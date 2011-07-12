@@ -1,13 +1,19 @@
 #include "Explosion.hpp"
 
-Explosion::Explosion(vector<sf::Image> &Images, sf::Vector2f Pos) : TTL(3.f), Time(0.f)
+Explosion::Explosion(ExplosionTemplate NewTemplate, map<string, sf::Image> &Images, sf::Vector2f Pos) : Template(NewTemplate), Time(0.f)
 {
-    const sf::Image &Image = Images[rand() % Images.size()];
+    const sf::Image &Image = Images[Template.Res];
     Shape.SetImage(Image);
     Shape.SetCenter(Image.GetWidth() / 2, Image.GetHeight() / 2);
     Shape.SetPosition(Pos);
 
-    Radius = (Image.GetWidth() + Image.GetHeight()) / 2.f;
+    Radius = Template.Radius;
+    TTL = Template.Time;
+}
+
+ExplosionTemplate Explosion::GetTemplate()
+{
+    return Template;
 }
 
 sf::Vector2f Explosion::GetPos()

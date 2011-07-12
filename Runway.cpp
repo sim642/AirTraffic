@@ -1,14 +1,18 @@
 #include "Runway.hpp"
 
-Runway::Runway(vector<sf::Image> &Images, sf::Vector2f Pos, float Rot)
+Runway::Runway(RunwayTemplate NewTemplate, map<string, sf::Image> &Images, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
 {
-    const sf::Image &Image = Images[rand() % Images.size()];
-    Shape.SetImage(Image);
-    Shape.SetCenter(Image.GetHeight() / 2, Image.GetHeight() / 2);
+    Shape.SetImage(Images[Template.Res]);
+    Shape.SetCenter(Template.Center);
     Shape.SetPosition(Pos);
     Shape.SetRotation(Rot);
 
-    Radius = Image.GetHeight() / 2.f * 1.5f;
+    Radius = Template.Radius;
+}
+
+RunwayTemplate Runway::GetTemplate()
+{
+    return Template;
 }
 
 bool Runway::OnMe(sf::Vector2f Pos)

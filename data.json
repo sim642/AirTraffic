@@ -4,14 +4,16 @@
 		{
 			"name": "runway1",
 			"res": "Runway1.png",
-			"center": [20, 20],
-			"radius": 15
+			"centerx": 20,
+			"centery": 20,
+			"radius": 20
 		},
 		{
 			"name": "runway2",
 			"res": "Runway2.png",
-			"center": [23, 23],
-			"radius": 18
+			"centerx": 23,
+			"centery": 23,
+			"radius": 25
 		}
     ],
 	"aircrafts":
@@ -44,5 +46,20 @@
 			"speed": 80,
 			"runways": ["runway1", "runway2"]
 		}
+	],
+	"explosions":
+	[
+        {
+            "name": "exp1",
+            "res": "Exp2.png",
+            "radius": 128,
+            "time": 3.0
+        },
+        {
+            "name": "exp2",
+            "res": "Explosion.png",
+            "radius": 200,
+            "time": 5.0
+        }
 	]
 }

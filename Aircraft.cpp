@@ -1,17 +1,20 @@
 #include "Aircraft.hpp"
 
-//Aircraft::Aircraft(vector<sf::Image> &Images, sf::Vector2f Pos, float Rot) : Land(0), Turning(0.f), Turn(2.f), FlyIn(true)
-Aircraft::Aircraft(vector<sf::Image> &Images, sf::Vector2f Pos, float Rot) : Turn(2.f), Land(0), Turning(0.f), FlyIn(true)
+Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Image> &Images, sf::Vector2f Pos, float Rot) : Template(NewTemplate), Turn(2.f), Land(0), Turning(0.f), FlyIn(true)
 {
-    const sf::Image &Image = Images[rand() % Images.size()];
+    const sf::Image &Image = Images[Template.Res];
     Shape.SetImage(Image);
     Shape.SetCenter(Image.GetWidth() / 2, Image.GetHeight() / 2);
     Shape.SetPosition(Pos);
     Shape.SetRotation(Rot);
 
-    //Radius = sqrt(pow(Image.GetWidth(), 2) + pow(Image.GetHeight(), 2)) / 2.f / 1.5f;
-    Radius = sqrt(pow(Image.GetWidth(), 2) + pow(Image.GetHeight(), 2)) / 2.f;
-    Speed = 2.5f * Image.GetWidth();
+    Radius = Template.Radius;
+    Speed = Template.Speed;
+}
+
+AircraftTemplate Aircraft::GetTemplate()
+{
+    return Template;
 }
 
 sf::Vector2f Aircraft::GetPos()

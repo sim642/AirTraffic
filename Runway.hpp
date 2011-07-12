@@ -3,13 +3,23 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <map>
 
 using namespace std;
+
+struct RunwayTemplate
+{
+    string Name;
+    string Res;
+    sf::Vector2f Center;
+    float Radius;
+};
 
 class Runway
 {
     public:
-        Runway(vector<sf::Image>&, sf::Vector2f, float);
+        Runway(RunwayTemplate, map<string, sf::Image>&, sf::Vector2f, float);
+        RunwayTemplate GetTemplate();
 
         bool OnMe(sf::Vector2f);
 
@@ -18,6 +28,7 @@ class Runway
         void Draw(sf::RenderWindow&);
     protected:
     private:
+        RunwayTemplate Template;
         sf::Sprite Shape;
 
         float Radius;

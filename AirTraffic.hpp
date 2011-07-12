@@ -3,9 +3,12 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <iterator>
 #include <ctime>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include "Aircraft.hpp"
 #include "Runway.hpp"
 #include "Explosion.hpp"
@@ -30,6 +33,12 @@ class AirTraffic
 
         sf::RenderWindow App;
 
+        boost::property_tree::ptree Data;
+
+        map<string, AircraftTemplate> AircraftTemplates;
+        map<string, RunwayTemplate> RunwayTemplates;
+        map<string, ExplosionTemplate> ExplosionTemplates;
+
         boost::ptr_vector<Aircraft> Aircrafts;
         boost::ptr_vector<Runway> Runways;
         boost::ptr_vector<Explosion> Explosions;
@@ -45,17 +54,15 @@ class AirTraffic
         sf::Clock Spawner;
         sf::Clock PlayTime;
 
+        void LoadImage(const string&);
+        map<string, sf::Image> Images;
 
-        void LoadImage(vector<sf::Image>&, const string&);
-
-        vector<sf::Image> AircraftImages;
-        vector<sf::Image> RunwayImages;
-        vector<sf::Image> ExplosionImages;
         sf::Image GrassImage;
         sf::Sprite Grass;
 
         void SpawnRunway();
         void SpawnAircraft();
+        void SpawnExplosion(sf::Vector2f);
 };
 
 #endif // AIRTRAFFIC_H

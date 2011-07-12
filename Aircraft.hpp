@@ -11,10 +11,20 @@
 
 using namespace std;
 
+struct AircraftTemplate
+{
+    string Name;
+    string Res;
+    float Radius;
+    float Speed;
+    vector<string> Runways;
+};
+
 class Aircraft
 {
     public:
-        Aircraft(vector<sf::Image>&, sf::Vector2f, float);
+        Aircraft(AircraftTemplate, map<string, sf::Image>&, sf::Vector2f, float);
+        AircraftTemplate GetTemplate();
 
         sf::Vector2f GetPos();
 
@@ -30,6 +40,8 @@ class Aircraft
         void Draw(sf::RenderWindow&);
     protected:
     private:
+        AircraftTemplate Template;
+
         float Radius;
         float Speed;
         float Turn;

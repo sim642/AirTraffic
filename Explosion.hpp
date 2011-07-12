@@ -7,11 +7,20 @@
 
 using namespace std;
 
+struct ExplosionTemplate
+{
+    string Name;
+    string Res;
+    float Radius;
+    float Time;
+};
+
 class Explosion
 {
     public:
         friend class Aircraft;
-        Explosion(vector<sf::Image>&, sf::Vector2f);
+        Explosion(ExplosionTemplate, map<string, sf::Image>&, sf::Vector2f);
+        ExplosionTemplate GetTemplate();
 
         sf::Vector2f GetPos();
 
@@ -21,6 +30,8 @@ class Explosion
         void Draw(sf::RenderWindow&);
     protected:
     private:
+        ExplosionTemplate Template;
+
         sf::Sprite Shape;
 
         float TTL, Time;
