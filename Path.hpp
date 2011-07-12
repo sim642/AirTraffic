@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cmath>
+#include "Math.hpp"
 
 using namespace std;
 
@@ -14,6 +15,8 @@ class Path
 
         int AddPoint(sf::Vector2f);
         bool TryAddPoint(sf::Vector2f);
+
+        float EndAngle();
 
         void RemovePoint(int);
         void Clear();

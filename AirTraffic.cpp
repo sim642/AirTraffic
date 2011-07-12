@@ -130,13 +130,15 @@ void AirTraffic::HandleEvents()
         }
         else if (Event.Type == sf::Event::MouseMoved && Pathing)
         {
-            if (Pathing->GetPath().TryAddPoint(MousePos))
+            Path &P = Pathing->GetPath();
+            if (P.TryAddPoint(MousePos))
             {
                 Runway *Land = 0;
                 for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
                 {
-                    if (it->OnMe(MousePos))
+                    if (it->OnMe(P[P.NumPoints() - 1]))
                     {
+                        cout << it->GetRotation() << " " << P.EndAngle() << " " << abs(fmod(AngleDiff(it->GetRotation(), P.EndAngle()), 360.f)) << endl;
                         Land = &*it;
                         break;
                     }

@@ -24,6 +24,7 @@ class Runway
         bool OnMe(sf::Vector2f);
 
         sf::Vector2f GetPos();
+        float GetRotation();
 
         void Draw(sf::RenderWindow&);
     protected:

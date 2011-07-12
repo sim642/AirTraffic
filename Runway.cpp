@@ -26,6 +26,11 @@ sf::Vector2f Runway::GetPos()
     return Shape.GetPosition();
 }
 
+float Runway::GetRotation()
+{
+    return Shape.GetRotation();
+}
+
 void Runway::Draw(sf::RenderWindow &App)
 {
     App.Draw(Shape);

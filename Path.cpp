@@ -26,6 +26,14 @@ bool Path::TryAddPoint(sf::Vector2f Point)
     }
 }
 
+float Path::EndAngle()
+{
+    sf::Vector2f &Pos1 = *Points.rbegin();
+    sf::Vector2f &Pos2 = *(Points.rbegin() + 1);
+
+    return fmod(AngleFix(RadToDeg(atan2(Pos1.y - Pos2.y, Pos1.x - Pos2.x))), 360.f);
+}
+
 void Path::RemovePoint(int i)
 {
     Points.erase(Points.begin() + i);

@@ -67,7 +67,7 @@ bool Aircraft::Step(float FT)
             P.RemovePoint(0);
 
         float Target = AngleFix(RadToDeg(atan2(To.y - Me.y, To.x - Me.x)));
-        float Diff = AngleDiff(Shape.GetRotation(), Target);
+        //float Diff = AngleDiff(Shape.GetRotation(), Target);
 
         Shape.SetRotation(Target);
     }
