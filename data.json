@@ -1,0 +1,48 @@
+{
+    "runways":
+    [
+		{
+			"name": "runway1",
+			"res": "Runway1.png",
+			"center": [20, 20],
+			"radius": 15
+		},
+		{
+			"name": "runway2",
+			"res": "Runway2.png",
+			"center": [23, 23],
+			"radius": 18
+		}
+    ],
+	"aircrafts":
+	[
+		{
+			"name": "yellow",
+			"res": "Aircraft1.png",
+			"radius": 35,
+			"speed": 120,
+			"runways": ["runway1", "runway2"]
+		},
+		{
+			"name": "red",
+			"res": "Aircraft2.png",
+			"radius": 35,
+			"speed": 120,
+			"runways": ["runway1", "runway2"]
+		},
+		{
+			"name": "purple",
+			"res": "Aircraft3.png",
+			"radius": 35,
+			"speed": 120,
+			"runways": ["runway1", "runway2"]
+		},
+		{
+			"name": "small",
+			"res": "Aircraft4.png",
+			"radius": 23,
+			"speed": 80,
+			"runways": ["runway1", "runway2"]
+		}
+	]
+}

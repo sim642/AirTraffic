@@ -1,0 +1,337 @@
+#include "AirTraffic.hpp"
+
+AirTraffic::AirTraffic() : Pathing(), Score(0)
+{
+    srand(time(0));
+
+    App.Create(sf::VideoMode(800, 600, 32), "AirTraffic");
+    App.SetFramerateLimit(60);
+
+    LoadResources();
+
+    ScoreText.SetFont(Font);
+    ScoreText.SetSize(40);
+    ScoreText.SetPosition(sf::Vector2f(10.f, 10.f));
+    ScoreText.SetColor(sf::Color::White);
+
+    DebugText.SetFont(Font);
+    DebugText.SetSize(24);
+    DebugText.SetPosition(sf::Vector2f(10.f, 50.f));
+    DebugText.SetColor(sf::Color::White);
+
+    for (int n = 0; n < 2; n++)
+    {
+        SpawnRunway();
+    }
+}
+
+int AirTraffic::Run()
+{
+    while (App.IsOpened())
+    {
+        HandleEvents();
+        Step();
+        Draw();
+    }
+
+    return 0;
+}
+
+void AirTraffic::LoadResources()
+{
+    Font = sf::Font::GetDefaultFont();
+
+    LoadImage(AircraftImages, "Aircraft1");
+    LoadImage(AircraftImages, "Aircraft2");
+    LoadImage(AircraftImages, "Aircraft3");
+    LoadImage(AircraftImages, "Aircraft4");
+    LoadImage(RunwayImages, "Runway1");
+    LoadImage(RunwayImages, "Runway2");
+    //LoadImage(ExplosionImages, "Explosion");
+    LoadImage(ExplosionImages, "Exp2");
+
+    GrassImage.LoadFromFile("res/Grass192.png");
+    GrassImage.SetSmooth(false);
+    Grass.SetImage(GrassImage);
+}
+
+void AirTraffic::HandleEvents()
+{
+    const sf::Input &Input = App.GetInput();
+    const sf::Vector2f MousePos = sf::Vector2f(Input.GetMouseX(), Input.GetMouseY());
+
+    sf::Event Event;
+    while (App.GetEvent(Event))
+    {
+        if (Event.Type == sf::Event::Closed)
+            App.Close();
+
+        if (Event.Type == sf::Event::MouseButtonPressed &&
+            Event.MouseButton.Button == sf::Mouse::Left)
+        {
+            for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+            {
+                if (it->OnMe(MousePos))
+                {
+                    Pathing = &*it;
+                    Pathing->GetPath().Clear();
+
+                    break;
+                }
+            }
+        }
+        else if (Event.Type == sf::Event::MouseButtonReleased &&
+                 Event.MouseButton.Button == sf::Mouse::Left &&
+                 Pathing)
+        {
+            Pathing = 0;
+        }
+        else if (Event.Type == sf::Event::MouseMoved && Pathing)
+        {
+            if (Pathing->GetPath().TryAddPoint(MousePos))
+            {
+                //Pathing->GetPath().AddPoint(MousePos);
+
+                Runway *Land = 0;
+                for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+                {
+                    if (it->OnMe(MousePos))
+                    {
+                        Land = &*it;
+                        break;
+                    }
+                }
+                Pathing->SetRunway(Land);
+            }
+
+        }
+    }
+}
+
+void AirTraffic::Step()
+{
+    const float FT = App.GetFrameTime();
+    float SpawnTime = wr::Map(PlayTime.GetElapsedTime(), 0.f, 120.f, 5.f, 0.5f);
+    if (SpawnTime < 0.5f)
+        SpawnTime = 0.5f;
+    //float SpawnTime = 3.f / PlayTime.GetElapsedTime();
+
+    if (Spawner.GetElapsedTime() > SpawnTime)
+    {
+        SpawnAircraft();
+        Spawner.Reset();
+    }
+
+    for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); )
+    {
+        boost::ptr_vector<Aircraft>::iterator it2 = it + 1;
+        for (; it2 != Aircrafts.end(); ++it2)
+        {
+            if (it->Colliding(*it2))
+            {
+                break;
+            }
+        }
+
+        boost::ptr_vector<Explosion>::iterator it3 = Explosions.begin();
+        for (; it3 != Explosions.end(); ++it3)
+        {
+            if (it->Colliding(*it3))
+            {
+                break;
+            }
+        }
+
+        if (it2 != Aircrafts.end())
+        {
+            sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
+            Explosions.push_back(new Explosion(ExplosionImages, (Pos1 + Pos2) / 2.f));
+            Score -= 10000;
+
+            if (Pathing == &*it || Pathing == &*it2) // take care if were drawing a path
+            {
+                Pathing = 0;
+            }
+
+            if (it < it2)
+            {
+                //      --1--2--
+                it = Aircrafts.erase(it);
+                Aircrafts.erase(it2 - 1);
+            }
+            else
+            {
+                //      --2--1--
+                Aircrafts.erase(it2);
+                it = Aircrafts.erase(it - 1);
+            }
+        }
+        else if (it3 != Explosions.end() && it3->Deadly())
+        {
+            sf::Vector2f Pos1 = it->GetPos(), Pos2 = it3->GetPos();
+            Explosions.push_back(new Explosion(ExplosionImages, (Pos1 + Pos2) / 2.f));
+            Score -= 10000;
+
+            if (Pathing == &*it)
+            {
+                Pathing = 0;
+            }
+
+            it = Aircrafts.erase(it);
+        }
+        else if (it->Step(FT))
+        {
+            Score += 1000;
+            if (Pathing == &*it) // take care if were drawing a path
+            {
+                Pathing = 0;
+            }
+            it = Aircrafts.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    for (boost::ptr_vector<Explosion>::iterator it = Explosions.begin(); it != Explosions.end();)
+    {
+        if (it->Step(FT))
+        {
+            it = Explosions.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    ScoreText.SetText(boost::lexical_cast<string>(Score));
+    DebugText.SetText(boost::lexical_cast<string>(SpawnTime));
+}
+
+void AirTraffic::Draw()
+{
+    //draw grass
+    //App.Clear(sf::Color(38, 127, 0));
+    for (int y = 0; y < App.GetHeight(); y += GrassImage.GetHeight())
+    {
+        for (int x = 0; x < App.GetWidth(); x += GrassImage.GetWidth())
+        {
+            Grass.SetPosition(x, y);
+            App.Draw(Grass);
+        }
+    }
+
+    for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+    {
+        it->Draw(App);
+    }
+
+    for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    {
+        it->GetPath().Draw(App);
+        it->Draw(App);
+    }
+
+    for (boost::ptr_vector<Explosion>::iterator it = Explosions.begin(); it != Explosions.end(); ++it)
+    {
+        it->Draw(App);
+    }
+
+    App.Draw(ScoreText);
+    App.Draw(DebugText);
+
+    App.Display();
+}
+
+void AirTraffic::LoadImage(vector<sf::Image> &Vec, const string &FileName)
+{
+    sf::Image Image;
+    Image.LoadFromFile("res/" + FileName + ".png");
+    Vec.push_back(Image);
+}
+
+void AirTraffic::SpawnRunway()
+{
+    sf::Vector2f Pos;
+    float Angle;
+
+    bool Ready;
+    do
+    {
+        Ready = true;
+
+        Pos.x = sf::Randomizer::Random(200.f, 600.f);
+        Pos.y = sf::Randomizer::Random(200.f, 400.f);
+
+        Angle = sf::Randomizer::Random(0.f, 360.f);
+
+        Runway New(RunwayImages, Pos, Angle);
+        for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+        {
+            sf::Vector2f Pos1 = New.GetPos(),
+                         Pos2 = it->GetPos();
+            if (pow(Pos1.x - Pos2.x, 2) + pow(Pos1.y - Pos2.y, 2) < pow(200, 2))
+            {
+                Ready = false;
+                break;
+            }
+        }
+    }
+    while (!Ready);
+
+    Runways.push_back(new Runway(RunwayImages, Pos, Angle));
+}
+
+void AirTraffic::SpawnAircraft()
+{
+    sf::Vector2f Pos;
+    float Angle;
+
+    bool Ready;
+    do
+    {
+        Ready = true;
+
+        Pos.x = sf::Randomizer::Random(-25.f, 825.f);
+        Pos.y = sf::Randomizer::Random(-25.f, 625.f);
+        Angle = 0.f;
+
+        if (sf::Randomizer::Random(0, 1) == 0)
+        {
+            if (sf::Randomizer::Random(0, 1) == 0)
+            {
+                Pos.y = -25.f;
+            }
+            else
+            {
+                Pos.y = 625.f;
+            }
+        }
+        else
+        {
+            if (sf::Randomizer::Random(0, 1) == 0)
+            {
+                Pos.x = -25.f;
+            }
+            else
+            {
+                Pos.x = 825.f;
+            }
+        }
+
+        Aircraft New(AircraftImages, Pos, Angle);
+        for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+        {
+            if (it->Colliding(New))
+            {
+                Ready = false;
+                break;
+            }
+        }
+    }
+    while (!Ready);
+
+    Aircrafts.push_back(new Aircraft(AircraftImages, Pos, Angle));
+}

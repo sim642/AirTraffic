@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="AirTraffic.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="2922" topLine="82" />
+	</File>
+	<File name="AirTraffic.hpp" open="1" top="0" tabpos="1">
+		<Cursor position="416" topLine="15" />
+	</File>
+	<File name="Aircraft.cpp" open="1" top="1" tabpos="4">
+		<Cursor position="327" topLine="0" />
+	</File>
+	<File name="Aircraft.hpp" open="1" top="0" tabpos="3">
+		<Cursor position="774" topLine="0" />
+	</File>
+	<File name="Explosion.cpp" open="1" top="0" tabpos="9">
+		<Cursor position="275" topLine="0" />
+	</File>
+	<File name="Explosion.hpp" open="1" top="0" tabpos="8">
+		<Cursor position="112" topLine="0" />
+	</File>
+	<File name="Math.hpp" open="1" top="0" tabpos="5">
+		<Cursor position="591" topLine="0" />
+	</File>
+	<File name="Path.cpp" open="1" top="0" tabpos="11">
+		<Cursor position="123" topLine="3" />
+	</File>
+	<File name="Path.hpp" open="1" top="0" tabpos="10">
+		<Cursor position="252" topLine="0" />
+	</File>
+	<File name="Runway.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="207" topLine="0" />
+	</File>
+	<File name="Runway.hpp" open="1" top="0" tabpos="6">
+		<Cursor position="175" topLine="0" />
+	</File>
+	<File name="data.json" open="0" top="0" tabpos="0">
+		<Cursor position="24" topLine="0" />
+	</File>
+	<File name="main.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="72" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>
