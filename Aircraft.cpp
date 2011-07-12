@@ -37,14 +37,14 @@ bool Aircraft::Colliding(const Aircraft &Other)
 {
     const sf::Vector2f &Me = Shape.GetPosition();
     const sf::Vector2f &Pos = Other.Shape.GetPosition();
-    return pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow(Radius + Other.Radius, 2);
+    return pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow((Radius + Other.Radius) / 1.3f, 2);
 }
 
 bool Aircraft::Colliding(const Explosion &Exp)
 {
     const sf::Vector2f &Me = Shape.GetPosition();
     const sf::Vector2f &Pos = Exp.Shape.GetPosition();
-    return pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow((Radius + Exp.Radius) / 2.f, 2);
+    return pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow((Radius + Exp.Radius) / 2.5f, 2);
 }
 
 void Aircraft::SetRunway(Runway *NewLand)

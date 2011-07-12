@@ -132,8 +132,6 @@ void AirTraffic::HandleEvents()
         {
             if (Pathing->GetPath().TryAddPoint(MousePos))
             {
-                //Pathing->GetPath().AddPoint(MousePos);
-
                 Runway *Land = 0;
                 for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
                 {
@@ -187,7 +185,9 @@ void AirTraffic::Step()
         if (it2 != Aircrafts.end())
         {
             sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
-            SpawnExplosion((Pos1 + Pos2) / 2.f);
+            SpawnExplosion(Pos1);
+            SpawnExplosion(Pos2);
+            //SpawnExplosion((Pos1 + Pos2) / 2.f);
             Score -= 10000;
 
             if (Pathing == &*it || Pathing == &*it2) // take care if were drawing a path
@@ -211,7 +211,8 @@ void AirTraffic::Step()
         else if (it3 != Explosions.end() && it3->Deadly())
         {
             sf::Vector2f Pos1 = it->GetPos(), Pos2 = it3->GetPos();
-            SpawnExplosion((Pos1 + Pos2) / 2.f);
+            SpawnExplosion(Pos1);
+            //SpawnExplosion((Pos1 + Pos2) / 2.f);
             Score -= 10000;
 
             if (Pathing == &*it)
@@ -254,8 +255,7 @@ void AirTraffic::Step()
 
 void AirTraffic::Draw()
 {
-    //draw grass
-    //App.Clear(sf::Color(38, 127, 0));
+    // grass
     for (int y = 0; y < App.GetHeight(); y += GrassImage.GetHeight())
     {
         for (int x = 0; x < App.GetWidth(); x += GrassImage.GetWidth())
@@ -265,17 +265,80 @@ void AirTraffic::Draw()
         }
     }
 
+    // runways
     for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
     {
         it->Draw(App);
     }
+    // landing areas
+    for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+    {
+        if (Pathing)
+        {
+            App.Draw(sf::Shape::Circle(it->GetPos(),
+                                       it->GetTemplate().Radius - 3.f,
+                                       sf::Color(0, 255, 255, 96),
+                                       3.f,
+                                       sf::Color(0, 255, 255)));
+        }
+    }
 
+    // aircraft paths
     for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
         it->GetPath().Draw(App);
+    }
+    // aircrafts
+    for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    {
         it->Draw(App);
     }
+    // aircraft collision warnings
+    for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    {
+        // with other aircraft
+        for (boost::ptr_vector<Aircraft>::iterator it2 = it + 1; it2 != Aircrafts.end(); ++it2)
+        {
+            sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
+            float R1 = it->GetTemplate().Radius, R2 = it2->GetTemplate().Radius;
+            float MaxDist = 1.75 * (R1 + R2);
+            if (pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2) < pow(MaxDist, 2))
+            {
+                float Dist = sqrt(pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2));
+                float MinDist = (R1 + R2) / 1.3f;
+                App.Draw(sf::Shape::Circle(Pos1,
+                                           R1 - 3.f,
+                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
+                                           3.f,
+                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
+                App.Draw(sf::Shape::Circle(Pos2,
+                                           R2 - 3.f,
+                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
+                                           3.f,
+                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
+            }
+        }
 
+        // with explosion
+        for (boost::ptr_vector<Explosion>::iterator it2 = Explosions.begin(); it2 != Explosions.end(); ++it2)
+        {
+            sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
+            float R1 = it->GetTemplate().Radius, R2 = it2->GetTemplate().Radius;
+            float MaxDist = (R1 + R2) / 1.5;
+            if (pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2) < pow(MaxDist, 2))
+            {
+                float Dist = sqrt(pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2));
+                float MinDist = (R1 + R2) / 2.5f;
+                App.Draw(sf::Shape::Circle(Pos1,
+                                           R1 - 3.f,
+                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
+                                           3.f,
+                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
+            }
+        }
+    }
+
+    // explosions
     for (boost::ptr_vector<Explosion>::iterator it = Explosions.begin(); it != Explosions.end(); ++it)
     {
         it->Draw(App);
