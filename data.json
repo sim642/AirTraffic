@@ -14,6 +14,13 @@
 			"centerx": 23,
 			"centery": 23,
 			"radius": 25
+		},
+		{
+            "name": "helipad",
+            "res": "Helipad.png",
+            "centerx": 25,
+            "centery": 25,
+            "radius": 20
 		}
     ],
 	"aircrafts":
@@ -49,6 +56,14 @@
 			"speed": 80,
 			"turn": 2,
 			"runways": ["runway1", "runway2"]
+		},
+		{
+            "name": "heli",
+            "res": "Heli1.png",
+            "radius": 25,
+            "speed": 65,
+            "turn": 5,
+            "runways": ["helipad"]
 		}
 	],
 	"explosions":
