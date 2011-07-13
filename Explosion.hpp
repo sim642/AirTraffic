@@ -30,7 +30,7 @@ class Explosion
         void Draw(sf::RenderWindow&);
     protected:
     private:
-        ExplosionTemplate Template;
+        const ExplosionTemplate Template;
 
         sf::Sprite Shape;
 

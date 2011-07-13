@@ -1,6 +1,6 @@
 #include "Aircraft.hpp"
 
-Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Image> &Images, sf::Vector2f Pos, float Rot) : Template(NewTemplate), Turn(2.f), Land(0), Turning(0.f), FlyIn(true)
+Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Image> &Images, sf::Vector2f Pos, float Rot) : Template(NewTemplate), Land(0), Turning(0.f), FlyIn(true)
 {
     const sf::Image &Image = Images[Template.Res];
     Shape.SetImage(Image);
@@ -10,6 +10,7 @@ Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Image> &Images,
 
     Radius = Template.Radius;
     Speed = Template.Speed;
+    Turn = Template.Turn;
 }
 
 AircraftTemplate Aircraft::GetTemplate()

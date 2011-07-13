@@ -69,6 +69,7 @@ void AirTraffic::LoadResources()
         LoadImage(Temp.Res);
         Temp.Speed = Cur.get<float>("speed");
         Temp.Radius = Cur.get<float>("radius");
+        Temp.Turn = Cur.get<float>("turn");
 
         boost::property_tree::ptree &CurRunways = Cur.get_child("runways");
         for (boost::property_tree::ptree::iterator it2 = CurRunways.begin(); it2 != CurRunways.end(); ++it2)
@@ -136,9 +137,10 @@ void AirTraffic::HandleEvents()
                 Runway *Land = 0;
                 for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
                 {
-                    if (it->OnMe(P[P.NumPoints() - 1]))
+                    vector<string> Landable = Pathing->GetTemplate().Runways;
+                    if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end() && it->OnMe(P[P.NumPoints() - 1]))
                     {
-                        cout << it->GetRotation() << " " << P.EndAngle() << " " << abs(fmod(AngleDiff(it->GetRotation(), P.EndAngle()), 360.f)) << endl;
+                        //cout << it->GetRotation() << " " << P.EndAngle() << " " << abs(fmod(AngleDiff(it->GetRotation(), P.EndAngle()), 360.f)) << endl;
                         Land = &*it;
                         break;
                     }
@@ -215,7 +217,7 @@ void AirTraffic::Step()
             sf::Vector2f Pos1 = it->GetPos(), Pos2 = it3->GetPos();
             SpawnExplosion(Pos1);
             //SpawnExplosion((Pos1 + Pos2) / 2.f);
-            Score -= 10000;
+            Score -= 5000;
 
             if (Pathing == &*it)
             {
@@ -277,11 +279,15 @@ void AirTraffic::Draw()
     {
         if (Pathing)
         {
-            App.Draw(sf::Shape::Circle(it->GetPos(),
-                                       it->GetTemplate().Radius - 3.f,
-                                       sf::Color(0, 255, 255, 96),
-                                       3.f,
-                                       sf::Color(0, 255, 255)));
+            vector<string> Landable = Pathing->GetTemplate().Runways;
+            if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end())
+            {
+                App.Draw(sf::Shape::Circle(it->GetPos(),
+                                           it->GetTemplate().Radius - 3.f,
+                                           sf::Color(0, 255, 255, 96),
+                                           3.f,
+                                           sf::Color(0, 255, 255)));
+            }
         }
     }
 
@@ -298,6 +304,23 @@ void AirTraffic::Draw()
     // aircraft collision warnings
     for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
+        // with explosion
+        for (boost::ptr_vector<Explosion>::iterator it2 = Explosions.begin(); it2 != Explosions.end(); ++it2)
+        {
+            sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
+            float R1 = it->GetTemplate().Radius, R2 = it2->GetTemplate().Radius;
+            float MaxDist = (R1 + R2) / 1.5;
+            if (it2->Deadly() && pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2) < pow(MaxDist, 2))
+            {
+                float Dist = sqrt(pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2));
+                float MinDist = (R1 + R2) / 2.5f;
+                App.Draw(sf::Shape::Circle(Pos1,
+                                           R1 - 3.f,
+                                           sf::Color(255, 255, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
+                                           3.f,
+                                           sf::Color(255, 255, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
+            }
+        }
         // with other aircraft
         for (boost::ptr_vector<Aircraft>::iterator it2 = it + 1; it2 != Aircrafts.end(); ++it2)
         {
@@ -315,24 +338,6 @@ void AirTraffic::Draw()
                                            sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
                 App.Draw(sf::Shape::Circle(Pos2,
                                            R2 - 3.f,
-                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
-                                           3.f,
-                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
-            }
-        }
-
-        // with explosion
-        for (boost::ptr_vector<Explosion>::iterator it2 = Explosions.begin(); it2 != Explosions.end(); ++it2)
-        {
-            sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
-            float R1 = it->GetTemplate().Radius, R2 = it2->GetTemplate().Radius;
-            float MaxDist = (R1 + R2) / 1.5;
-            if (pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2) < pow(MaxDist, 2))
-            {
-                float Dist = sqrt(pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2));
-                float MinDist = (R1 + R2) / 2.5f;
-                App.Draw(sf::Shape::Circle(Pos1,
-                                           R1 - 3.f,
                                            sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
                                            3.f,
                                            sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));

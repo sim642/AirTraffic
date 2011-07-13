@@ -23,6 +23,7 @@
 			"res": "Aircraft1.png",
 			"radius": 35,
 			"speed": 120,
+			"turn": 1.75,
 			"runways": ["runway1", "runway2"]
 		},
 		{
@@ -30,6 +31,7 @@
 			"res": "Aircraft2.png",
 			"radius": 35,
 			"speed": 120,
+			"turn": 1.75,
 			"runways": ["runway1", "runway2"]
 		},
 		{
@@ -37,6 +39,7 @@
 			"res": "Aircraft3.png",
 			"radius": 35,
 			"speed": 120,
+			"turn": 1.75,
 			"runways": ["runway1", "runway2"]
 		},
 		{
@@ -44,6 +47,7 @@
 			"res": "Aircraft4.png",
 			"radius": 23,
 			"speed": 80,
+			"turn": 2,
 			"runways": ["runway1", "runway2"]
 		}
 	],
@@ -54,12 +58,6 @@
             "res": "Exp2.png",
             "radius": 128,
             "time": 3.0
-        },
-        {
-            "name": "exp2",
-            "res": "Explosion.png",
-            "radius": 200,
-            "time": 5.0
         }
 	]
 }

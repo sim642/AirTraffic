@@ -17,6 +17,7 @@ struct AircraftTemplate
     string Res;
     float Radius;
     float Speed;
+    float Turn;
     vector<string> Runways;
 };
 
@@ -40,7 +41,7 @@ class Aircraft
         void Draw(sf::RenderWindow&);
     protected:
     private:
-        AircraftTemplate Template;
+        const AircraftTemplate Template;
 
         float Radius;
         float Speed;

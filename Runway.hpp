@@ -29,7 +29,7 @@ class Runway
         void Draw(sf::RenderWindow&);
     protected:
     private:
-        RunwayTemplate Template;
+        const RunwayTemplate Template;
         sf::Sprite Shape;
 
         float Radius;
