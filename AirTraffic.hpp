@@ -48,8 +48,8 @@ class AirTraffic
         int Score;
 
         sf::Font Font;
-        sf::String ScoreText;
-        sf::String DebugText;
+        sf::Text ScoreText;
+        sf::Text DebugText;
 
         sf::Clock Spawner;
         sf::Clock PlayTime;

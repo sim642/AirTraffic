@@ -4,7 +4,7 @@ Explosion::Explosion(ExplosionTemplate NewTemplate, map<string, sf::Image> &Imag
 {
     const sf::Image &Image = Images[Template.Res];
     Shape.SetImage(Image);
-    Shape.SetCenter(Image.GetWidth() / 2, Image.GetHeight() / 2);
+    Shape.SetOrigin(Image.GetWidth() / 2, Image.GetHeight() / 2);
     Shape.SetPosition(Pos);
 
     Radius = Template.Radius;

@@ -4,18 +4,18 @@ AirTraffic::AirTraffic() : Pathing(), Score(0)
 {
     srand(time(0));
 
-    App.Create(sf::VideoMode(800, 600, 32), "AirTraffic");
+    App.Create(sf::VideoMode(800, 600, 32), "AirTraffic", sf::Style::Default, sf::ContextSettings(24, 8, 16));
     App.SetFramerateLimit(60);
 
     LoadResources();
 
     ScoreText.SetFont(Font);
-    ScoreText.SetSize(40);
+    ScoreText.SetCharacterSize(40);
     ScoreText.SetPosition(sf::Vector2f(10.f, 10.f));
     ScoreText.SetColor(sf::Color::White);
 
     DebugText.SetFont(Font);
-    DebugText.SetSize(24);
+    DebugText.SetCharacterSize(24);
     DebugText.SetPosition(sf::Vector2f(10.f, 50.f));
     DebugText.SetColor(sf::Color::White);
 
@@ -100,11 +100,10 @@ void AirTraffic::LoadResources()
 
 void AirTraffic::HandleEvents()
 {
-    const sf::Input &Input = App.GetInput();
-    const sf::Vector2f MousePos = sf::Vector2f(Input.GetMouseX(), Input.GetMouseY());
+    const sf::Vector2f MousePos(sf::Mouse::GetPosition(App).x, sf::Mouse::GetPosition(App).y);
 
     sf::Event Event;
-    while (App.GetEvent(Event))
+    while (App.PollEvent(Event))
     {
         if (Event.Type == sf::Event::Closed)
             App.Close();
@@ -154,13 +153,13 @@ void AirTraffic::HandleEvents()
 
 void AirTraffic::Step()
 {
-    const float FT = App.GetFrameTime();
-    float SpawnTime = wr::Map(PlayTime.GetElapsedTime(), 0.f, 120.f, 5.f, 0.5f);
+    const float FT = App.GetFrameTime() / 1000.f;
+    float SpawnTime = wr::Map(PlayTime.GetElapsedTime() / 1000.f, 0.f, 120.f, 5.f, 0.5f);
     if (SpawnTime < 0.5f)
         SpawnTime = 0.5f;
     //float SpawnTime = 3.f / PlayTime.GetElapsedTime();
 
-    if (Spawner.GetElapsedTime() > SpawnTime)
+    if (Spawner.GetElapsedTime() / 1000.f > SpawnTime)
     {
         SpawnAircraft();
         Spawner.Reset();
@@ -253,16 +252,16 @@ void AirTraffic::Step()
         }
     }
 
-    ScoreText.SetText(boost::lexical_cast<string>(Score));
-    DebugText.SetText(boost::lexical_cast<string>(SpawnTime));
+    ScoreText.SetString(boost::lexical_cast<string>(Score));
+    DebugText.SetString(boost::lexical_cast<string>(SpawnTime));
 }
 
 void AirTraffic::Draw()
 {
     // grass
-    for (int y = 0; y < App.GetHeight(); y += GrassImage.GetHeight())
+    for (unsigned int y = 0; y < App.GetHeight(); y += GrassImage.GetHeight())
     {
-        for (int x = 0; x < App.GetWidth(); x += GrassImage.GetWidth())
+        for (unsigned int x = 0; x < App.GetWidth(); x += GrassImage.GetWidth())
         {
             Grass.SetPosition(x, y);
             App.Draw(Grass);
@@ -378,10 +377,10 @@ void AirTraffic::SpawnRunway()
     {
         Ready = true;
 
-        Pos.x = sf::Randomizer::Random(200.f, 600.f);
-        Pos.y = sf::Randomizer::Random(200.f, 400.f);
+        Pos.x = Random(200.f, 600.f);
+        Pos.y = Random(200.f, 400.f);
 
-        Angle = sf::Randomizer::Random(0.f, 360.f);
+        Angle = Random(0.f, 360.f);
 
 
 
@@ -416,13 +415,13 @@ void AirTraffic::SpawnAircraft()
     {
         Ready = true;
 
-        Pos.x = sf::Randomizer::Random(-25.f, 825.f);
-        Pos.y = sf::Randomizer::Random(-25.f, 625.f);
+        Pos.x = Random(-25.f, 825.f);
+        Pos.y = Random(-25.f, 625.f);
         Angle = 0.f;
 
-        if (sf::Randomizer::Random(0, 1) == 0)
+        if (Chance(0.5f))
         {
-            if (sf::Randomizer::Random(0, 1) == 0)
+            if (Chance(0.5f))
             {
                 Pos.y = -25.f;
             }
@@ -433,7 +432,7 @@ void AirTraffic::SpawnAircraft()
         }
         else
         {
-            if (sf::Randomizer::Random(0, 1) == 0)
+            if (Chance(0.5f))
             {
                 Pos.x = -25.f;
             }

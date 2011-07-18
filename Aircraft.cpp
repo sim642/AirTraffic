@@ -4,7 +4,7 @@ Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Image> &Images,
 {
     const sf::Image &Image = Images[Template.Res];
     Shape.SetImage(Image);
-    Shape.SetCenter(Image.GetWidth() / 2, Image.GetHeight() / 2);
+    Shape.SetOrigin(Image.GetWidth() / 2, Image.GetHeight() / 2);
     Shape.SetPosition(Pos);
     Shape.SetRotation(Rot);
 
@@ -67,8 +67,7 @@ bool Aircraft::Step(float FT)
         if (pow(To.x - Me.x, 2) + pow(To.y - Me.y, 2) < pow(5, 2))
             P.RemovePoint(0);
 
-        float Target = AngleFix(RadToDeg(atan2(To.y - Me.y, To.x - Me.x)));
-        //float Diff = AngleDiff(Shape.GetRotation(), Target);
+        float Target = RadToDeg(atan2(To.y - Me.y, To.x - Me.x));
 
         Shape.SetRotation(Target);
     }
@@ -80,12 +79,12 @@ bool Aircraft::Step(float FT)
             Turning = 0.2f;
         }
         sf::Vector2f To(400.f, 300.f);
-        Shape.SetRotation(AngleFix(RadToDeg(atan2(To.y - Me.y, To.x - Me.x))));
+        Shape.SetRotation(RadToDeg(atan2(To.y - Me.y, To.x - Me.x)));
     }
     else
     {
         FlyIn = false;
-        float Angle = Shape.GetRotation(), AddAngle;
+        float Angle = AngleFix(Shape.GetRotation()), AddAngle;
         if ((Me.x < 100 && Angle > 180) ||
             (Me.x > 700 && Angle < 180) ||
             (Me.y < 100 && (Angle > 90 && Angle < 270)) ||
@@ -108,12 +107,10 @@ bool Aircraft::Step(float FT)
         }
 
         Angle += AddAngle;
-        if (Angle < 0.f)
-            Angle += 360.f;
-        Shape.SetRotation(Angle);
+        Shape.SetRotation(AngleFix(Angle));
     }
 
-    Shape.Move(sf::Vector2f(cos(DegToRad(AngleFix(Shape.GetRotation()))), sin(DegToRad(AngleFix(Shape.GetRotation())))) * FT * Speed);
+    Shape.Move(sf::Vector2f(cos(DegToRad(Shape.GetRotation())), sin(DegToRad(Shape.GetRotation()))) * FT * Speed);
 
     return P.NumPoints() == 0 && (Land ? Land->OnMe(Me) : false);
 }
@@ -121,5 +118,4 @@ bool Aircraft::Step(float FT)
 void Aircraft::Draw(sf::RenderWindow& App)
 {
     App.Draw(Shape);
-    //App.Draw(sf::Shape::Circle(Shape.GetPosition(), 15.f, sf::Color::Magenta));
 }

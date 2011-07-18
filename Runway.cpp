@@ -3,7 +3,7 @@
 Runway::Runway(RunwayTemplate NewTemplate, map<string, sf::Image> &Images, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
 {
     Shape.SetImage(Images[Template.Res]);
-    Shape.SetCenter(Template.Center);
+    Shape.SetOrigin(Template.Center);
     Shape.SetPosition(Pos);
     Shape.SetRotation(Rot);
 

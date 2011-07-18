@@ -35,4 +35,21 @@ inline float AngleDiff(float Angle1, float Angle2)
     return Diff;
 }
 
+inline float Random(float Min, float Max)
+{
+    return (Max - Min) * (rand() / static_cast<float>(RAND_MAX)) + Min;
+}
+
+inline int Random(int Min, int Max)
+{
+    return rand() % (Max - Min + 1) + Min;
+}
+
+inline bool Chance(float Cha)
+{
+    return (rand() / static_cast<float>(RAND_MAX)) < Cha;
+}
+
+
+
 #endif // MATH_H

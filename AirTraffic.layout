@@ -2,25 +2,25 @@
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
 	<File name="AirTraffic.cpp" open="1" top="1" tabpos="2">
-		<Cursor position="560" topLine="0" />
+		<Cursor position="603" topLine="0" />
 	</File>
 	<File name="AirTraffic.hpp" open="1" top="0" tabpos="1">
-		<Cursor position="1503" topLine="21" />
+		<Cursor position="1183" topLine="25" />
 	</File>
 	<File name="Aircraft.cpp" open="1" top="0" tabpos="4">
-		<Cursor position="493" topLine="0" />
+		<Cursor position="1863" topLine="0" />
 	</File>
 	<File name="Aircraft.hpp" open="1" top="0" tabpos="3">
 		<Cursor position="341" topLine="1" />
 	</File>
 	<File name="Explosion.cpp" open="1" top="0" tabpos="9">
-		<Cursor position="402" topLine="0" />
+		<Cursor position="268" topLine="0" />
 	</File>
 	<File name="Explosion.hpp" open="1" top="0" tabpos="8">
 		<Cursor position="603" topLine="0" />
 	</File>
 	<File name="Math.hpp" open="1" top="0" tabpos="5">
-		<Cursor position="591" topLine="0" />
+		<Cursor position="326" topLine="3" />
 	</File>
 	<File name="Path.cpp" open="1" top="0" tabpos="11">
 		<Cursor position="147" topLine="0" />
@@ -29,7 +29,7 @@
 		<Cursor position="120" topLine="0" />
 	</File>
 	<File name="Runway.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="688" topLine="0" />
+		<Cursor position="219" topLine="0" />
 	</File>
 	<File name="Runway.hpp" open="1" top="0" tabpos="6">
 		<Cursor position="574" topLine="0" />
