@@ -5,6 +5,7 @@
 #include <vector>
 #include <iterator>
 #include <ctime>
+#include <cassert>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/property_tree/ptree.hpp>

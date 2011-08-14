@@ -23,6 +23,16 @@ sf::Vector2f Aircraft::GetPos()
     return Shape.GetPosition();
 }
 
+float Aircraft::GetAngle()
+{
+    return Shape.GetRotation();
+}
+
+Runway* Aircraft::GetLand()
+{
+    return Land;
+}
+
 Path& Aircraft::GetPath()
 {
     return P;
@@ -112,7 +122,16 @@ bool Aircraft::Step(float FT)
 
     Shape.Move(sf::Vector2f(cos(DegToRad(Shape.GetRotation())), sin(DegToRad(Shape.GetRotation()))) * FT * Speed);
 
-    return P.NumPoints() == 0 && (Land ? Land->OnMe(Me) : false);
+    if (Land && P.NumPoints() == 0 && Land->OnMe(Me))
+    {
+        return abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle;
+    }
+    else
+    {
+        return false;
+    }
+
+    //return P.NumPoints() == 0 && (Land ? Land->OnMe(Me) : false);
 }
 
 void Aircraft::Draw(sf::RenderWindow& App)

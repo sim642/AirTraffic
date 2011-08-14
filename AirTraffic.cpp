@@ -56,6 +56,7 @@ void AirTraffic::LoadResources()
         LoadImage(Temp.Res);
         Temp.Center = sf::Vector2f(Cur.get<float>("centerx"), Cur.get<float>("centery"));
         Temp.Radius = Cur.get<float>("radius");
+        Temp.LandAngle = Cur.get<float>("landangle");
 
         RunwayTemplates.insert(make_pair(Cur.get<string>("name"), Temp));
     }
@@ -137,7 +138,9 @@ void AirTraffic::HandleEvents()
                 for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
                 {
                     vector<string> Landable = Pathing->GetTemplate().Runways;
-                    if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end() && it->OnMe(P[P.NumPoints() - 1]))
+                    if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end() &&
+                        it->OnMe(P[P.NumPoints() - 1]) &&
+                        abs(AngleDiff(P.NumPoints() < 2 ? Pathing->GetAngle() : P.EndAngle(), it->GetAngle())) <= it->GetTemplate().LandAngle)
                     {
                         //cout << it->GetRotation() << " " << P.EndAngle() << " " << abs(fmod(AngleDiff(it->GetRotation(), P.EndAngle()), 360.f)) << endl;
                         Land = &*it;
@@ -232,6 +235,7 @@ void AirTraffic::Step()
             {
                 Pathing = 0;
             }
+
             it = Aircrafts.erase(it);
         }
         else

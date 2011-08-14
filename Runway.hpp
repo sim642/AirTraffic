@@ -13,6 +13,7 @@ struct RunwayTemplate
     string Res;
     sf::Vector2f Center;
     float Radius;
+    float LandAngle;
 };
 
 class Runway
@@ -24,7 +25,7 @@ class Runway
         bool OnMe(sf::Vector2f);
 
         sf::Vector2f GetPos();
-        float GetRotation();
+        float GetAngle();
 
         void Draw(sf::RenderWindow&);
     protected:

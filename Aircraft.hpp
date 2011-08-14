@@ -28,6 +28,8 @@ class Aircraft
         AircraftTemplate GetTemplate();
 
         sf::Vector2f GetPos();
+        float GetAngle();
+        Runway* GetLand();
 
         Path& GetPath();
         bool OnMe(sf::Vector2f);

@@ -6,21 +6,24 @@
 			"res": "Runway1.png",
 			"centerx": 20,
 			"centery": 20,
-			"radius": 20
+			"radius": 20,
+			"landangle": 45
 		},
 		{
 			"name": "runway2",
 			"res": "Runway2.png",
 			"centerx": 23,
 			"centery": 23,
-			"radius": 25
+			"radius": 25,
+			"landangle": 45
 		},
 		{
             "name": "helipad",
             "res": "Helipad.png",
             "centerx": 25,
             "centery": 25,
-            "radius": 20
+            "radius": 20,
+            "landangle": 180
 		}
     ],
 	"aircrafts":

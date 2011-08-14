@@ -29,7 +29,7 @@ inline float AngleDiff(float Angle1, float Angle2)
     while (Diff < -180.f)
         Diff += 360.f;
 
-    while (Diff > -180.f)
+    while (Diff > 180.f)
         Diff -= 360.f;
 
     return Diff;
