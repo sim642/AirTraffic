@@ -114,7 +114,7 @@ void AirTraffic::HandleEvents()
         {
             for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
             {
-                if (it->OnMe(MousePos))
+                if (it->Pathable() && it->OnMe(MousePos))
                 {
                     Pathing = &*it;
                     Pathing->GetPath().Clear();
@@ -330,7 +330,7 @@ void AirTraffic::Draw()
             sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
             float R1 = it->GetTemplate().Radius, R2 = it2->GetTemplate().Radius;
             float MaxDist = 1.75 * (R1 + R2);
-            if (pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2) < pow(MaxDist, 2))
+            if (it->OnRunway() == it2->OnRunway() && pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2) < pow(MaxDist, 2))
             {
                 float Dist = sqrt(pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2));
                 float MinDist = (R1 + R2) / 1.3f;

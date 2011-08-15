@@ -31,6 +31,11 @@ float Runway::GetAngle()
     return Shape.GetRotation();
 }
 
+float Runway::GetLength()
+{
+    return Shape.GetSize().x;
+}
+
 void Runway::Draw(sf::RenderWindow &App)
 {
     App.Draw(Shape);

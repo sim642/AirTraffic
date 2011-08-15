@@ -26,6 +26,7 @@ class Runway
 
         sf::Vector2f GetPos();
         float GetAngle();
+        float GetLength();
 
         void Draw(sf::RenderWindow&);
     protected:

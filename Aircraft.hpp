@@ -34,6 +34,9 @@ class Aircraft
         Path& GetPath();
         bool OnMe(sf::Vector2f);
 
+        bool Pathable();
+        bool OnRunway();
+
         bool Colliding(const Aircraft&);
         bool Colliding(const Explosion&);
 
@@ -56,6 +59,7 @@ class Aircraft
 
         float Turning;
         bool FlyIn;
+        bool FlyRunway;
 
 };
 

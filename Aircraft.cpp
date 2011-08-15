@@ -1,6 +1,6 @@
 #include "Aircraft.hpp"
 
-Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Image> &Images, sf::Vector2f Pos, float Rot) : Template(NewTemplate), Land(0), Turning(0.f), FlyIn(true)
+Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Image> &Images, sf::Vector2f Pos, float Rot) : Template(NewTemplate), Land(0), Turning(0.f), FlyIn(true), FlyRunway(false)
 {
     const sf::Image &Image = Images[Template.Res];
     Shape.SetImage(Image);
@@ -44,11 +44,21 @@ bool Aircraft::OnMe(sf::Vector2f Pos)
     return pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow(Radius, 2);
 }
 
+bool Aircraft::Pathable()
+{
+    return !FlyRunway;
+}
+
+bool Aircraft::OnRunway()
+{
+    return FlyRunway;
+}
+
 bool Aircraft::Colliding(const Aircraft &Other)
 {
     const sf::Vector2f &Me = Shape.GetPosition();
     const sf::Vector2f &Pos = Other.Shape.GetPosition();
-    return pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow((Radius + Other.Radius) / 1.3f, 2);
+    return FlyRunway == Other.FlyRunway && pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow((Radius + Other.Radius) / 1.3f, 2);
 }
 
 bool Aircraft::Colliding(const Explosion &Exp)
@@ -91,6 +101,10 @@ bool Aircraft::Step(float FT)
         sf::Vector2f To(400.f, 300.f);
         Shape.SetRotation(RadToDeg(atan2(To.y - Me.y, To.x - Me.x)));
     }
+    else if (FlyRunway)
+    {
+        Shape.SetRotation(Land->GetAngle());
+    }
     else
     {
         FlyIn = false;
@@ -122,14 +136,35 @@ bool Aircraft::Step(float FT)
 
     Shape.Move(sf::Vector2f(cos(DegToRad(Shape.GetRotation())), sin(DegToRad(Shape.GetRotation()))) * FT * Speed);
 
-    if (Land && P.NumPoints() == 0 && Land->OnMe(Me))
+    if (!FlyRunway &&
+        Land &&
+        P.NumPoints() == 0 &&
+        Land->OnMe(Me) &&
+        abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle)
+    {
+        FlyRunway = true;
+        Shape.SetScale(0.7f, 0.7f);
+        Radius *= 0.7f;
+    }
+
+    if (FlyRunway)
+    {
+        sf::Vector2f Runway = Land->GetPos();
+        return pow(Runway.x - Me.x, 2) + pow(Runway.y - Me.y, 2) > pow(Land->GetLength() * 0.7f, 2);
+    }
+    else
+    {
+        return false;
+    }
+
+    /*if (Land && P.NumPoints() == 0 && Land->OnMe(Me))
     {
         return abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle;
     }
     else
     {
         return false;
-    }
+    }*/
 
     //return P.NumPoints() == 0 && (Land ? Land->OnMe(Me) : false);
 }
