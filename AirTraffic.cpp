@@ -94,7 +94,7 @@ void AirTraffic::LoadResources()
         ExplosionTemplates.insert(make_pair(Cur.get<string>("name"), Temp));
     }
 
-    GrassImage.LoadFromFile("res/Grass192.png");
+    GrassImage.LoadFromFile("res/Grass192_2.png");
     GrassImage.SetSmooth(false);
     Grass.SetImage(GrassImage);
 }
@@ -407,8 +407,25 @@ void AirTraffic::SpawnRunway()
 
 void AirTraffic::SpawnAircraft()
 {
-    map<string, AircraftTemplate>::iterator it = AircraftTemplates.begin();
-    advance(it, rand() % AircraftTemplates.size());
+    map<string, AircraftTemplate>::iterator it;
+    bool CanLand = false;
+    do
+    {
+        it = AircraftTemplates.begin();
+        advance(it, rand() % AircraftTemplates.size());
+
+        for (boost::ptr_vector<Runway>::iterator it2 = Runways.begin(); it2 != Runways.end(); ++it2)
+        {
+            vector<string> &Landable = it->second.Runways;
+            if (find(Landable.begin(), Landable.end(), it2->GetTemplate().Name) != Landable.end())
+            {
+                CanLand = true;
+                break;
+            }
+        }
+    }
+    while (!CanLand);
+
     AircraftTemplate &Temp = it->second;
 
     sf::Vector2f Pos;
