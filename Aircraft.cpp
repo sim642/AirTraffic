@@ -33,6 +33,11 @@ Runway* Aircraft::GetLand()
     return Land;
 }
 
+float Aircraft::GetRadius()
+{
+    return Radius;
+}
+
 Path& Aircraft::GetPath()
 {
     return P;
@@ -41,7 +46,7 @@ Path& Aircraft::GetPath()
 bool Aircraft::OnMe(sf::Vector2f Pos)
 {
     const sf::Vector2f &Me = Shape.GetPosition();
-    return pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow(Radius, 2);
+    return InRange(Me, Pos, Radius);
 }
 
 bool Aircraft::Pathable()
@@ -58,14 +63,15 @@ bool Aircraft::Colliding(const Aircraft &Other)
 {
     const sf::Vector2f &Me = Shape.GetPosition();
     const sf::Vector2f &Pos = Other.Shape.GetPosition();
-    return FlyRunway == Other.FlyRunway && pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow((Radius + Other.Radius) / 1.3f, 2);
+    return FlyRunway == Other.FlyRunway &&
+           InRange(Me, Pos, (Radius + Other.Radius) / 1.3f);
 }
 
 bool Aircraft::Colliding(const Explosion &Exp)
 {
     const sf::Vector2f &Me = Shape.GetPosition();
     const sf::Vector2f &Pos = Exp.Shape.GetPosition();
-    return pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow((Radius + Exp.Radius) / 2.5f, 2);
+    return InRange(Me, Pos, (Radius + Exp.Radius) / 2.5f);
 }
 
 void Aircraft::SetRunway(Runway *NewLand)
@@ -75,6 +81,7 @@ void Aircraft::SetRunway(Runway *NewLand)
 
 bool Aircraft::Step(float FT)
 {
+    bool Die = false;
     P.Highlight = static_cast<bool>(Land);
 
     const sf::Vector2f &Me = Shape.GetPosition();
@@ -84,7 +91,7 @@ bool Aircraft::Step(float FT)
         FlyIn = false;
         const sf::Vector2f &To = P[0];
 
-        if (pow(To.x - Me.x, 2) + pow(To.y - Me.y, 2) < pow(5, 2))
+        if (InRange(Me, To, 5))
             P.RemovePoint(0);
 
         float Target = RadToDeg(atan2(To.y - Me.y, To.x - Me.x));
@@ -103,7 +110,20 @@ bool Aircraft::Step(float FT)
     }
     else if (FlyRunway)
     {
+        sf::Vector2f Runway = Land->GetPos();
+        float Dist = Distance(Me, Runway);
+
+        Speed = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, Template.Speed, 0.f);
         Shape.SetRotation(Land->GetAngle());
+
+        float Scale = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, 1.f, 0.65f);
+        Shape.SetScale(Scale, Scale);
+        Radius = Template.Radius * Scale;
+
+        if (Dist > Land->GetLength())
+        {
+            Die = true;
+        }
     }
     else
     {
@@ -143,30 +163,9 @@ bool Aircraft::Step(float FT)
         abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle)
     {
         FlyRunway = true;
-        Shape.SetScale(0.7f, 0.7f);
-        Radius *= 0.7f;
     }
 
-    if (FlyRunway)
-    {
-        sf::Vector2f Runway = Land->GetPos();
-        return pow(Runway.x - Me.x, 2) + pow(Runway.y - Me.y, 2) > pow(Land->GetLength() * 0.7f, 2);
-    }
-    else
-    {
-        return false;
-    }
-
-    /*if (Land && P.NumPoints() == 0 && Land->OnMe(Me))
-    {
-        return abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle;
-    }
-    else
-    {
-        return false;
-    }*/
-
-    //return P.NumPoints() == 0 && (Land ? Land->OnMe(Me) : false);
+    return Die;
 }
 
 void Aircraft::Draw(sf::RenderWindow& App)

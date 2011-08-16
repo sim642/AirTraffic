@@ -23,6 +23,7 @@ class Explosion
         ExplosionTemplate GetTemplate();
 
         sf::Vector2f GetPos();
+        float GetRadius();
 
         bool Deadly();
 

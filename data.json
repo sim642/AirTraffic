@@ -7,7 +7,8 @@
 			"centerx": 20,
 			"centery": 20,
 			"radius": 20,
-			"landangle": 45
+			"landangle": 45,
+			"length": 140
 		},
 		{
 			"name": "runway2",
@@ -15,7 +16,8 @@
 			"centerx": 23,
 			"centery": 23,
 			"radius": 25,
-			"landangle": 45
+			"landangle": 45,
+			"length": 150
 		},
 		{
             "name": "helipad",
@@ -23,7 +25,8 @@
             "centerx": 25,
             "centery": 25,
             "radius": 20,
-            "landangle": 180
+            "landangle": 180,
+            "length": 20
 		}
     ],
 	"aircrafts":
@@ -59,6 +62,14 @@
 			"speed": 80,
 			"turn": 2,
 			"runways": ["runway1", "runway2"]
+		},
+		{
+            "name": "fat",
+            "res": "Aircraft5.png",
+            "radius": 40,
+            "speed": 130,
+            "turn": 1.25,
+            "runways": ["runway2"]
 		},
 		{
             "name": "heli",

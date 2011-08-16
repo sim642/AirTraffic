@@ -50,6 +50,15 @@ inline bool Chance(float Cha)
     return (rand() / static_cast<float>(RAND_MAX)) < Cha;
 }
 
+inline float Distance(sf::Vector2f P1, sf::Vector2f P2)
+{
+    return sqrt(pow(P2.x - P1.x, 2) + pow(P2.y - P1.y, 2));
+}
+
+inline bool InRange(sf::Vector2f P1, sf::Vector2f P2, float Dist)
+{
+    return pow(P2.x - P1.x, 2) + pow(P2.y - P1.y, 2) < pow(Dist, 2);
+}
 
 
 #endif // MATH_H

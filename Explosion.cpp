@@ -21,6 +21,11 @@ sf::Vector2f Explosion::GetPos()
     return Shape.GetPosition();
 }
 
+float Explosion::GetRadius()
+{
+    return Radius;
+}
+
 bool Explosion::Deadly()
 {
     return (Time / TTL) < 0.60f;

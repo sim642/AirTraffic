@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <map>
+#include "Math.hpp"
 
 using namespace std;
 
@@ -14,6 +15,7 @@ struct RunwayTemplate
     sf::Vector2f Center;
     float Radius;
     float LandAngle;
+    float Length;
 };
 
 class Runway

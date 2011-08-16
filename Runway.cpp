@@ -18,7 +18,7 @@ RunwayTemplate Runway::GetTemplate()
 bool Runway::OnMe(sf::Vector2f Pos)
 {
     const sf::Vector2f &Me = Shape.GetPosition();
-    return pow(Pos.x - Me.x, 2) + pow(Pos.y - Me.y, 2) < pow(Radius, 2);
+    return InRange(Me, Pos, Radius);
 }
 
 sf::Vector2f Runway::GetPos()
@@ -33,7 +33,7 @@ float Runway::GetAngle()
 
 float Runway::GetLength()
 {
-    return Shape.GetSize().x;
+    return Template.Length;
 }
 
 void Runway::Draw(sf::RenderWindow &App)

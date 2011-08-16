@@ -19,7 +19,7 @@ AirTraffic::AirTraffic() : Pathing(), Score(0)
     DebugText.SetPosition(sf::Vector2f(10.f, 50.f));
     DebugText.SetColor(sf::Color::White);
 
-    for (int n = 0; n < 2; n++)
+    for (int n = 0; n < 3; n++)
     {
         SpawnRunway();
     }
@@ -57,6 +57,7 @@ void AirTraffic::LoadResources()
         Temp.Center = sf::Vector2f(Cur.get<float>("centerx"), Cur.get<float>("centery"));
         Temp.Radius = Cur.get<float>("radius");
         Temp.LandAngle = Cur.get<float>("landangle");
+        Temp.Length = Cur.get<float>("length");
 
         RunwayTemplates.insert(make_pair(Cur.get<string>("name"), Temp));
     }
@@ -311,11 +312,12 @@ void AirTraffic::Draw()
         for (boost::ptr_vector<Explosion>::iterator it2 = Explosions.begin(); it2 != Explosions.end(); ++it2)
         {
             sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
-            float R1 = it->GetTemplate().Radius, R2 = it2->GetTemplate().Radius;
-            float MaxDist = (R1 + R2) / 1.5;
-            if (it2->Deadly() && pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2) < pow(MaxDist, 2))
+            float R1 = it->GetRadius(), R2 = it2->GetRadius();
+            float MaxDist = (R1 + R2) / 1.5f;
+            float Dist = Distance(Pos1, Pos2);
+
+            if (it2->Deadly() && Dist < MaxDist)
             {
-                float Dist = sqrt(pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2));
                 float MinDist = (R1 + R2) / 2.5f;
                 App.Draw(sf::Shape::Circle(Pos1,
                                            R1 - 3.f,
@@ -328,11 +330,12 @@ void AirTraffic::Draw()
         for (boost::ptr_vector<Aircraft>::iterator it2 = it + 1; it2 != Aircrafts.end(); ++it2)
         {
             sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
-            float R1 = it->GetTemplate().Radius, R2 = it2->GetTemplate().Radius;
+            float R1 = it->GetRadius(), R2 = it2->GetRadius();
             float MaxDist = 1.75 * (R1 + R2);
-            if (it->OnRunway() == it2->OnRunway() && pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2) < pow(MaxDist, 2))
+            float Dist = Distance(Pos1, Pos2);
+
+            if (it->OnRunway() == it2->OnRunway() && Dist < MaxDist)
             {
-                float Dist = sqrt(pow(Pos2.x - Pos1.x, 2) + pow(Pos2.y - Pos1.y, 2));
                 float MinDist = (R1 + R2) / 1.3f;
                 App.Draw(sf::Shape::Circle(Pos1,
                                            R1 - 3.f,
@@ -393,7 +396,7 @@ void AirTraffic::SpawnRunway()
         {
             sf::Vector2f Pos1 = New.GetPos(),
                          Pos2 = it->GetPos();
-            if (pow(Pos1.x - Pos2.x, 2) + pow(Pos1.y - Pos2.y, 2) < pow(200, 2))
+            if (InRange(Pos1, Pos2, 200.f))
             {
                 Ready = false;
                 break;

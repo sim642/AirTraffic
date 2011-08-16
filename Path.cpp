@@ -15,7 +15,8 @@ int Path::AddPoint(sf::Vector2f Point)
 bool Path::TryAddPoint(sf::Vector2f Point)
 {
     if (!(Points.size() > 0 &&
-          pow(Points[Points.size() - 1].x - Point.x, 2) + pow(Points[Points.size() - 1].y - Point.y, 2) < pow(10, 2)))
+          InRange(Point, *Points.rbegin(), 10)))
+        //pow(Points[Points.size() - 1].x - Point.x, 2) + pow(Points[Points.size() - 1].y - Point.y, 2) < pow(10, 2)))
     {
         AddPoint(Point);
         return true;

@@ -30,6 +30,7 @@ class Aircraft
         sf::Vector2f GetPos();
         float GetAngle();
         Runway* GetLand();
+        float GetRadius();
 
         Path& GetPath();
         bool OnMe(sf::Vector2f);
