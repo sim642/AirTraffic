@@ -19,7 +19,7 @@ AirTraffic::AirTraffic() : Pathing(), Score(0)
     DebugText.SetPosition(sf::Vector2f(10.f, 50.f));
     DebugText.SetColor(sf::Color::White);
 
-    for (int n = 0; n < 3; n++)
+    for (int n = 0; n < 2; n++)
     {
         SpawnRunway();
     }

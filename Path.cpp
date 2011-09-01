@@ -1,6 +1,6 @@
 #include "Path.hpp"
 
-Path::Path() : Highlight(false)
+Path::Path() : Highlight(false), interp(5)
 {
     //ctor
 }
@@ -14,17 +14,75 @@ int Path::AddPoint(sf::Vector2f Point)
 
 bool Path::TryAddPoint(sf::Vector2f Point)
 {
-    if (!(Points.size() > 0 &&
-          InRange(Point, *Points.rbegin(), 10)))
-        //pow(Points[Points.size() - 1].x - Point.x, 2) + pow(Points[Points.size() - 1].y - Point.y, 2) < pow(10, 2)))
+    bool Added = false;
+    if (Points.size() < 1)
     {
-        AddPoint(Point);
-        return true;
+        Points.push_back(Point);
+        Added = true;
     }
-    else
+    else if (!InRange(Point, Points.back(), 20.f))
     {
-        return false;
+        Points.reserve(Points.size() + interp);
+        if (Points.size() < 2)
+        {
+            double step = 1.0 / interp;
+            double t = step;
+            for (int i = 1; i < interp; i++, t += step)
+            {
+                Points.push_back(Points.back() + static_cast<float>(t) * (Point - Points.back()));
+            }
+        }
+        else
+        {
+            static double shit = 0.5;
+            auto tangent = [](double p0, double p1, double p2, double shit)
+            {
+                return ((p2 - p1) / (2 * (shit + shit))) + ((p1 - p0) / (2 * (shit + shit)));
+            };
+            auto f = [](double p0, double p1, double m0, double m1, double t)
+            {
+                return (2 * pow(t,3) - 3 * pow(t,2) + 1) * p0 + (pow(t,3) - 2 * pow(t,2) + t) * m0 + (-2 * pow(t,3) + 3 * pow(t,2)) * p1 + (pow(t,3) - pow(t,2)) * m1;
+            };
+
+            sf::Vector2f p0 = Points[max<int>(0, Points.size() - 2 - (interp - 1))];
+            sf::Vector2f p1 = Points.back();
+            sf::Vector2f p2 = Point;
+            sf::Vector2f m0, m1, m2;
+
+            if (Points.size() <= (3 + 2 * (interp - 1)))
+            {
+                m0 = sf::Vector2f(0.f, 0.f);
+            }
+            else
+            {
+                m0.x = tangent(Points[Points.size() - 3 - 2 * (interp - 1)].x, p0.x, p1.x, shit);
+                m0.y = tangent(Points[Points.size() - 3 - 2 * (interp - 1)].y, p0.y, p1.y, shit);
+            }
+            m1.x = tangent(p0.x, p1.x, p2.x, shit);
+            m1.y = tangent(p0.y, p1.y, p2.y, shit);
+            m2 = sf::Vector2f(0.f, 0.f);
+
+            double step = 1.0 / interp;
+            double t = step;
+            for (int i = 0; i < interp; i++, t += step)
+            {
+                sf::Vector2f &p = Points[Points.size() - 2 - (interp - 1) + 1 + i];
+                p.x = f(p0.x, p1.x, m0.x, m1.x, t);
+                p.y = f(p0.y, p1.y, m0.y, m1.y, t);
+            }
+            t = step;
+            for (int i = 1; i < interp; i++, t += step)
+            {
+                sf::Vector2f p;
+                p.x = f(p1.x, p2.x, m1.x, m2.x, t);
+                p.y = f(p1.y, p2.y, m1.y, m2.y, t);
+                Points.push_back(p);
+            }
+        }
+        Points.push_back(Point);
+        Added = true;
     }
+    return Added;
 }
 
 float Path::EndAngle()
@@ -71,5 +129,3 @@ void Path::Draw(sf::RenderWindow& App)
         }
     }
 }
-
-

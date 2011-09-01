@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 #include "Math.hpp"
 
 using namespace std;
@@ -30,6 +31,7 @@ class Path
     protected:
     private:
         vector<sf::Vector2f> Points;
+        int interp;
 };
 
 #endif // PATH_H
