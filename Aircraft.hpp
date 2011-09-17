@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <cmath>
 #include "Math.hpp"
 #include "Path.hpp"
 #include "Runway.hpp"
@@ -61,7 +60,7 @@ class Aircraft
         float Turning;
         bool FlyIn;
         bool FlyRunway;
-
+        sf::Vector2f LandPoint;
 };
 
 #endif // AIRCRAFT_H

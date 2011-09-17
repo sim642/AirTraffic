@@ -8,7 +8,8 @@
 			"centery": 20,
 			"radius": 20,
 			"landangle": 45,
-			"length": 140
+			"length": 140,
+			"directional": true
 		},
 		{
 			"name": "runway2",
@@ -17,7 +18,8 @@
 			"centery": 23,
 			"radius": 25,
 			"landangle": 45,
-			"length": 150
+			"length": 150,
+			"directional": true
 		},
 		{
             "name": "helipad",
@@ -26,7 +28,8 @@
             "centery": 25,
             "radius": 20,
             "landangle": 180,
-            "length": 20
+            "length": 10,
+            "directional": false
 		}
     ],
 	"aircrafts":

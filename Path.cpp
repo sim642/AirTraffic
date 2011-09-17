@@ -22,27 +22,19 @@ bool Path::TryAddPoint(sf::Vector2f Point)
     }
     else if (!InRange(Point, Points.back(), 20.f))
     {
-        Points.reserve(Points.size() + interp);
         if (Points.size() < 2)
         {
             double step = 1.0 / interp;
             double t = step;
+            sf::Vector2f last = Points.back();
             for (int i = 1; i < interp; i++, t += step)
             {
-                Points.push_back(Points.back() + static_cast<float>(t) * (Point - Points.back()));
+                Points.push_back(last + static_cast<float>(t) * (Point - last));
             }
         }
         else
         {
             static double shit = 0.5;
-            auto tangent = [](double p0, double p1, double p2, double shit)
-            {
-                return ((p2 - p1) / (2 * (shit + shit))) + ((p1 - p0) / (2 * (shit + shit)));
-            };
-            auto f = [](double p0, double p1, double m0, double m1, double t)
-            {
-                return (2 * pow(t,3) - 3 * pow(t,2) + 1) * p0 + (pow(t,3) - 2 * pow(t,2) + t) * m0 + (-2 * pow(t,3) + 3 * pow(t,2)) * p1 + (pow(t,3) - pow(t,2)) * m1;
-            };
 
             sf::Vector2f p0 = Points[max<int>(0, Points.size() - 2 - (interp - 1))];
             sf::Vector2f p1 = Points.back();
@@ -66,7 +58,10 @@ bool Path::TryAddPoint(sf::Vector2f Point)
             double t = step;
             for (int i = 0; i < interp; i++, t += step)
             {
-                sf::Vector2f &p = Points[Points.size() - 2 - (interp - 1) + 1 + i];
+                int j = Points.size() - 2 - (interp - 1) + 1 + i; // not perfect fix
+                if (j < 0)
+                    continue;
+                sf::Vector2f &p = Points[j];
                 p.x = f(p0.x, p1.x, m0.x, m1.x, t);
                 p.y = f(p0.y, p1.y, m0.y, m1.y, t);
             }
@@ -128,4 +123,14 @@ void Path::Draw(sf::RenderWindow& App)
             App.Draw(sf::Shape::Line(*(it - 1), *it, 2.f, Highlight ? sf::Color::Yellow : sf::Color::Blue));
         }
     }
+}
+
+double Path::tangent(double p0, double p1, double p2, double shit)
+{
+    return ((p2 - p1) / (2 * (shit + shit))) + ((p1 - p0) / (2 * (shit + shit)));
+}
+
+double Path::f(double p0, double p1, double m0, double m1, double t)
+{
+    return (2 * pow(t,3) - 3 * pow(t,2) + 1) * p0 + (pow(t,3) - 2 * pow(t,2) + t) * m0 + (-2 * pow(t,3) + 3 * pow(t,2)) * p1 + (pow(t,3) - pow(t,2)) * m1;
 }

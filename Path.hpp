@@ -30,6 +30,9 @@ class Path
         bool Highlight;
     protected:
     private:
+        double tangent(double p0, double p1, double p2, double shit);
+        double f(double p0, double p1, double m0, double m1, double t);
+
         vector<sf::Vector2f> Points;
         int interp;
 };

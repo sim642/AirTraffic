@@ -58,8 +58,9 @@ void AirTraffic::LoadResources()
         Temp.Radius = Cur.get<float>("radius");
         Temp.LandAngle = Cur.get<float>("landangle");
         Temp.Length = Cur.get<float>("length");
+        Temp.Directional = Cur.get<bool>("directional");
 
-        RunwayTemplates.insert(make_pair(Cur.get<string>("name"), Temp));
+        RunwayTemplates.push_back(Temp);
     }
 
     for (boost::property_tree::ptree::iterator it = DataAircrafts.begin(); it != DataAircrafts.end(); ++it)
@@ -79,7 +80,7 @@ void AirTraffic::LoadResources()
             Temp.Runways.push_back(it2->second.get_value<string>());
         }
 
-        AircraftTemplates.insert(make_pair(Cur.get<string>("name"), Temp));
+        AircraftTemplates.push_back(Temp);
     }
 
     for (boost::property_tree::ptree::iterator it = DataExplosions.begin(); it != DataExplosions.end(); ++it)
@@ -92,7 +93,7 @@ void AirTraffic::LoadResources()
         Temp.Radius = Cur.get<float>("radius");
         Temp.Time = Cur.get<float>("time");
 
-        ExplosionTemplates.insert(make_pair(Cur.get<string>("name"), Temp));
+        ExplosionTemplates.push_back(Temp);
     }
 
     GrassImage.LoadFromFile("res/Grass192_2.png");
@@ -113,7 +114,7 @@ void AirTraffic::HandleEvents()
         if (Event.Type == sf::Event::MouseButtonPressed &&
             Event.MouseButton.Button == sf::Mouse::Left)
         {
-            for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+            for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
             {
                 if (it->Pathable() && it->OnMe(MousePos))
                 {
@@ -136,14 +137,13 @@ void AirTraffic::HandleEvents()
             if (P.TryAddPoint(MousePos))
             {
                 Runway *Land = 0;
-                for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+                for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
                 {
                     vector<string> Landable = Pathing->GetTemplate().Runways;
                     if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end() &&
                         it->OnMe(P[P.NumPoints() - 1]) &&
                         abs(AngleDiff(P.NumPoints() < 2 ? Pathing->GetAngle() : P.EndAngle(), it->GetAngle())) <= it->GetTemplate().LandAngle)
                     {
-                        //cout << it->GetRotation() << " " << P.EndAngle() << " " << abs(fmod(AngleDiff(it->GetRotation(), P.EndAngle()), 360.f)) << endl;
                         Land = &*it;
                         break;
                     }
@@ -169,10 +169,10 @@ void AirTraffic::Step()
         Spawner.Reset();
     }
 
-    for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); )
+    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); )
     {
-        boost::ptr_vector<Aircraft>::iterator it2 = it + 1;
-        for (; it2 != Aircrafts.end(); ++it2)
+        boost::ptr_list<Aircraft>::iterator it2 = it;
+        for (++it2; it2 != Aircrafts.end(); ++it2)
         {
             if (it->Colliding(*it2))
             {
@@ -180,7 +180,7 @@ void AirTraffic::Step()
             }
         }
 
-        boost::ptr_vector<Explosion>::iterator it3 = Explosions.begin();
+        boost::ptr_list<Explosion>::iterator it3 = Explosions.begin();
         for (; it3 != Explosions.end(); ++it3)
         {
             if (it->Colliding(*it3))
@@ -194,7 +194,6 @@ void AirTraffic::Step()
             sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
             SpawnExplosion(Pos1);
             SpawnExplosion(Pos2);
-            //SpawnExplosion((Pos1 + Pos2) / 2.f);
             Score -= 10000;
 
             if (Pathing == &*it || Pathing == &*it2) // take care if were drawing a path
@@ -202,24 +201,13 @@ void AirTraffic::Step()
                 Pathing = 0;
             }
 
-            if (it < it2)
-            {
-                //      --1--2--
-                it = Aircrafts.erase(it);
-                Aircrafts.erase(it2 - 1);
-            }
-            else
-            {
-                //      --2--1--
-                Aircrafts.erase(it2);
-                it = Aircrafts.erase(it - 1);
-            }
+            Aircrafts.erase(it2);
+            it = Aircrafts.erase(it);
         }
         else if (it3 != Explosions.end() && it3->Deadly())
         {
             sf::Vector2f Pos1 = it->GetPos(), Pos2 = it3->GetPos();
             SpawnExplosion(Pos1);
-            //SpawnExplosion((Pos1 + Pos2) / 2.f);
             Score -= 5000;
 
             if (Pathing == &*it)
@@ -245,7 +233,7 @@ void AirTraffic::Step()
         }
     }
 
-    for (boost::ptr_vector<Explosion>::iterator it = Explosions.begin(); it != Explosions.end();)
+    for (boost::ptr_list<Explosion>::iterator it = Explosions.begin(); it != Explosions.end();)
     {
         if (it->Step(FT))
         {
@@ -274,12 +262,12 @@ void AirTraffic::Draw()
     }
 
     // runways
-    for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+    for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
     {
         it->Draw(App);
     }
     // landing areas
-    for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+    for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
     {
         if (Pathing)
         {
@@ -296,20 +284,20 @@ void AirTraffic::Draw()
     }
 
     // aircraft paths
-    for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
         it->GetPath().Draw(App);
     }
     // aircrafts
-    for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
         it->Draw(App);
     }
     // aircraft collision warnings
-    for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
         // with explosion
-        for (boost::ptr_vector<Explosion>::iterator it2 = Explosions.begin(); it2 != Explosions.end(); ++it2)
+        for (boost::ptr_list<Explosion>::iterator it2 = Explosions.begin(); it2 != Explosions.end(); ++it2)
         {
             sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
             float R1 = it->GetRadius(), R2 = it2->GetRadius();
@@ -327,7 +315,8 @@ void AirTraffic::Draw()
             }
         }
         // with other aircraft
-        for (boost::ptr_vector<Aircraft>::iterator it2 = it + 1; it2 != Aircrafts.end(); ++it2)
+        boost::ptr_list<Aircraft>::iterator it2 = it;
+        for (++it2; it2 != Aircrafts.end(); ++it2)
         {
             sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
             float R1 = it->GetRadius(), R2 = it2->GetRadius();
@@ -352,7 +341,7 @@ void AirTraffic::Draw()
     }
 
     // explosions
-    for (boost::ptr_vector<Explosion>::iterator it = Explosions.begin(); it != Explosions.end(); ++it)
+    for (boost::ptr_list<Explosion>::iterator it = Explosions.begin(); it != Explosions.end(); ++it)
     {
         it->Draw(App);
     }
@@ -372,13 +361,14 @@ void AirTraffic::LoadImage(const string &FileName)
 
 void AirTraffic::SpawnRunway()
 {
-    map<string, RunwayTemplate>::iterator it = RunwayTemplates.begin();
-    advance(it, rand() % RunwayTemplates.size());
-    RunwayTemplate &Temp = it->second;
+    vector<RunwayTemplate>::iterator it = RunwayTemplates.begin();
+    it += rand() % RunwayTemplates.size();
+    RunwayTemplate &Temp = *it;
 
     sf::Vector2f Pos;
     float Angle;
 
+    Runway *New;
     bool Ready;
     do
     {
@@ -391,10 +381,10 @@ void AirTraffic::SpawnRunway()
 
 
 
-        Runway New(Temp, Images, Pos, Angle);
-        for (boost::ptr_vector<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+        New = new Runway(Temp, Images, Pos, Angle);
+        for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
         {
-            sf::Vector2f Pos1 = New.GetPos(),
+            sf::Vector2f Pos1 = New->GetPos(),
                          Pos2 = it->GetPos();
             if (InRange(Pos1, Pos2, 200.f))
             {
@@ -402,24 +392,28 @@ void AirTraffic::SpawnRunway()
                 break;
             }
         }
+        if (!Ready)
+        {
+            delete New;
+        }
     }
     while (!Ready);
 
-    Runways.push_back(new Runway(Temp, Images, Pos, Angle));
+    Runways.push_back(New);
 }
 
 void AirTraffic::SpawnAircraft()
 {
-    map<string, AircraftTemplate>::iterator it;
+    vector<AircraftTemplate>::iterator it;
     bool CanLand = false;
     do
     {
         it = AircraftTemplates.begin();
-        advance(it, rand() % AircraftTemplates.size());
+        it += rand() % AircraftTemplates.size();
 
-        for (boost::ptr_vector<Runway>::iterator it2 = Runways.begin(); it2 != Runways.end(); ++it2)
+        for (boost::ptr_list<Runway>::iterator it2 = Runways.begin(); it2 != Runways.end(); ++it2)
         {
-            vector<string> &Landable = it->second.Runways;
+            vector<string> &Landable = it->Runways;
             if (find(Landable.begin(), Landable.end(), it2->GetTemplate().Name) != Landable.end())
             {
                 CanLand = true;
@@ -429,11 +423,12 @@ void AirTraffic::SpawnAircraft()
     }
     while (!CanLand);
 
-    AircraftTemplate &Temp = it->second;
+    AircraftTemplate &Temp = *it;
 
     sf::Vector2f Pos;
     float Angle;
 
+    Aircraft* New;
     bool Ready;
     do
     {
@@ -466,25 +461,30 @@ void AirTraffic::SpawnAircraft()
             }
         }
 
-        Aircraft New(Temp, Images, Pos, Angle);
-        for (boost::ptr_vector<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+        New = new Aircraft(Temp, Images, Pos, Angle);
+        for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
         {
-            if (it->Colliding(New))
+            if (it->Colliding(*New))
             {
                 Ready = false;
                 break;
             }
         }
+
+        if (!Ready)
+        {
+            delete New;
+        }
     }
     while (!Ready);
 
-    Aircrafts.push_back(new Aircraft(Temp, Images, Pos, Angle));
+    Aircrafts.push_back(New);
 }
 
 void AirTraffic::SpawnExplosion(sf::Vector2f Pos)
 {
-    map<string, ExplosionTemplate>::iterator it = ExplosionTemplates.begin();
-    advance(it, rand() % ExplosionTemplates.size());
-    ExplosionTemplate &Temp = it->second;
+    vector<ExplosionTemplate>::iterator it = ExplosionTemplates.begin();
+    it += rand() % ExplosionTemplates.size();
+    ExplosionTemplate &Temp = *it;
     Explosions.push_back(new Explosion(Temp, Images, Pos));
 }

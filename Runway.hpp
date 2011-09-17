@@ -16,6 +16,7 @@ struct RunwayTemplate
     float Radius;
     float LandAngle;
     float Length;
+    bool Directional;
 };
 
 class Runway

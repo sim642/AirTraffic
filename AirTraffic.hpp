@@ -3,10 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <iterator>
 #include <ctime>
-#include <cassert>
-#include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/ptr_container/ptr_list.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -14,8 +12,6 @@
 #include "Runway.hpp"
 #include "Explosion.hpp"
 #include "Math.hpp"
-
-#include <iostream>
 
 using namespace std;
 
@@ -36,13 +32,13 @@ class AirTraffic
 
         boost::property_tree::ptree Data;
 
-        map<string, AircraftTemplate> AircraftTemplates;
-        map<string, RunwayTemplate> RunwayTemplates;
-        map<string, ExplosionTemplate> ExplosionTemplates;
+        vector<AircraftTemplate> AircraftTemplates;
+        vector<RunwayTemplate> RunwayTemplates;
+        vector<ExplosionTemplate> ExplosionTemplates;
 
-        boost::ptr_vector<Aircraft> Aircrafts;
-        boost::ptr_vector<Runway> Runways;
-        boost::ptr_vector<Explosion> Explosions;
+        boost::ptr_list<Aircraft> Aircrafts;
+        boost::ptr_list<Runway> Runways;
+        boost::ptr_list<Explosion> Explosions;
 
         Aircraft *Pathing;
 

@@ -110,11 +110,15 @@ bool Aircraft::Step(float FT)
     }
     else if (FlyRunway)
     {
-        sf::Vector2f Runway = Land->GetPos();
+        sf::Vector2f Runway = LandPoint;
         float Dist = Distance(Me, Runway);
 
         Speed = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, Template.Speed, 0.f);
-        Shape.SetRotation(Land->GetAngle());
+
+        if (Land->GetTemplate().Directional)
+        {
+            Shape.SetRotation(Land->GetAngle());
+        }
 
         float Scale = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, 1.f, 0.65f);
         Shape.SetScale(Scale, Scale);
@@ -163,6 +167,7 @@ bool Aircraft::Step(float FT)
         abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle)
     {
         FlyRunway = true;
+        LandPoint = Me;
     }
 
     return Die;
