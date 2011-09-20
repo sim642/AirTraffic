@@ -23,7 +23,22 @@ struct AircraftTemplate
 class Aircraft
 {
     public:
-        Aircraft(AircraftTemplate, map<string, sf::Image>&, sf::Vector2f, float);
+        enum States
+        {
+            FlyingIn,
+            FlyingOut,
+            FlyingFree,
+            FlyingPath,
+            Landing,
+            TakingOff
+        };
+        enum Directions
+        {
+            In,
+            Out
+        };
+
+        Aircraft(AircraftTemplate, map<string, sf::Image>&, sf::Vector2f, float, Runway* = 0);
         AircraftTemplate GetTemplate();
 
         sf::Vector2f GetPos();
@@ -35,7 +50,8 @@ class Aircraft
         bool OnMe(sf::Vector2f);
 
         bool Pathable();
-        bool OnRunway();
+        bool OnRunway() const;
+        Directions GetDirection();
 
         bool Colliding(const Aircraft&);
         bool Colliding(const Explosion&);
@@ -44,7 +60,6 @@ class Aircraft
 
         bool Step(float);
         void Draw(sf::RenderWindow&);
-    protected:
     private:
         const AircraftTemplate Template;
 
@@ -58,8 +73,8 @@ class Aircraft
         Runway *Land;
 
         float Turning;
-        bool FlyIn;
-        bool FlyRunway;
+        States State;
+        Directions Direction;
         sf::Vector2f LandPoint;
 };
 

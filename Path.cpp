@@ -36,7 +36,7 @@ bool Path::TryAddPoint(sf::Vector2f Point)
         {
             static double shit = 0.5;
 
-            sf::Vector2f p0 = Points[max<int>(0, Points.size() - 2 - (interp - 1))];
+            sf::Vector2f p0 = Points.at(max<int>(0, Points.size() - 2 - (interp - 1)));
             sf::Vector2f p1 = Points.back();
             sf::Vector2f p2 = Point;
             sf::Vector2f m0, m1, m2;
@@ -47,8 +47,8 @@ bool Path::TryAddPoint(sf::Vector2f Point)
             }
             else
             {
-                m0.x = tangent(Points[Points.size() - 3 - 2 * (interp - 1)].x, p0.x, p1.x, shit);
-                m0.y = tangent(Points[Points.size() - 3 - 2 * (interp - 1)].y, p0.y, p1.y, shit);
+                m0.x = tangent(Points.at(Points.size() - 3 - 2 * (interp - 1)).x, p0.x, p1.x, shit);
+                m0.y = tangent(Points.at(Points.size() - 3 - 2 * (interp - 1)).y, p0.y, p1.y, shit);
             }
             m1.x = tangent(p0.x, p1.x, p2.x, shit);
             m1.y = tangent(p0.y, p1.y, p2.y, shit);
@@ -61,7 +61,7 @@ bool Path::TryAddPoint(sf::Vector2f Point)
                 int j = Points.size() - 2 - (interp - 1) + 1 + i; // not perfect fix
                 if (j < 0)
                     continue;
-                sf::Vector2f &p = Points[j];
+                sf::Vector2f &p = Points.at(j);
                 p.x = f(p0.x, p1.x, m0.x, m1.x, t);
                 p.y = f(p0.y, p1.y, m0.y, m1.y, t);
             }
@@ -111,7 +111,7 @@ int Path::NumPoints()
 
 sf::Vector2f Path::operator[](int i)
 {
-    return Points[i];
+    return Points.at(i);
 }
 
 void Path::Draw(sf::RenderWindow& App)

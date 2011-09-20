@@ -120,6 +120,7 @@ void AirTraffic::HandleEvents()
                 {
                     Pathing = &*it;
                     Pathing->GetPath().Clear();
+                    Pathing->GetPath().TryAddPoint(MousePos);
 
                     break;
                 }
@@ -136,19 +137,32 @@ void AirTraffic::HandleEvents()
             Path &P = Pathing->GetPath();
             if (P.TryAddPoint(MousePos))
             {
-                Runway *Land = 0;
-                for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+                Pathing->GetPath().Highlight = false;
+                if (Pathing->GetDirection() == Aircraft::In)
                 {
-                    vector<string> Landable = Pathing->GetTemplate().Runways;
-                    if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end() &&
-                        it->OnMe(P[P.NumPoints() - 1]) &&
-                        abs(AngleDiff(P.NumPoints() < 2 ? Pathing->GetAngle() : P.EndAngle(), it->GetAngle())) <= it->GetTemplate().LandAngle)
+                    Runway *Land = 0;
+                    for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
                     {
-                        Land = &*it;
-                        break;
+                        vector<string> Landable = Pathing->GetTemplate().Runways;
+                        if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end() &&
+                            it->OnMe(P[P.NumPoints() - 1]) &&
+                            abs(AngleDiff(P.NumPoints() < 2 ? Pathing->GetAngle() : P.EndAngle(), it->GetAngle())) <= it->GetTemplate().LandAngle)
+                        {
+                            Land = &*it;
+                            Pathing->GetPath().Highlight = true;
+                            break;
+                        }
+                    }
+                    Pathing->SetRunway(Land);
+                }
+                else
+                {
+                    sf::Vector2f Point = P[P.NumPoints() - 1];
+                    if (Point.x < 50 || Point.x > 750 || Point.y < 50 || Point.y > 550)
+                    {
+                        Pathing->GetPath().Highlight = true;
                     }
                 }
-                Pathing->SetRunway(Land);
             }
 
         }
@@ -271,14 +285,26 @@ void AirTraffic::Draw()
     {
         if (Pathing)
         {
-            vector<string> Landable = Pathing->GetTemplate().Runways;
-            if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end())
+            if (Pathing->GetDirection() == Aircraft::In)
             {
-                App.Draw(sf::Shape::Circle(it->GetPos(),
-                                           it->GetTemplate().Radius - 3.f,
-                                           sf::Color(0, 255, 255, 96),
-                                           3.f,
-                                           sf::Color(0, 255, 255)));
+                vector<string> Landable = Pathing->GetTemplate().Runways;
+                if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end())
+                {
+                    App.Draw(sf::Shape::Circle(it->GetPos(),
+                                               it->GetTemplate().Radius - 3.f,
+                                               sf::Color(0, 255, 255, 96),
+                                               3.f,
+                                               sf::Color(0, 255, 255)));
+                }
+            }
+            else
+            {
+                App.Draw(sf::Shape::Rectangle(0.f, 0.f, 800.f, 50.f, sf::Color(0, 255, 255, 96)));
+                App.Draw(sf::Shape::Rectangle(0.f, 550.f, 800.f, 50.f, sf::Color(0, 255, 255, 96)));
+                App.Draw(sf::Shape::Rectangle(0.f, 50.f, 50.f, 500.f, sf::Color(0, 255, 255, 96)));
+                App.Draw(sf::Shape::Rectangle(750.f, 50.f, 50.f, 500.f, sf::Color(0, 255, 255, 96)));
+
+                App.Draw(sf::Shape::Rectangle(50.f, 50.f, 700.f, 500.f, sf::Color(0, 0, 0, 0), 3.f, sf::Color(0, 255, 255)));
             }
         }
     }
@@ -428,57 +454,106 @@ void AirTraffic::SpawnAircraft()
     sf::Vector2f Pos;
     float Angle;
 
-    Aircraft* New;
     bool Ready;
-    do
+    Aircraft* New;
+
+    if (Chance(0.4f))
     {
-        Ready = true;
+        //takeoff
+        vector<Runway*> Rws;
 
-        Pos.x = Random(-25.f, 825.f);
-        Pos.y = Random(-25.f, 625.f);
-        Angle = 0.f;
-
-        if (Chance(0.5f))
+        for (boost::ptr_list<Runway>::iterator it2 = Runways.begin(); it2 != Runways.end(); ++it2)
         {
-            if (Chance(0.5f))
+            vector<string> &Landable = Temp.Runways;
+            if (find(Landable.begin(), Landable.end(), it2->GetTemplate().Name) != Landable.end())
             {
-                Pos.y = -25.f;
-            }
-            else
-            {
-                Pos.y = 625.f;
-            }
-        }
-        else
-        {
-            if (Chance(0.5f))
-            {
-                Pos.x = -25.f;
-            }
-            else
-            {
-                Pos.x = 825.f;
+                Rws.push_back(&*it2);
             }
         }
 
-        New = new Aircraft(Temp, Images, Pos, Angle);
-        for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+        random_shuffle(Rws.begin(), Rws.end()); //needs moar random
+
+        for (vector<Runway*>::iterator it2 = Rws.begin(); it2 != Rws.end(); ++it2)
         {
-            if (it->Colliding(*New))
+            Ready = true;
+            Angle = (*it2)->GetAngle();
+            Pos = (*it2)->GetPos();
+            New = new Aircraft(Temp, Images, Pos, Angle, *it2);
+
+            for (boost::ptr_list<Aircraft>::iterator it3 = Aircrafts.begin(); it3 != Aircrafts.end(); ++it3)
             {
-                Ready = false;
+                if (it3->Colliding(*New))
+                {
+                    Ready = false;
+                    break;
+                }
+            }
+
+            if (Ready)
+            {
                 break;
             }
-        }
-
-        if (!Ready)
-        {
-            delete New;
+            else
+            {
+                delete New;
+            }
         }
     }
-    while (!Ready);
+    else
+    {
+        do
+        {
+            Ready = true;
 
-    Aircrafts.push_back(New);
+            Pos.x = Random(-25.f, 825.f);
+            Pos.y = Random(-25.f, 625.f);
+            Angle = 0.f;
+
+            if (Chance(0.5f))
+            {
+                if (Chance(0.5f))
+                {
+                    Pos.y = -25.f;
+                }
+                else
+                {
+                    Pos.y = 625.f;
+                }
+            }
+            else
+            {
+                if (Chance(0.5f))
+                {
+                    Pos.x = -25.f;
+                }
+                else
+                {
+                    Pos.x = 825.f;
+                }
+            }
+
+            New = new Aircraft(Temp, Images, Pos, Angle);
+            for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+            {
+                if (it->Colliding(*New))
+                {
+                    Ready = false;
+                    break;
+                }
+            }
+
+            if (!Ready)
+            {
+                delete New;
+            }
+        }
+        while (!Ready);
+    }
+
+    if (Ready)
+    {
+        Aircrafts.push_back(New);
+    }
 }
 
 void AirTraffic::SpawnExplosion(sf::Vector2f Pos)
