@@ -482,7 +482,7 @@ void AirTraffic::SpawnAircraft()
 
             for (boost::ptr_list<Aircraft>::iterator it3 = Aircrafts.begin(); it3 != Aircrafts.end(); ++it3)
             {
-                if (it3->Colliding(*New))
+                if (it3->Colliding(*New) || it3->GetLand() == *it2)
                 {
                     Ready = false;
                     break;
