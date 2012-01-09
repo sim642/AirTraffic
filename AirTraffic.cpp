@@ -158,7 +158,12 @@ void AirTraffic::HandleEvents()
                 else
                 {
                     sf::Vector2f Point = P[P.NumPoints() - 1];
-                    if (Point.x < 50 || Point.x > 750 || Point.y < 50 || Point.y > 550)
+                    Aircraft::OutDirections OutDirection = Pathing->GetOutDirection();
+
+                    if ((OutDirection == Aircraft::OutUp && Point.y < 50) ||
+                      (OutDirection == Aircraft::OutDown && Point.y > 550) ||
+                      (OutDirection == Aircraft::OutLeft && Point.x < 50) ||
+                      (OutDirection == Aircraft::OutRight && Point.x > 750))
                     {
                         Pathing->GetPath().Highlight = true;
                     }
@@ -299,12 +304,21 @@ void AirTraffic::Draw()
             }
             else
             {
-                App.Draw(Rectangle(0.f, 0.f, 800.f, 50.f, sf::Color(0, 255, 255, 96)));
-                App.Draw(Rectangle(0.f, 550.f, 800.f, 50.f, sf::Color(0, 255, 255, 96)));
-                App.Draw(Rectangle(0.f, 50.f, 50.f, 500.f, sf::Color(0, 255, 255, 96)));
-                App.Draw(Rectangle(750.f, 50.f, 50.f, 500.f, sf::Color(0, 255, 255, 96)));
-
-                App.Draw(Rectangle(50.f, 50.f, 700.f, 500.f, sf::Color(0, 0, 0, 0), 3.f, sf::Color(0, 255, 255)));
+                switch (Pathing->GetOutDirection())
+                {
+                    case Aircraft::OutUp:
+                        App.Draw(Rectangle(0.f, 0.f, 800.f, 50.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
+                        break;
+                    case Aircraft::OutDown:
+                        App.Draw(Rectangle(0.f, 550.f, 800.f, 50.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
+                        break;
+                    case Aircraft::OutLeft:
+                        App.Draw(Rectangle(0.f, 0.f, 50.f, 600.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
+                        break;
+                    case Aircraft::OutRight:
+                        App.Draw(Rectangle(750.f, 0.f, 50.f, 600.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
+                        break;
+                }
             }
         }
     }

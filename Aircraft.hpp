@@ -37,6 +37,13 @@ class Aircraft
             In,
             Out
         };
+        enum OutDirections
+        {
+            OutUp,
+            OutDown,
+            OutLeft,
+            OutRight
+        };
 
         Aircraft(AircraftTemplate, map<string, sf::Texture>&, sf::Vector2f, float, Runway* = 0);
         AircraftTemplate GetTemplate();
@@ -52,6 +59,7 @@ class Aircraft
         bool Pathable();
         bool OnRunway() const;
         Directions GetDirection();
+        OutDirections GetOutDirection();
 
         bool Colliding(const Aircraft&);
         bool Colliding(const Explosion&);
@@ -75,6 +83,7 @@ class Aircraft
         float Turning;
         States State;
         Directions Direction;
+        OutDirections OutDirection;
         sf::Vector2f LandPoint;
 };
 

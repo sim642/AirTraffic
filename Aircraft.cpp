@@ -16,6 +16,8 @@ Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textu
     {
         State = TakingOff;
         Direction = Out;
+        // random shouldn't be here
+        OutDirection = static_cast<OutDirections>(Random(OutUp, OutRight)); //right order
     }
     else
     {
@@ -73,6 +75,11 @@ bool Aircraft::OnRunway() const
 Aircraft::Directions Aircraft::GetDirection()
 {
     return Direction;
+}
+
+Aircraft::OutDirections Aircraft::GetOutDirection()
+{
+    return OutDirection;
 }
 
 bool Aircraft::Colliding(const Aircraft &Other)
@@ -162,7 +169,10 @@ bool Aircraft::Step(float FT)
                 State = FlyingPath;
             }
             else if (Direction == Out &&
-                     (Me.x < 50 || Me.x > 750 || Me.y < 50 || Me.y > 550))
+                     ((OutDirection == OutUp && Me.y < 50) ||
+                      (OutDirection == OutDown && Me.y > 550) ||
+                      (OutDirection == OutLeft && Me.x < 50) ||
+                      (OutDirection == OutRight && Me.x > 750)))
             {
                 State = FlyingOut;
             }
