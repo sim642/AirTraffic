@@ -102,7 +102,7 @@ void Aircraft::SetRunway(Runway *NewLand)
     Land = NewLand;
 }
 
-bool Aircraft::Step(float FT)
+bool Aircraft::Step(float FT, sf::Vector2f Wind)
 {
     bool Die = false;
 
@@ -251,6 +251,7 @@ bool Aircraft::Step(float FT)
     }
 
     Shape.Move(sf::Vector2f(cos(DegToRad(Shape.GetRotation())), sin(DegToRad(Shape.GetRotation()))) * FT * Speed);
+    Shape.Move(Wind * FT);
 
     return Die;
 }

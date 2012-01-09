@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <wrench/Math.hpp>
+#include <SFML/System/Vector2.hpp>
 
 using namespace std;
 
@@ -58,6 +59,35 @@ inline float Distance(sf::Vector2f P1, sf::Vector2f P2)
 inline bool InRange(sf::Vector2f P1, sf::Vector2f P2, float Dist)
 {
     return pow(P2.x - P1.x, 2) + pow(P2.y - P1.y, 2) < pow(Dist, 2);
+}
+
+inline float Magnitude(sf::Vector2f V)
+{
+    return Distance(sf::Vector2f(0.f, 0.f), V);
+}
+
+inline float Angle(sf::Vector2f V)
+{
+    return RadToDeg(atan2(-V.y, -V.x));
+}
+
+inline sf::Vector2f Normalize(sf::Vector2f V)
+{
+    return V / Magnitude(V);
+}
+
+inline sf::Vector2f Scale(sf::Vector2f V, float S)
+{
+    return Normalize(V) * S;
+}
+
+inline sf::Vector2f Rotate(sf::Vector2f V, float Deg)
+{
+    float Rad = DegToRad(Deg);
+    sf::Vector2f New;
+    New.x = V.x * cos(Rad) - V.y * sin(Rad);
+    New.y = V.x * sin(Rad) + V.y * cos(Rad);
+    return New;
 }
 
 

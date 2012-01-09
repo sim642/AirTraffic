@@ -188,6 +188,22 @@ void AirTraffic::Step()
         Spawner.Reset();
     }
 
+    if (WindTime.GetElapsedTime() / 1000.f > 0.5f) // may need changing
+    {
+        if (Wind == sf::Vector2f(0.f, 0.f))
+        {
+            Wind = sf::Vector2f(5.f, 0.f);
+            Wind = Rotate(Wind, Random(0.f, 360.f));
+            Wind = Scale(Wind, Random(0.5f, 1.f));
+        }
+        else
+        {
+            Wind = Rotate(Wind, Random(-5.f, 5.f));
+            Wind = Scale(Wind, Random(0.95f, 1.05f));
+        }
+        WindTime.Reset();
+    }
+
     for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); )
     {
         boost::ptr_list<Aircraft>::iterator it2 = it;
@@ -236,7 +252,7 @@ void AirTraffic::Step()
 
             it = Aircrafts.erase(it);
         }
-        else if (it->Step(FT))
+        else if (it->Step(FT, Wind))
         {
             Score += 1000;
             if (Pathing == &*it) // take care if were drawing a path
@@ -386,8 +402,12 @@ void AirTraffic::Draw()
         it->Draw(App);
     }
 
+    // hud
     App.Draw(ScoreText);
     App.Draw(DebugText);
+
+    App.Draw(Line(sf::Vector2f(750.f, 50.f), sf::Vector2f(750.f, 50.f) + Wind * 25.f, 3.f, sf::Color::White));
+    App.Draw(Circle(sf::Vector2f(750.f, 50.f), 5.f, sf::Color::Red));
 
     App.Display();
 }

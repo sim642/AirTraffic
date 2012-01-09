@@ -66,7 +66,7 @@ class Aircraft
 
         void SetRunway(Runway*);
 
-        bool Step(float);
+        bool Step(float, sf::Vector2f);
         void Draw(sf::RenderWindow&);
     private:
         const AircraftTemplate Template;

@@ -52,6 +52,9 @@ class AirTraffic
         sf::Clock Spawner;
         sf::Clock PlayTime;
 
+        sf::Vector2f Wind;
+        sf::Clock WindTime;
+
         void LoadTexture(const string&);
         map<string, sf::Texture> Textures;
 
