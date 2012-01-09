@@ -53,7 +53,7 @@ void AirTraffic::LoadResources()
         RunwayTemplate Temp;
         Temp.Name = Cur.get<string>("name");
         Temp.Res = Cur.get<string>("res");
-        LoadImage(Temp.Res);
+        LoadTexture(Temp.Res);
         Temp.Center = sf::Vector2f(Cur.get<float>("centerx"), Cur.get<float>("centery"));
         Temp.Radius = Cur.get<float>("radius");
         Temp.LandAngle = Cur.get<float>("landangle");
@@ -69,7 +69,7 @@ void AirTraffic::LoadResources()
         AircraftTemplate Temp;
         Temp.Name = Cur.get<string>("name");
         Temp.Res = Cur.get<string>("res");
-        LoadImage(Temp.Res);
+        LoadTexture(Temp.Res);
         Temp.Speed = Cur.get<float>("speed");
         Temp.Radius = Cur.get<float>("radius");
         Temp.Turn = Cur.get<float>("turn");
@@ -89,16 +89,16 @@ void AirTraffic::LoadResources()
         ExplosionTemplate Temp;
         Temp.Name = Cur.get<string>("name");
         Temp.Res = Cur.get<string>("res");
-        LoadImage(Temp.Res);
+        LoadTexture(Temp.Res);
         Temp.Radius = Cur.get<float>("radius");
         Temp.Time = Cur.get<float>("time");
 
         ExplosionTemplates.push_back(Temp);
     }
 
-    GrassImage.LoadFromFile("res/Grass192_2.png");
-    GrassImage.SetSmooth(false);
-    Grass.SetImage(GrassImage);
+    GrassTexture.LoadFromFile("res/Grass192_2.png");
+    GrassTexture.SetSmooth(false);
+    Grass.SetTexture(GrassTexture);
 }
 
 void AirTraffic::HandleEvents()
@@ -266,9 +266,9 @@ void AirTraffic::Step()
 void AirTraffic::Draw()
 {
     // grass
-    for (unsigned int y = 0; y < App.GetHeight(); y += GrassImage.GetHeight())
+    for (unsigned int y = 0; y < App.GetHeight(); y += GrassTexture.GetHeight())
     {
-        for (unsigned int x = 0; x < App.GetWidth(); x += GrassImage.GetWidth())
+        for (unsigned int x = 0; x < App.GetWidth(); x += GrassTexture.GetWidth())
         {
             Grass.SetPosition(x, y);
             App.Draw(Grass);
@@ -290,7 +290,7 @@ void AirTraffic::Draw()
                 vector<string> Landable = Pathing->GetTemplate().Runways;
                 if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end())
                 {
-                    App.Draw(sf::Shape::Circle(it->GetPos(),
+                    App.Draw(Circle(it->GetPos(),
                                                it->GetTemplate().Radius - 3.f,
                                                sf::Color(0, 255, 255, 96),
                                                3.f,
@@ -299,12 +299,12 @@ void AirTraffic::Draw()
             }
             else
             {
-                App.Draw(sf::Shape::Rectangle(0.f, 0.f, 800.f, 50.f, sf::Color(0, 255, 255, 96)));
-                App.Draw(sf::Shape::Rectangle(0.f, 550.f, 800.f, 50.f, sf::Color(0, 255, 255, 96)));
-                App.Draw(sf::Shape::Rectangle(0.f, 50.f, 50.f, 500.f, sf::Color(0, 255, 255, 96)));
-                App.Draw(sf::Shape::Rectangle(750.f, 50.f, 50.f, 500.f, sf::Color(0, 255, 255, 96)));
+                App.Draw(Rectangle(0.f, 0.f, 800.f, 50.f, sf::Color(0, 255, 255, 96)));
+                App.Draw(Rectangle(0.f, 550.f, 800.f, 50.f, sf::Color(0, 255, 255, 96)));
+                App.Draw(Rectangle(0.f, 50.f, 50.f, 500.f, sf::Color(0, 255, 255, 96)));
+                App.Draw(Rectangle(750.f, 50.f, 50.f, 500.f, sf::Color(0, 255, 255, 96)));
 
-                App.Draw(sf::Shape::Rectangle(50.f, 50.f, 700.f, 500.f, sf::Color(0, 0, 0, 0), 3.f, sf::Color(0, 255, 255)));
+                App.Draw(Rectangle(50.f, 50.f, 700.f, 500.f, sf::Color(0, 0, 0, 0), 3.f, sf::Color(0, 255, 255)));
             }
         }
     }
@@ -333,7 +333,7 @@ void AirTraffic::Draw()
             if (it2->Deadly() && Dist < MaxDist)
             {
                 float MinDist = (R1 + R2) / 2.5f;
-                App.Draw(sf::Shape::Circle(Pos1,
+                App.Draw(Circle(Pos1,
                                            R1 - 3.f,
                                            sf::Color(255, 255, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
                                            3.f,
@@ -352,12 +352,12 @@ void AirTraffic::Draw()
             if (it->OnRunway() == it2->OnRunway() && Dist < MaxDist)
             {
                 float MinDist = (R1 + R2) / 1.3f;
-                App.Draw(sf::Shape::Circle(Pos1,
+                App.Draw(Circle(Pos1,
                                            R1 - 3.f,
                                            sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
                                            3.f,
                                            sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
-                App.Draw(sf::Shape::Circle(Pos2,
+                App.Draw(Circle(Pos2,
                                            R2 - 3.f,
                                            sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
                                            3.f,
@@ -378,11 +378,11 @@ void AirTraffic::Draw()
     App.Display();
 }
 
-void AirTraffic::LoadImage(const string &FileName)
+void AirTraffic::LoadTexture(const string &FileName)
 {
-    sf::Image Image;
-    Image.LoadFromFile("res/" + FileName);
-    Images.insert(make_pair(FileName, Image));
+    sf::Texture Texture;
+    Texture.LoadFromFile("res/" + FileName);
+    Textures.insert(make_pair(FileName, Texture));
 }
 
 void AirTraffic::SpawnRunway()
@@ -407,7 +407,7 @@ void AirTraffic::SpawnRunway()
 
 
 
-        New = new Runway(Temp, Images, Pos, Angle);
+        New = new Runway(Temp, Textures, Pos, Angle);
         for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
         {
             sf::Vector2f Pos1 = New->GetPos(),
@@ -478,7 +478,7 @@ void AirTraffic::SpawnAircraft()
             Ready = true;
             Angle = (*it2)->GetAngle();
             Pos = (*it2)->GetPos();
-            New = new Aircraft(Temp, Images, Pos, Angle, *it2);
+            New = new Aircraft(Temp, Textures, Pos, Angle, *it2);
 
             for (boost::ptr_list<Aircraft>::iterator it3 = Aircrafts.begin(); it3 != Aircrafts.end(); ++it3)
             {
@@ -532,7 +532,7 @@ void AirTraffic::SpawnAircraft()
                 }
             }
 
-            New = new Aircraft(Temp, Images, Pos, Angle);
+            New = new Aircraft(Temp, Textures, Pos, Angle);
             for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
             {
                 if (it->Colliding(*New))
@@ -561,5 +561,5 @@ void AirTraffic::SpawnExplosion(sf::Vector2f Pos)
     vector<ExplosionTemplate>::iterator it = ExplosionTemplates.begin();
     it += rand() % ExplosionTemplates.size();
     ExplosionTemplate &Temp = *it;
-    Explosions.push_back(new Explosion(Temp, Images, Pos));
+    Explosions.push_back(new Explosion(Temp, Textures, Pos));
 }

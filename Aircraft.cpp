@@ -1,10 +1,10 @@
 #include "Aircraft.hpp"
 
-Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Image> &Images, sf::Vector2f Pos, float Rot, Runway *NewRunway) : Template(NewTemplate), Land(NewRunway), Turning(0.f)
+Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot, Runway *NewRunway) : Template(NewTemplate), Land(NewRunway), Turning(0.f)
 {
-    const sf::Image &Image = Images[Template.Res];
-    Shape.SetImage(Image);
-    Shape.SetOrigin(Image.GetWidth() / 2, Image.GetHeight() / 2);
+    const sf::Texture &Texture = Textures[Template.Res];
+    Shape.SetTexture(Texture);
+    Shape.SetOrigin(Texture.GetWidth() / 2, Texture.GetHeight() / 2);
     Shape.SetPosition(Pos);
     Shape.SetRotation(Rot);
 

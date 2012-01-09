@@ -12,6 +12,7 @@
 #include "Runway.hpp"
 #include "Explosion.hpp"
 #include "Math.hpp"
+#include "GraphUtil.hpp"
 
 using namespace std;
 
@@ -51,10 +52,10 @@ class AirTraffic
         sf::Clock Spawner;
         sf::Clock PlayTime;
 
-        void LoadImage(const string&);
-        map<string, sf::Image> Images;
+        void LoadTexture(const string&);
+        map<string, sf::Texture> Textures;
 
-        sf::Image GrassImage;
+        sf::Texture GrassTexture;
         sf::Sprite Grass;
 
         void SpawnRunway();

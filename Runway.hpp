@@ -22,7 +22,7 @@ struct RunwayTemplate
 class Runway
 {
     public:
-        Runway(RunwayTemplate, map<string, sf::Image>&, sf::Vector2f, float);
+        Runway(RunwayTemplate, map<string, sf::Texture>&, sf::Vector2f, float);
         RunwayTemplate GetTemplate();
 
         bool OnMe(sf::Vector2f);

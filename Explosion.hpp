@@ -19,7 +19,7 @@ class Explosion
 {
     public:
         friend class Aircraft;
-        Explosion(ExplosionTemplate, map<string, sf::Image>&, sf::Vector2f);
+        Explosion(ExplosionTemplate, map<string, sf::Texture>&, sf::Vector2f);
         ExplosionTemplate GetTemplate();
 
         sf::Vector2f GetPos();

@@ -38,7 +38,7 @@ class Aircraft
             Out
         };
 
-        Aircraft(AircraftTemplate, map<string, sf::Image>&, sf::Vector2f, float, Runway* = 0);
+        Aircraft(AircraftTemplate, map<string, sf::Texture>&, sf::Vector2f, float, Runway* = 0);
         AircraftTemplate GetTemplate();
 
         sf::Vector2f GetPos();

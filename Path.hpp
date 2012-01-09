@@ -6,6 +6,7 @@
 #include <cmath>
 #include <algorithm>
 #include "Math.hpp"
+#include "GraphUtil.hpp"
 
 using namespace std;
 

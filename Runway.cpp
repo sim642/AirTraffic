@@ -1,8 +1,8 @@
 #include "Runway.hpp"
 
-Runway::Runway(RunwayTemplate NewTemplate, map<string, sf::Image> &Images, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
+Runway::Runway(RunwayTemplate NewTemplate, map<string, sf::Texture> &Texture, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
 {
-    Shape.SetImage(Images[Template.Res]);
+    Shape.SetTexture(Texture[Template.Res]);
     Shape.SetOrigin(Template.Center);
     Shape.SetPosition(Pos);
     Shape.SetRotation(Rot);

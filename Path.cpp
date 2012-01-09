@@ -120,7 +120,7 @@ void Path::Draw(sf::RenderWindow& App)
     {
         for (vector<sf::Vector2f>::iterator it = Points.begin() + 1; it != Points.end(); ++it)
         {
-            App.Draw(sf::Shape::Line(*(it - 1), *it, 2.f, Highlight ? sf::Color::Yellow : sf::Color::Blue));
+            App.Draw(Line(*(it - 1), *it, 2.f, Highlight ? sf::Color::Yellow : sf::Color::Blue));
         }
     }
 }

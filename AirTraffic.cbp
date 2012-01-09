@@ -37,7 +37,6 @@
 			<Add option="-lsfml-graphics-s" />
 			<Add option="-lsfml-window-s" />
 			<Add option="-lsfml-system-s" />
-			<Add option="-static-libgcc" />
 		</Linker>
 		<Unit filename="AirTraffic.cpp" />
 		<Unit filename="AirTraffic.hpp" />
@@ -45,6 +44,8 @@
 		<Unit filename="Aircraft.hpp" />
 		<Unit filename="Explosion.cpp" />
 		<Unit filename="Explosion.hpp" />
+		<Unit filename="GraphUtil.cpp" />
+		<Unit filename="GraphUtil.hpp" />
 		<Unit filename="Math.hpp" />
 		<Unit filename="Path.cpp" />
 		<Unit filename="Path.hpp" />
