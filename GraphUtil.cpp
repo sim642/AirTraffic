@@ -1,15 +1,26 @@
 #include "GraphUtil.hpp"
 
-sf::RectangleShape Line(const sf::Vector2f &Start, const sf::Vector2f &End, float Thickness, const sf::Color &Color, float Outline, const sf::Color &OutlineColor)
+sf::ConvexShape Line(const sf::Vector2f &Start, const sf::Vector2f &End, float Thickness, const sf::Color &Color, float Outline, const sf::Color &OutlineColor)
 {
-    //doesn't have rounded ends
-    sf::RectangleShape Line;
-    Line.SetPosition(Start);
-    Line.SetSize(sf::Vector2f(Distance(Start, End), Thickness));
-    Line.SetRotation(RadToDeg(atan2(End.y - Start.y, End.x - Start.x)));
+    sf::Vector2f Normal(Start.y - End.y, End.x - Start.x);
+    float Length = Distance(sf::Vector2f(0.f, 0.f), Normal);
+    if (Length != 0.f)
+        Normal /= Length;
+
+    Normal *= Thickness / 2;
+
+
+    sf::ConvexShape Line;
+
+    Line.SetPointCount(4);
+    Line.SetPoint(0, Start - Normal);
+    Line.SetPoint(1, End - Normal);
+    Line.SetPoint(2, End + Normal);
+    Line.SetPoint(3, Start + Normal);
     Line.SetFillColor(Color);
     Line.SetOutlineThickness(Outline);
     Line.SetOutlineColor(OutlineColor);
+
     return Line;
 }
 
