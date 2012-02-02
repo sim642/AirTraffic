@@ -49,11 +49,11 @@ class AirTrafficScreen : public Screen
         sf::Text ScoreText;
         sf::Text DebugText;
 
-        sf::Clock Spawner;
-        sf::Clock PlayTime;
+        float Spawner;
+        float PlayTime;
 
         sf::Vector2f Wind;
-        sf::Clock WindTime;
+        float WindTime;
 
         void LoadTexture(const string&);
         map<string, sf::Texture> Textures;

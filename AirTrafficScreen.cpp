@@ -18,6 +18,10 @@ AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), P
     {
         SpawnRunway();
     }
+
+    Spawner = 0.f;
+    PlayTime = 0.f;
+    WindTime = 0.f;
 }
 
 AirTrafficScreen::ScreenType AirTrafficScreen::Run()
@@ -173,18 +177,21 @@ void AirTrafficScreen::HandleEvents()
 void AirTrafficScreen::Step()
 {
     const float FT = App.GetFrameTime() / 1000.f;
-    float SpawnTime = wr::Map(PlayTime.GetElapsedTime() / 1000.f, 0.f, 120.f, 5.f, 0.5f);
+    Spawner += FT;
+    PlayTime += FT;
+    WindTime += FT;
+
+    float SpawnTime = wr::Map(PlayTime, 0.f, 120.f, 5.f, 0.5f);
     if (SpawnTime < 0.5f)
         SpawnTime = 0.5f;
-    //float SpawnTime = 3.f / PlayTime.GetElapsedTime();
 
-    if (Spawner.GetElapsedTime() / 1000.f > SpawnTime)
+    if (Spawner > SpawnTime)
     {
         SpawnAircraft();
-        Spawner.Reset();
+        Spawner = 0.f;
     }
 
-    if (WindTime.GetElapsedTime() / 1000.f > 0.5f) // may need changing
+    if (WindTime > 0.5f) // may need changing
     {
         if (Wind == sf::Vector2f(0.f, 0.f))
         {
@@ -197,7 +204,7 @@ void AirTrafficScreen::Step()
             Wind = Rotate(Wind, Random(-5.f, 5.f));
             Wind = Scale(Wind, Random(0.95f, 1.05f));
         }
-        WindTime.Reset();
+        WindTime = 0.f;
     }
 
     for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); )
