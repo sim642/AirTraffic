@@ -40,6 +40,8 @@
 		</Linker>
 		<Unit filename="AirTraffic.cpp" />
 		<Unit filename="AirTraffic.hpp" />
+		<Unit filename="AirTrafficScreen.cpp" />
+		<Unit filename="AirTrafficScreen.hpp" />
 		<Unit filename="Aircraft.cpp" />
 		<Unit filename="Aircraft.hpp" />
 		<Unit filename="Explosion.cpp" />
@@ -47,10 +49,14 @@
 		<Unit filename="GraphUtil.cpp" />
 		<Unit filename="GraphUtil.hpp" />
 		<Unit filename="Math.hpp" />
+		<Unit filename="MenuScreen.cpp" />
+		<Unit filename="MenuScreen.hpp" />
 		<Unit filename="Path.cpp" />
 		<Unit filename="Path.hpp" />
 		<Unit filename="Runway.cpp" />
 		<Unit filename="Runway.hpp" />
+		<Unit filename="Screen.cpp" />
+		<Unit filename="Screen.hpp" />
 		<Unit filename="data.json" />
 		<Unit filename="main.cpp" />
 		<Extensions>
