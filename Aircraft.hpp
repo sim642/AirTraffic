@@ -45,7 +45,7 @@ class Aircraft
             OutRight
         };
 
-        Aircraft(AircraftTemplate, map<string, sf::Texture>&, sf::Vector2f, float, Runway* = 0);
+        Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot, Runway *NewRunway = 0);
         AircraftTemplate GetTemplate();
 
         sf::Vector2f GetPos();
@@ -61,13 +61,13 @@ class Aircraft
         Directions GetDirection();
         OutDirections GetOutDirection();
 
-        bool Colliding(const Aircraft&);
-        bool Colliding(const Explosion&);
+        bool Colliding(const Aircraft &Other);
+        bool Colliding(const Explosion &Exp);
 
-        void SetRunway(Runway*);
+        void SetRunway(Runway *NewLand);
 
-        bool Step(float, sf::Vector2f);
-        void Draw(sf::RenderWindow&);
+        bool Step(float FT, sf::Vector2f Wind);
+        void Draw(sf::RenderWindow &App);
     private:
         const AircraftTemplate Template;
 

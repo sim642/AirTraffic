@@ -3,7 +3,6 @@
 
 #include "Screen.hpp"
 
-
 class MenuScreen : public Screen
 {
     public:

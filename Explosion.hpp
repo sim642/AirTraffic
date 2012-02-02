@@ -19,7 +19,7 @@ class Explosion
 {
     public:
         friend class Aircraft;
-        Explosion(ExplosionTemplate, map<string, sf::Texture>&, sf::Vector2f);
+        Explosion(ExplosionTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos);
         ExplosionTemplate GetTemplate();
 
         sf::Vector2f GetPos();
@@ -27,8 +27,8 @@ class Explosion
 
         bool Deadly();
 
-        bool Step(float);
-        void Draw(sf::RenderWindow&);
+        bool Step(float FT);
+        void Draw(sf::RenderWindow &App);
     protected:
     private:
         const ExplosionTemplate Template;

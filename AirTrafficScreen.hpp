@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <ctime>
 #include <boost/ptr_container/ptr_list.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -55,7 +54,7 @@ class AirTrafficScreen : public Screen
         sf::Vector2f Wind;
         float WindTime;
 
-        void LoadTexture(const string&);
+        void LoadTexture(const string& FileName);
         map<string, sf::Texture> Textures;
 
         sf::Texture GrassTexture;

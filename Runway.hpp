@@ -22,16 +22,16 @@ struct RunwayTemplate
 class Runway
 {
     public:
-        Runway(RunwayTemplate, map<string, sf::Texture>&, sf::Vector2f, float);
+        Runway(RunwayTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot);
         RunwayTemplate GetTemplate();
 
-        bool OnMe(sf::Vector2f);
+        bool OnMe(sf::Vector2f Pos);
 
         sf::Vector2f GetPos();
         float GetAngle();
         float GetLength();
 
-        void Draw(sf::RenderWindow&);
+        void Draw(sf::RenderWindow &App);
     protected:
     private:
         const RunwayTemplate Template;
