@@ -15,7 +15,7 @@ class Screen
 
         Screen(sf::RenderWindow &NewApp);
 
-        virtual ScreenType Run() = 0;
+        virtual ScreenType Run(const ScreenType &OldScreen) = 0;
     protected:
         sf::RenderWindow &App;
 };

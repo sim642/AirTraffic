@@ -24,7 +24,7 @@ AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), P
     WindTime = 0.f;
 }
 
-AirTrafficScreen::ScreenType AirTrafficScreen::Run()
+AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
 {
     Running = true;
     while (Running)

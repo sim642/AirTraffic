@@ -8,7 +8,7 @@ class MenuScreen : public Screen
     public:
         MenuScreen(sf::RenderWindow &NewApp);
 
-        virtual ScreenType Run();
+        virtual ScreenType Run(const ScreenType &OldScreen);
 };
 
 #endif // MENUSCREEN_H

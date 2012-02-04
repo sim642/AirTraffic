@@ -5,8 +5,13 @@ MenuScreen::MenuScreen(sf::RenderWindow &NewApp) : Screen(NewApp)
 
 }
 
-MenuScreen::ScreenType MenuScreen::Run()
+MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
 {
+    sf::Texture PauseTex;
+    PauseTex.Create(App.GetWidth(), App.GetHeight());
+    PauseTex.Update(App);
+    sf::Sprite PauseSpr(PauseTex);
+
     while (1)
     {
         sf::Event Event;
@@ -23,7 +28,10 @@ MenuScreen::ScreenType MenuScreen::Run()
         }
 
         App.Clear(sf::Color::Blue);
-
+        if (OldScreen == AirTrafficType)
+        {
+            App.Draw(PauseSpr);
+        }
         App.Display();
     }
 }

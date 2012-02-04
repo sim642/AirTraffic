@@ -21,7 +21,7 @@ class AirTrafficScreen : public Screen
     public:
         AirTrafficScreen(sf::RenderWindow &NewApp);
 
-        virtual ScreenType Run();
+        virtual ScreenType Run(const ScreenType &OldScreen);
     private:
         bool Running;
 

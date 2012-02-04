@@ -9,15 +9,18 @@ AirTraffic::AirTraffic()
 
     Screens.push_back(new MenuScreen(App));
     Screens.push_back(new AirTrafficScreen(App));
-
-    CurScreen = Screen::MenuType;
 }
 
 int AirTraffic::Run()
 {
-    while (CurScreen != Screen::ExitType)
+    Screen::ScreenType NextScreen = Screen::MenuType;
+    Screen::ScreenType OldScreen = Screen::ExitType;
+
+    while (NextScreen != Screen::ExitType)
     {
-        CurScreen = Screens[CurScreen].Run();
+        Screen::ScreenType CurScreen = NextScreen;
+        NextScreen = Screens[NextScreen].Run(OldScreen);
+        OldScreen = CurScreen;
     }
 
     App.Close();

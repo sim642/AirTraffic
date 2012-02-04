@@ -19,7 +19,6 @@ class AirTraffic
         sf::RenderWindow App;
 
         boost::ptr_vector<Screen> Screens;
-        Screen::ScreenType CurScreen;
 };
 
 #endif // AIRTRAFFIC_H
