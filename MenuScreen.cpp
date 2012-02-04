@@ -1,6 +1,6 @@
 #include "MenuScreen.hpp"
 
-MenuScreen::MenuScreen(sf::RenderWindow &NewApp) : Screen(NewApp), SelectionColor(200, 255, 150)
+MenuScreen::MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATC) : Screen(NewApp), ATC(NewATC), SelectionColor(200, 255, 150)
 {
     GrassTex.LoadFromFile("res/Grass192_2.png");
     GrassSpr.SetTexture(GrassTex);
@@ -27,7 +27,6 @@ MenuScreen::MenuScreen(sf::RenderWindow &NewApp) : Screen(NewApp), SelectionColo
     Cursor.SetColor(SelectionColor);
 
     Items.push_back("New game");
-    Items.push_back("Credits");
     Items.push_back("Exit");
 }
 
@@ -35,6 +34,11 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
 {
     ItemSelected = 0;
     bool Paused = OldScreen == AirTrafficType;
+
+    if (Paused && Items.front() != "Continue")
+    {
+        Items.insert(Items.begin(), "Continue");
+    }
 
     sf::Texture PauseTex;
     if (Paused)
@@ -61,8 +65,13 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                     case sf::Keyboard::Return:
                     {
                         string Selected = Items[ItemSelected];
-                        if (Selected == "New game")
+                        if (Selected == "Continue")
                         {
+                            return AirTrafficType;
+                        }
+                        else if (Selected == "New game")
+                        {
+                            ATC->Reset();
                             return AirTrafficType;
                         }
                         else if (Selected == "Exit")

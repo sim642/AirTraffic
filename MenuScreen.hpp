@@ -3,17 +3,20 @@
 
 #include <vector>
 #include "Screen.hpp"
+#include "AirTrafficScreen.hpp"
 
 using namespace std;
 
 class MenuScreen : public Screen
 {
     public:
-        MenuScreen(sf::RenderWindow &NewApp);
+        MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATC);
 
         virtual ScreenType Run(const ScreenType &OldScreen);
 
     private:
+        AirTrafficScreen *ATC;
+
         sf::Texture GrassTex;
         sf::Sprite GrassSpr;
 

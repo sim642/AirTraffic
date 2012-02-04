@@ -10,8 +10,9 @@ AirTraffic::AirTraffic()
     App.Create(sf::VideoMode(800, 600, 32), "AirTraffic", sf::Style::Default, sf::ContextSettings(0, 0, 16));
     App.SetFramerateLimit(60);
 
-    Screens.push_back(new MenuScreen(App));
-    Screens.push_back(new AirTrafficScreen(App));
+    AirTrafficScreen *ATC = new AirTrafficScreen(App);
+    Screens.push_back(new MenuScreen(App, ATC));
+    Screens.push_back(ATC);
 }
 
 int AirTraffic::Run()

@@ -4,7 +4,7 @@
 #include "Math.hpp"
 #include "GraphUtil.hpp"
 
-AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), Pathing(NULL), Score(0)
+AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp)
 {
     LoadResources();
 
@@ -18,14 +18,7 @@ AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), P
     DebugText.SetPosition(sf::Vector2f(10.f, 50.f));
     DebugText.SetColor(sf::Color::White);
 
-    for (int n = 0; n < 2; n++)
-    {
-        SpawnRunway();
-    }
-
-    Spawner = 0.f;
-    PlayTime = 0.f;
-    WindTime = 0.f;
+    Reset();
 }
 
 AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
@@ -39,6 +32,27 @@ AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
     }
 
     return MenuType;
+}
+
+void AirTrafficScreen::Reset()
+{
+    Pathing = NULL;
+    Score = 0;
+
+    Wind = sf::Vector2f(0.f, 0.f);
+
+    Spawner = 0.f;
+    PlayTime = 0.f;
+    WindTime = 0.f;
+
+    Aircrafts.clear();
+    Runways.clear();
+    Explosions.clear();
+
+    for (int n = 0; n < 2; n++)
+    {
+        SpawnRunway();
+    }
 }
 
 void AirTrafficScreen::LoadResources()
