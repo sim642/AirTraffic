@@ -39,7 +39,7 @@ AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
 
 void AirTrafficScreen::LoadResources()
 {
-    Font = sf::Font::GetDefaultFont();
+    Font.LoadFromFile("res/Play-Regular.ttf");
 
     boost::property_tree::json_parser::read_json("data.json", Data);
 
