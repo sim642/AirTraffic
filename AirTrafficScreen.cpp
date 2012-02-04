@@ -1,6 +1,6 @@
 #include "AirTrafficScreen.hpp"
 
-AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), Pathing(), Score(0)
+AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), Pathing(NULL), Score(0)
 {
     LoadResources();
 
