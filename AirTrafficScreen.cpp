@@ -1,4 +1,8 @@
 #include "AirTrafficScreen.hpp"
+#include <boost/lexical_cast.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include "Math.hpp"
+#include "GraphUtil.hpp"
 
 AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), Pathing(NULL), Score(0)
 {

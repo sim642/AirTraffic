@@ -3,10 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <cmath>
-#include <algorithm>
-#include "Math.hpp"
-#include "GraphUtil.hpp"
 
 using namespace std;
 

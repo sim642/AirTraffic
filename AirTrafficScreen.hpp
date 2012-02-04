@@ -4,15 +4,11 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <boost/ptr_container/ptr_list.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include "Screen.hpp"
 #include "Aircraft.hpp"
 #include "Runway.hpp"
 #include "Explosion.hpp"
-#include "Math.hpp"
-#include "GraphUtil.hpp"
 
 using namespace std;
 

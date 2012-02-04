@@ -1,4 +1,7 @@
 #include "Path.hpp"
+#include <algorithm>
+#include "Math.hpp"
+#include "GraphUtil.hpp"
 
 Path::Path() : Highlight(false), interp(5)
 {

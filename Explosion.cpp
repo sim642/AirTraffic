@@ -1,4 +1,5 @@
 #include "Explosion.hpp"
+#include "Math.hpp"
 
 Explosion::Explosion(ExplosionTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos) : Template(NewTemplate), Time(0.f)
 {

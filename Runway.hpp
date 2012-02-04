@@ -2,9 +2,7 @@
 #define RUNWAY_H
 
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include <map>
-#include "Math.hpp"
 
 using namespace std;
 

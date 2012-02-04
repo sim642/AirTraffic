@@ -1,4 +1,7 @@
 #include "AirTraffic.hpp"
+#include <ctime>
+#include "AirTrafficScreen.hpp"
+#include "MenuScreen.hpp"
 
 AirTraffic::AirTraffic()
 {

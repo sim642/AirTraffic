@@ -1,4 +1,5 @@
 #include "Runway.hpp"
+#include "Math.hpp"
 
 Runway::Runway(RunwayTemplate NewTemplate, map<string, sf::Texture> &Texture, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
 {

@@ -1,4 +1,5 @@
 #include "Aircraft.hpp"
+#include "Math.hpp"
 
 Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot, Runway *NewRunway) : Template(NewTemplate), Land(NewRunway), Turning(0.f)
 {

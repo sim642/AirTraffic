@@ -1,4 +1,5 @@
 #include "GraphUtil.hpp"
+#include "Math.hpp"
 
 sf::ConvexShape Line(const sf::Vector2f &Start, const sf::Vector2f &End, float Thickness, const sf::Color &Color, float Outline, const sf::Color &OutlineColor)
 {

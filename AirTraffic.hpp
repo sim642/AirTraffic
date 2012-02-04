@@ -1,12 +1,9 @@
 #ifndef AIRTRAFFIC_H
 #define AIRTRAFFIC_H
 
-#include <ctime>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <SFML/Graphics.hpp>
 #include "Screen.hpp"
-#include "AirTrafficScreen.hpp"
-#include "MenuScreen.hpp"
 
 class AirTraffic
 {
