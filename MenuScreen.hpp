@@ -9,6 +9,10 @@ class MenuScreen : public Screen
         MenuScreen(sf::RenderWindow &NewApp);
 
         virtual ScreenType Run(const ScreenType &OldScreen);
+
+    private:
+        sf::Texture GrassTex;
+        sf::Sprite GrassSpr;
 };
 
 #endif // MENUSCREEN_H
