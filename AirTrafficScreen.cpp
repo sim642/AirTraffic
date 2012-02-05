@@ -528,7 +528,7 @@ void AirTrafficScreen::SpawnAircraft()
             }
         }
 
-        random_shuffle(Rws.begin(), Rws.end()); //needs moar random
+        random_shuffle(Rws.begin(), Rws.end(), Shuffler);
 
         for (vector<Runway*>::iterator it2 = Rws.begin(); it2 != Rws.end(); ++it2)
         {

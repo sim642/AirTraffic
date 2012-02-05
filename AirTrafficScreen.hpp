@@ -61,6 +61,15 @@ class AirTrafficScreen : public Screen
         void SpawnRunway();
         void SpawnAircraft();
         void SpawnExplosion(sf::Vector2f);
+
+        class
+        {
+            public:
+                int operator() (const int &n)
+                {
+                    return rand() % n;
+                }
+        } Shuffler;
 };
 
 #endif // AIRTRAFFICSCREEN_H

@@ -44,6 +44,8 @@
 		<Unit filename="AirTrafficScreen.hpp" />
 		<Unit filename="Aircraft.cpp" />
 		<Unit filename="Aircraft.hpp" />
+		<Unit filename="AnimSprite.cpp" />
+		<Unit filename="AnimSprite.hpp" />
 		<Unit filename="Explosion.cpp" />
 		<Unit filename="Explosion.hpp" />
 		<Unit filename="GraphUtil.cpp" />
