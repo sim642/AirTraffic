@@ -88,6 +88,8 @@ void AirTrafficScreen::LoadResources()
         Temp.Name = Cur.get<string>("name");
         Temp.Res = Cur.get<string>("res");
         LoadTexture(Temp.Res);
+        Temp.FrameSize = sf::Vector2i(Cur.get("framew", -1), Cur.get("frameh", -1));
+        Temp.FrameRate = Cur.get("framerate", 0.f);
         Temp.Speed = Cur.get<float>("speed");
         Temp.Radius = Cur.get<float>("radius");
         Temp.Turn = Cur.get<float>("turn");

@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <map>
+#include "AnimSprite.hpp"
 #include "Path.hpp"
 #include "Runway.hpp"
 #include "Explosion.hpp"
@@ -14,6 +15,8 @@ struct AircraftTemplate
 {
     string Name;
     string Res;
+    sf::Vector2i FrameSize;
+    float FrameRate;
     float Radius;
     float Speed;
     float Turn;
@@ -76,7 +79,7 @@ class Aircraft
         float Turn;
 
         Path P;
-        sf::Sprite Shape;
+        AnimSprite Shape;
 
         Runway *Land;
 

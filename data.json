@@ -77,6 +77,9 @@
 		{
             "name": "heli",
             "res": "Heli1.png",
+            "framew": 50,
+            "frameh": 50,
+            "framerate": 20,
             "radius": 25,
             "speed": 65,
             "turn": 5,

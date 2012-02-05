@@ -1,11 +1,20 @@
 #include "Aircraft.hpp"
 #include "Math.hpp"
+#include <iostream>
 
 Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot, Runway *NewRunway) : Template(NewTemplate), Land(NewRunway), Turning(0.f)
 {
     const sf::Texture &Texture = Textures[Template.Res];
-    Shape.SetTexture(Texture);
-    Shape.SetOrigin(Texture.GetWidth() / 2, Texture.GetHeight() / 2);
+    if (Template.FrameSize.x >= 0 || Template.FrameSize.y >= 0)
+    {
+        Shape = AnimSprite(Texture, Template.FrameSize, Template.FrameRate);
+        Shape.SetOrigin(Template.FrameSize.x / 2.f, Template.FrameSize.y / 2.f);
+    }
+    else
+    {
+        Shape = AnimSprite(Texture, sf::Vector2i(Texture.GetWidth(), Texture.GetHeight()), 0.f);
+        Shape.SetOrigin(Texture.GetWidth() / 2, Texture.GetWidth() / 2);
+    }
     Shape.SetPosition(Pos);
     Shape.SetRotation(Rot);
 
@@ -108,6 +117,8 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
     bool Die = false;
 
     const sf::Vector2f &Me = Shape.GetPosition();
+
+    Shape.Update(FT);
 
     switch (State)
     {
