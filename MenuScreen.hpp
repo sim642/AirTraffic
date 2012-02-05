@@ -10,12 +10,12 @@ using namespace std;
 class MenuScreen : public Screen
 {
     public:
-        MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATC);
+        MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATS);
 
         virtual ScreenType Run(const ScreenType &OldScreen);
 
     private:
-        AirTrafficScreen *ATC;
+        AirTrafficScreen *ATS;
 
         sf::Texture GrassTex;
         sf::Sprite GrassSpr;

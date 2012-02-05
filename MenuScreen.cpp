@@ -1,6 +1,6 @@
 #include "MenuScreen.hpp"
 
-MenuScreen::MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATC) : Screen(NewApp), ATC(NewATC), SelectionColor(200, 255, 150)
+MenuScreen::MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATS) : Screen(NewApp), ATS(NewATS), SelectionColor(200, 255, 150)
 {
     GrassTex.LoadFromFile("res/Grass192_2.png");
     GrassSpr.SetTexture(GrassTex);
@@ -71,7 +71,7 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                         }
                         else if (Selected == "New game")
                         {
-                            ATC->Reset();
+                            ATS->Reset();
                             return AirTrafficType;
                         }
                         else if (Selected == "Exit")
