@@ -49,7 +49,7 @@ void AirTrafficScreen::Reset()
     Runways.clear();
     Explosions.clear();
 
-    for (int n = 0; n < 2; n++)
+    for (int n = 0; n < 5; n++)
     {
         SpawnRunway();
     }
@@ -467,9 +467,7 @@ void AirTrafficScreen::SpawnRunway()
         New = new Runway(Temp, Textures, Pos, Angle);
         for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
         {
-            sf::Vector2f Pos1 = New->GetPos(),
-                         Pos2 = it->GetPos();
-            if (InRange(Pos1, Pos2, 200.f))
+            if (New->Colliding(*it))
             {
                 Ready = false;
                 break;

@@ -22,6 +22,11 @@ bool Runway::OnMe(sf::Vector2f Pos)
     return InRange(Me, Pos, Radius);
 }
 
+bool Runway::Colliding(const Runway &Other)
+{
+    return Shape.GetGlobalBounds().Intersects(Other.Shape.GetGlobalBounds());
+}
+
 sf::Vector2f Runway::GetPos()
 {
     return Shape.GetPosition();

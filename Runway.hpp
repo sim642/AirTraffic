@@ -25,6 +25,8 @@ class Runway
 
         bool OnMe(sf::Vector2f Pos);
 
+        bool Colliding(const Runway &Other);
+
         sf::Vector2f GetPos();
         float GetAngle();
         float GetLength();
