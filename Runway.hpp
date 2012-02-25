@@ -20,6 +20,7 @@ struct RunwayTemplate
 class Runway
 {
     public:
+        friend class Scenery;
         Runway(RunwayTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot);
         RunwayTemplate GetTemplate();
 

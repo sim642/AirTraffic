@@ -9,6 +9,7 @@
 #include "Aircraft.hpp"
 #include "Runway.hpp"
 #include "Explosion.hpp"
+#include "Scenery.hpp"
 
 using namespace std;
 
@@ -33,10 +34,12 @@ class AirTrafficScreen : public Screen
         vector<AircraftTemplate> AircraftTemplates;
         vector<RunwayTemplate> RunwayTemplates;
         vector<ExplosionTemplate> ExplosionTemplates;
+        vector<SceneryTemplate> SceneryTemplates;
 
         boost::ptr_list<Aircraft> Aircrafts;
         boost::ptr_list<Runway> Runways;
         boost::ptr_list<Explosion> Explosions;
+        boost::ptr_list<Scenery> Sceneries;
 
         Aircraft *Pathing;
 
@@ -61,6 +64,7 @@ class AirTrafficScreen : public Screen
         void SpawnRunway();
         void SpawnAircraft();
         void SpawnExplosion(sf::Vector2f);
+        void SpawnScenery();
 
         class
         {

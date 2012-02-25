@@ -94,5 +94,15 @@
             "radius": 128,
             "time": 3.0
         }
+	],
+	"sceneries":
+	[
+        {
+            "name": "lake",
+            "res": "lake.png",
+            "framew": 100,
+            "frameh": 100,
+            "framerate": 1.0
+        }
 	]
 }

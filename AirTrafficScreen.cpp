@@ -18,7 +18,8 @@ AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp)
     DebugText.SetPosition(sf::Vector2f(10.f, 50.f));
     DebugText.SetColor(sf::Color::White);
 
-    Reset();
+    // not needed?
+    //Reset();
 }
 
 AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
@@ -48,10 +49,16 @@ void AirTrafficScreen::Reset()
     Aircrafts.clear();
     Runways.clear();
     Explosions.clear();
+    Sceneries.clear();
 
-    for (int n = 0; n < 5; n++)
+    for (int n = 0; n < 2; n++)
     {
         SpawnRunway();
+    }
+
+    for (int n = 0; n < 2; n++)
+    {
+        SpawnScenery();
     }
 }
 
@@ -64,6 +71,7 @@ void AirTrafficScreen::LoadResources()
     boost::property_tree::ptree &DataRunways = Data.get_child("runways");
     boost::property_tree::ptree &DataAircrafts = Data.get_child("aircrafts");
     boost::property_tree::ptree &DataExplosions = Data.get_child("explosions");
+    boost::property_tree::ptree &DataSceneries = Data.get_child("sceneries");
 
     for (boost::property_tree::ptree::iterator it = DataRunways.begin(); it != DataRunways.end(); ++it)
     {
@@ -114,6 +122,19 @@ void AirTrafficScreen::LoadResources()
         Temp.Time = Cur.get<float>("time");
 
         ExplosionTemplates.push_back(Temp);
+    }
+
+    for (boost::property_tree::ptree::iterator it = DataSceneries.begin(); it != DataSceneries.end(); ++it)
+    {
+        boost::property_tree::ptree &Cur = it->second;
+        SceneryTemplate Temp;
+        Temp.Name = Cur.get<string>("name");
+        Temp.Res = Cur.get<string>("res");
+        LoadTexture(Temp.Res);
+        Temp.FrameSize = sf::Vector2i(Cur.get("framew", -1), Cur.get("frameh", -1));
+        Temp.FrameRate = Cur.get("framerate", 0.f);
+
+        SceneryTemplates.push_back(Temp);
     }
 
     GrassTexture.LoadFromFile("res/Grass192_2.png");
@@ -303,6 +324,11 @@ void AirTrafficScreen::Step()
         }
     }
 
+    for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
+    {
+        it->Step(FT);
+    }
+
     ScoreText.SetString(boost::lexical_cast<string>(Score));
     DebugText.SetString(boost::lexical_cast<string>(SpawnTime));
 }
@@ -317,6 +343,12 @@ void AirTrafficScreen::Draw()
             Grass.SetPosition(x, y);
             App.Draw(Grass);
         }
+    }
+
+    // sceneries
+    for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
+    {
+        it->Draw(App);
     }
 
     // runways
@@ -617,4 +649,53 @@ void AirTrafficScreen::SpawnExplosion(sf::Vector2f Pos)
     it += rand() % ExplosionTemplates.size();
     ExplosionTemplate &Temp = *it;
     Explosions.push_back(new Explosion(Temp, Textures, Pos));
+}
+
+void AirTrafficScreen::SpawnScenery()
+{
+    vector<SceneryTemplate>::iterator it = SceneryTemplates.begin();
+    it += rand() % SceneryTemplates.size();
+    SceneryTemplate &Temp = *it;
+
+    sf::Vector2f Pos;
+    float Angle;
+
+    Scenery *New;
+    bool Ready;
+    do
+    {
+        Ready = true;
+
+        Pos.x = Random(100.f, 700.f);
+        Pos.y = Random(100.f, 500.f);
+
+        Angle = Random(0.f, 360.f);
+
+        New = new Scenery(Temp, Textures, Pos, Angle);
+        for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
+        {
+            if (New->Colliding(*it))
+            {
+                Ready = false;
+                break;
+            }
+        }
+
+        for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+        {
+            if (New->Colliding(*it))
+            {
+                Ready = false;
+                break;
+            }
+        }
+
+        if (!Ready)
+        {
+            delete New;
+        }
+    }
+    while (!Ready);
+
+    Sceneries.push_back(New);
 }
