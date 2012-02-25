@@ -4,7 +4,7 @@
 #include "Math.hpp"
 #include "GraphUtil.hpp"
 
-AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp)
+AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), Background(NULL)
 {
     LoadResources();
 
@@ -20,6 +20,14 @@ AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp)
 
     // not needed?
     //Reset();
+}
+
+AirTrafficScreen::~AirTrafficScreen()
+{
+    if (Background)
+    {
+        delete Background;
+    }
 }
 
 AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
@@ -51,6 +59,8 @@ void AirTrafficScreen::Reset()
     Explosions.clear();
     Sceneries.clear();
 
+    PickSurface();
+
     for (int n = 0; n < 2; n++)
     {
         SpawnRunway();
@@ -72,6 +82,7 @@ void AirTrafficScreen::LoadResources()
     boost::property_tree::ptree &DataAircrafts = Data.get_child("aircrafts");
     boost::property_tree::ptree &DataExplosions = Data.get_child("explosions");
     boost::property_tree::ptree &DataSceneries = Data.get_child("sceneries");
+    boost::property_tree::ptree &DataSurfaces = Data.get_child("surfaces");
 
     for (boost::property_tree::ptree::iterator it = DataRunways.begin(); it != DataRunways.end(); ++it)
     {
@@ -137,9 +148,16 @@ void AirTrafficScreen::LoadResources()
         SceneryTemplates.push_back(Temp);
     }
 
-    GrassTexture.LoadFromFile("res/Grass192_2.png");
-    GrassTexture.SetSmooth(false);
-    Grass.SetTexture(GrassTexture);
+    for (boost::property_tree::ptree::iterator it = DataSurfaces.begin(); it != DataSurfaces.end(); ++it)
+    {
+        boost::property_tree::ptree &Cur = it->second;
+        SurfaceTemplate Temp;
+        Temp.Name = Cur.get<string>("name");
+        Temp.Res = Cur.get<string>("res");
+        LoadTexture(Temp.Res);
+
+        SurfaceTemplates.push_back(Temp);
+    }
 }
 
 void AirTrafficScreen::HandleEvents()
@@ -335,15 +353,8 @@ void AirTrafficScreen::Step()
 
 void AirTrafficScreen::Draw()
 {
-    // grass
-    for (unsigned int y = 0; y < App.GetHeight(); y += GrassTexture.GetHeight())
-    {
-        for (unsigned int x = 0; x < App.GetWidth(); x += GrassTexture.GetWidth())
-        {
-            Grass.SetPosition(x, y);
-            App.Draw(Grass);
-        }
-    }
+    // surface
+    Background->Draw(App);
 
     // sceneries
     for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
@@ -698,4 +709,18 @@ void AirTrafficScreen::SpawnScenery()
     while (!Ready);
 
     Sceneries.push_back(New);
+}
+
+void AirTrafficScreen::PickSurface()
+{
+    if (Background)
+    {
+        delete Background;
+    }
+
+    vector<SurfaceTemplate>::iterator it = SurfaceTemplates.begin();
+    it += rand() % SurfaceTemplates.size();
+    SurfaceTemplate &Temp = *it;
+
+    Background = new Surface(Temp, Textures);
 }

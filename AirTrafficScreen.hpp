@@ -10,6 +10,7 @@
 #include "Runway.hpp"
 #include "Explosion.hpp"
 #include "Scenery.hpp"
+#include "Surface.hpp"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ class AirTrafficScreen : public Screen
 {
     public:
         AirTrafficScreen(sf::RenderWindow &NewApp);
+        ~AirTrafficScreen();
 
         virtual ScreenType Run(const ScreenType &OldScreen);
 
@@ -35,11 +37,14 @@ class AirTrafficScreen : public Screen
         vector<RunwayTemplate> RunwayTemplates;
         vector<ExplosionTemplate> ExplosionTemplates;
         vector<SceneryTemplate> SceneryTemplates;
+        vector<SurfaceTemplate> SurfaceTemplates;
 
         boost::ptr_list<Aircraft> Aircrafts;
         boost::ptr_list<Runway> Runways;
         boost::ptr_list<Explosion> Explosions;
         boost::ptr_list<Scenery> Sceneries;
+
+        Surface *Background;
 
         Aircraft *Pathing;
 
@@ -58,13 +63,11 @@ class AirTrafficScreen : public Screen
         void LoadTexture(const string& FileName);
         map<string, sf::Texture> Textures;
 
-        sf::Texture GrassTexture;
-        sf::Sprite Grass;
-
         void SpawnRunway();
         void SpawnAircraft();
         void SpawnExplosion(sf::Vector2f);
         void SpawnScenery();
+        void PickSurface();
 
         class
         {

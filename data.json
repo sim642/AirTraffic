@@ -104,5 +104,16 @@
             "frameh": 100,
             "framerate": 1.0
         }
+	],
+	"surfaces":
+	[
+        {
+            "name": "grass",
+            "res": "Grass192_2.png"
+        },
+        {
+            "name": "desert",
+            "res": "desert.png"
+        }
 	]
 }
