@@ -57,8 +57,12 @@
 		<Unit filename="Path.hpp" />
 		<Unit filename="Runway.cpp" />
 		<Unit filename="Runway.hpp" />
+		<Unit filename="Scenery.cpp" />
+		<Unit filename="Scenery.hpp" />
 		<Unit filename="Screen.cpp" />
 		<Unit filename="Screen.hpp" />
+		<Unit filename="Surface.cpp" />
+		<Unit filename="Surface.hpp" />
 		<Unit filename="data.json" />
 		<Unit filename="main.cpp" />
 		<Extensions>
