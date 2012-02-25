@@ -25,6 +25,7 @@ class AirTrafficScreen : public Screen
         void Reset();
     private:
         bool Running;
+        sf::Clock FrameTimer;
 
         void LoadResources();
         void HandleEvents();

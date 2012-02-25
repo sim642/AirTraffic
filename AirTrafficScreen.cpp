@@ -235,7 +235,7 @@ void AirTrafficScreen::HandleEvents()
 
 void AirTrafficScreen::Step()
 {
-    const float FT = App.GetFrameTime() / 1000.f;
+    const float FT = FrameTimer.Restart().AsSeconds();
     Spawner += FT;
     PlayTime += FT;
     WindTime += FT;
