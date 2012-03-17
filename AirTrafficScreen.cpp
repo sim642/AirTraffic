@@ -32,6 +32,7 @@ AirTrafficScreen::~AirTrafficScreen()
 
 AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
 {
+    FrameTimer.Restart();
     Running = true;
     while (Running)
     {
