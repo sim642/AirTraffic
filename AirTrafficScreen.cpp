@@ -18,6 +18,9 @@ AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), B
     DebugText.SetPosition(sf::Vector2f(10.f, 50.f));
     DebugText.SetColor(sf::Color::White);
 
+    AlarmSound.SetLoop(true);
+    AlarmSound.SetRelativeToListener(true);
+
     // not needed?
     //Reset();
 }
@@ -167,6 +170,9 @@ void AirTrafficScreen::LoadResources()
 
         SurfaceTemplates.push_back(Temp);
     }
+
+    LoadSound("alarm.wav");
+    AlarmSound.SetBuffer(Sounds["alarm.wav"]);
 }
 
 void AirTrafficScreen::HandleEvents()
@@ -429,6 +435,7 @@ void AirTrafficScreen::Draw()
         it->Draw(App);
     }
     // aircraft collision warnings
+    bool AlarmOn = false;
     for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
         // with explosion
@@ -441,6 +448,7 @@ void AirTrafficScreen::Draw()
 
             if (it2->Deadly() && Dist < MaxDist)
             {
+                AlarmOn = true;
                 float MinDist = (R1 + R2) / 2.5f;
                 App.Draw(Circle(Pos1,
                                            R1 - 3.f,
@@ -460,6 +468,7 @@ void AirTrafficScreen::Draw()
 
             if (it->OnRunway() == it2->OnRunway() && Dist < MaxDist)
             {
+                AlarmOn = true;
                 float MinDist = (R1 + R2) / 1.3f;
                 App.Draw(Circle(Pos1,
                                            R1 - 3.f,
@@ -473,6 +482,14 @@ void AirTrafficScreen::Draw()
                                            sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
             }
         }
+    }
+    if (AlarmSound.GetStatus() == sf::Sound::Stopped && AlarmOn)
+    {
+        AlarmSound.Play();
+    }
+    else if (AlarmSound.GetStatus() == sf::Sound::Playing && !AlarmOn)
+    {
+        AlarmSound.Stop();
     }
 
     // explosions

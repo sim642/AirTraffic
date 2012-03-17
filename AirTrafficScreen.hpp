@@ -47,6 +47,7 @@ class AirTrafficScreen : public Screen
         boost::ptr_list<Scenery> Sceneries;
 
         Surface *Background;
+        sf::Sound AlarmSound;
 
         Aircraft *Pathing;
 
