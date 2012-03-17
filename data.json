@@ -37,6 +37,9 @@
 		{
 			"name": "yellow",
 			"res": "Aircraft1.png",
+			"takeoffres": "jet_takeoff.wav",
+			"flyres": "jet_fly.wav",
+			"landingres": "jet_landing.wav",
 			"radius": 35,
 			"speed": 120,
 			"turn": 1.75,
@@ -45,6 +48,9 @@
 		{
 			"name": "red",
 			"res": "Aircraft2.png",
+			"takeoffres": "jet_takeoff.wav",
+			"flyres": "jet_fly.wav",
+			"landingres": "jet_landing.wav",
 			"radius": 35,
 			"speed": 120,
 			"turn": 1.75,
@@ -53,6 +59,9 @@
 		{
 			"name": "purple",
 			"res": "Aircraft3.png",
+			"takeoffres": "jet_takeoff.wav",
+			"flyres": "jet_fly.wav",
+			"landingres": "jet_landing.wav",
 			"radius": 35,
 			"speed": 120,
 			"turn": 1.75,
@@ -61,6 +70,9 @@
 		{
 			"name": "small",
 			"res": "Aircraft4.png",
+			"takeoffres": "jet_takeoff.wav",
+			"flyres": "jet_fly.wav",
+			"landingres": "jet_landing.wav",
 			"radius": 23,
 			"speed": 80,
 			"turn": 2,
@@ -69,6 +81,9 @@
 		{
             "name": "fat",
             "res": "Aircraft5.png",
+            "takeoffres": "jet_takeoff.wav",
+            "flyres": "jet_fly.wav",
+			"landingres": "jet_landing.wav",
             "radius": 40,
             "speed": 130,
             "turn": 1.25,
@@ -77,6 +92,9 @@
 		{
             "name": "heli",
             "res": "Heli1.png",
+            "takeoffres": "heli_takeoff.wav",
+            "flyres": "heli_fly.wav",
+            "landingres": "heli_landing.wav",
             "framew": 50,
             "frameh": 50,
             "framerate": 20,

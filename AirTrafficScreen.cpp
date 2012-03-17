@@ -74,6 +74,8 @@ void AirTrafficScreen::Reset()
 
 void AirTrafficScreen::LoadResources()
 {
+    Sounds.insert(make_pair("", sf::SoundBuffer())); // empty sound for special cases
+
     Font.LoadFromFile("res/Play-Regular.ttf");
 
     boost::property_tree::json_parser::read_json("data.json", Data);
@@ -107,6 +109,12 @@ void AirTrafficScreen::LoadResources()
         Temp.Name = Cur.get<string>("name");
         Temp.Res = Cur.get<string>("res");
         LoadTexture(Temp.Res);
+        Temp.TakeoffRes = Cur.get("takeoffres", "");
+        LoadSound(Temp.TakeoffRes);
+        Temp.FlyRes = Cur.get("flyres", "");
+        LoadSound(Temp.FlyRes);
+        Temp.LandingRes = Cur.get("landingres", "");
+        LoadSound(Temp.LandingRes);
         Temp.FrameSize = sf::Vector2i(Cur.get("framew", -1), Cur.get("frameh", -1));
         Temp.FrameRate = Cur.get("framerate", 0.f);
         Temp.Speed = Cur.get<float>("speed");
@@ -239,6 +247,10 @@ void AirTrafficScreen::Step()
     Spawner += FT;
     PlayTime += FT;
     WindTime += FT;
+
+    sf::Vector2i MousePos = sf::Mouse::GetPosition(App);
+    sf::Listener::SetPosition(MousePos.x, MousePos.y, 100.f);
+    //sf::Listener::SetDirection(0.f, 0.f, -100.f);
 
     float SpawnTime = wr::Map(PlayTime, 0.f, 120.f, 5.f, 0.5f);
     if (SpawnTime < 0.5f)
@@ -485,6 +497,16 @@ void AirTrafficScreen::LoadTexture(const string &FileName)
     Textures.insert(make_pair(FileName, Texture));
 }
 
+void AirTrafficScreen::LoadSound(const string &FileName)
+{
+    if (!FileName.empty())
+    {
+        sf::SoundBuffer Sound;
+        Sound.LoadFromFile("res/" + FileName);
+        Sounds.insert(make_pair(FileName, Sound));
+    }
+}
+
 void AirTrafficScreen::SpawnRunway()
 {
     vector<RunwayTemplate>::iterator it = RunwayTemplates.begin();
@@ -576,7 +598,7 @@ void AirTrafficScreen::SpawnAircraft()
             Ready = true;
             Angle = (*it2)->GetAngle();
             Pos = (*it2)->GetPos();
-            New = new Aircraft(Temp, Textures, Pos, Angle, *it2);
+            New = new Aircraft(Temp, Textures, Sounds, Pos, Angle, *it2);
 
             for (boost::ptr_list<Aircraft>::iterator it3 = Aircrafts.begin(); it3 != Aircrafts.end(); ++it3)
             {
@@ -630,7 +652,7 @@ void AirTrafficScreen::SpawnAircraft()
                 }
             }
 
-            New = new Aircraft(Temp, Textures, Pos, Angle);
+            New = new Aircraft(Temp, Textures, Sounds, Pos, Angle);
             for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
             {
                 if (it->Colliding(*New))

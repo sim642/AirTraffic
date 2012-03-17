@@ -2,6 +2,7 @@
 #define AIRCRAFT_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 #include <map>
 #include "AnimSprite.hpp"
@@ -15,6 +16,9 @@ struct AircraftTemplate
 {
     string Name;
     string Res;
+    string TakeoffRes;
+    string FlyRes;
+    string LandingRes;
     sf::Vector2i FrameSize;
     float FrameRate;
     float Radius;
@@ -48,7 +52,7 @@ class Aircraft
             OutRight
         };
 
-        Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot, Runway *NewRunway = 0);
+        Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway = 0);
         AircraftTemplate GetTemplate();
 
         sf::Vector2f GetPos();
@@ -88,6 +92,8 @@ class Aircraft
         Directions Direction;
         OutDirections OutDirection;
         sf::Vector2f LandPoint;
+
+        sf::Sound TakeoffSound, FlySound, LandingSound;
 };
 
 #endif // AIRCRAFT_H

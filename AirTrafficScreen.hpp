@@ -2,6 +2,7 @@
 #define AIRTRAFFICSCREEN_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 #include <boost/ptr_container/ptr_list.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -63,6 +64,8 @@ class AirTrafficScreen : public Screen
 
         void LoadTexture(const string& FileName);
         map<string, sf::Texture> Textures;
+        void LoadSound(const string& FileName);
+        map<string, sf::SoundBuffer> Sounds;
 
         void SpawnRunway();
         void SpawnAircraft();

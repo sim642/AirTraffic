@@ -34,6 +34,7 @@
 			<Add option="-DSFML_STATIC" />
 		</Compiler>
 		<Linker>
+			<Add option="-lsfml-audio-s" />
 			<Add option="-lsfml-graphics-s" />
 			<Add option="-lsfml-window-s" />
 			<Add option="-lsfml-system-s" />

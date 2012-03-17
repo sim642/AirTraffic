@@ -2,7 +2,7 @@
 #include "Math.hpp"
 #include <iostream>
 
-Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot, Runway *NewRunway) : Template(NewTemplate), Land(NewRunway), Turning(0.f)
+Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway) : Template(NewTemplate), Land(NewRunway), Turning(0.f)
 {
     const sf::Texture &Texture = Textures[Template.Res];
     if (Template.FrameSize.x >= 0 || Template.FrameSize.y >= 0)
@@ -18,12 +18,21 @@ Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textu
     Shape.SetPosition(Pos);
     Shape.SetRotation(Rot);
 
+    TakeoffSound.SetBuffer(Sounds[Template.TakeoffRes]);
+    TakeoffSound.SetAttenuation(0.05f);
+    FlySound.SetBuffer(Sounds[Template.FlyRes]);
+    FlySound.SetLoop(true);
+    FlySound.SetAttenuation(0.05f);
+    LandingSound.SetBuffer(Sounds[Template.LandingRes]);
+    LandingSound.SetAttenuation(0.05f);
+
     Radius = Template.Radius;
     Speed = Template.Speed;
     Turn = Template.Turn;
 
     if (NewRunway != 0)
     {
+        TakeoffSound.Play();
         State = TakingOff;
         Direction = Out;
         // random shouldn't be here
@@ -31,6 +40,7 @@ Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textu
     }
     else
     {
+        FlySound.Play();
         State = FlyingIn;
         Direction = In;
     }
@@ -117,6 +127,9 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
     bool Die = false;
 
     const sf::Vector2f &Me = Shape.GetPosition();
+    TakeoffSound.SetPosition(Me.x, Me.y, 0.f);
+    FlySound.SetPosition(Me.x, Me.y, 0.f);
+    LandingSound.SetPosition(Me.x, Me.y, 0.f);
 
     Shape.Update(FT);
 
@@ -206,6 +219,8 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
                 Land->OnMe(Me) &&
                 abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle)
             {
+                FlySound.Stop();
+                LandingSound.Play();
                 State = Landing;
                 LandPoint = Me;
             }
@@ -255,6 +270,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
 
             if (Dist > Land->GetLength())
             {
+                FlySound.Play();
                 State = FlyingFree;
                 Land = 0;
             }
