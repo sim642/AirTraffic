@@ -55,7 +55,9 @@ void AirTrafficScreen::Reset()
     Pathing = NULL;
     Score = 0;
 
-    Wind = sf::Vector2f(0.f, 0.f);
+    Wind = sf::Vector2f(0.f, 1.f);
+    Wind = Rotate(Wind, Random(0.f, 360.f));
+    Wind = Scale(Wind, Random(3.f, 10.f));
 
     Spawner = 0.f;
     PlayTime = 0.f;
@@ -280,17 +282,8 @@ void AirTrafficScreen::Step()
 
     if (WindTime > 0.5f) // may need changing
     {
-        if (Wind == sf::Vector2f(0.f, 0.f))
-        {
-            Wind = sf::Vector2f(5.f, 0.f);
-            Wind = Rotate(Wind, Random(0.f, 360.f));
-            Wind = Scale(Wind, Random(0.5f, 1.f));
-        }
-        else
-        {
-            Wind = Rotate(Wind, Random(-5.f, 5.f));
-            Wind = Scale(Wind, Random(0.95f, 1.05f));
-        }
+        Wind = Rotate(Wind, Random(-5.f, 5.f));
+        Wind *= Random(0.95f, 1.05f);
         WindTime = 0.f;
     }
 
@@ -511,7 +504,7 @@ void AirTrafficScreen::Draw()
     App.Draw(ScoreText);
     App.Draw(DebugText);
 
-    App.Draw(Line(sf::Vector2f(750.f, 50.f), sf::Vector2f(750.f, 50.f) + Wind * 25.f, 3.f, sf::Color::White));
+    App.Draw(Line(sf::Vector2f(750.f, 50.f), sf::Vector2f(750.f, 50.f) + Wind * 4.f, 3.f, sf::Color::White));
     App.Draw(Circle(sf::Vector2f(750.f, 50.f), 5.f, sf::Color::Red));
 
     App.Display();

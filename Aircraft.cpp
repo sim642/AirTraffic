@@ -259,14 +259,14 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
         }
         case Landing:
         {
-            sf::Vector2f Runway = LandPoint;
-            float Dist = Distance(Me, Runway);
+            sf::Vector2f Runway = Land->GetPos() + PolarToRect(sf::Vector2f(Land->GetLength() * 1.5f, Land->GetAngle()));
+            float Dist = Distance(Me, LandPoint);
 
             Speed = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, Template.Speed, 0.f);
 
             if (Land->GetTemplate().Directional)
             {
-                Shape.SetRotation(Land->GetAngle());
+                Shape.SetRotation(Angle(Me - Runway));
             }
 
             float Scale = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, 1.f, 0.65f);
@@ -281,14 +281,14 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
         }
         case TakingOff:
         {
-            sf::Vector2f Runway = Land->GetPos();
-            float Dist = Distance(Me, Runway);
+            sf::Vector2f Runway = Land->GetPos() + PolarToRect(sf::Vector2f(Land->GetLength() * 1.5f, Land->GetAngle()));
+            float Dist = Distance(Me, Land->GetPos());
 
             Speed = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, 10.f, Template.Speed);
 
             if (Land->GetTemplate().Directional)
             {
-                Shape.SetRotation(Land->GetAngle());
+                Shape.SetRotation(Angle(Me - Runway));
             }
 
             float Scale = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, 0.65f, 1.f);

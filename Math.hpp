@@ -90,5 +90,11 @@ inline sf::Vector2f Rotate(sf::Vector2f V, float Deg)
     return New;
 }
 
+inline sf::Vector2f PolarToRect(sf::Vector2f Polar)
+{
+    sf::Vector2f Rect(Polar.x, 0.f);
+    return Rotate(Rect, Polar.y);
+}
+
 
 #endif // MATH_H
