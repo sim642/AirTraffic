@@ -213,11 +213,11 @@ void AirTrafficScreen::HandleEvents()
         }
         else if (Event.Type == sf::Event::MouseButtonReleased &&
                  Event.MouseButton.Button == sf::Mouse::Left &&
-                 Pathing)
+                 Pathing != NULL)
         {
-            Pathing = 0;
+            Pathing = NULL;
         }
-        else if (Event.Type == sf::Event::MouseMoved && Pathing)
+        else if (Event.Type == sf::Event::MouseMoved && Pathing != NULL)
         {
             Path &P = Pathing->GetPath();
             if (P.TryAddPoint(MousePos))
@@ -316,7 +316,7 @@ void AirTrafficScreen::Step()
 
             if (Pathing == &*it || Pathing == &*it2) // take care if were drawing a path
             {
-                Pathing = 0;
+                Pathing = NULL;
             }
 
             Aircrafts.erase(it2);
@@ -330,7 +330,7 @@ void AirTrafficScreen::Step()
 
             if (Pathing == &*it)
             {
-                Pathing = 0;
+                Pathing = NULL;
             }
 
             it = Aircrafts.erase(it);
@@ -340,7 +340,7 @@ void AirTrafficScreen::Step()
             Score += 1000;
             if (Pathing == &*it) // take care if were drawing a path
             {
-                Pathing = 0;
+                Pathing = NULL;
             }
 
             it = Aircrafts.erase(it);
@@ -391,7 +391,7 @@ void AirTrafficScreen::Draw()
     // landing areas
     for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
     {
-        if (Pathing)
+        if (Pathing != NULL)
         {
             if (Pathing->GetDirection() == Aircraft::In)
             {
