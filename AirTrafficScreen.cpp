@@ -187,8 +187,12 @@ void AirTrafficScreen::HandleEvents()
     sf::Event Event;
     while (App.PollEvent(Event))
     {
-        if (Event.Type == sf::Event::Closed || (Event.Type == sf::Event::KeyPressed && Event.Key.Code == sf::Keyboard::Escape))
+        if (Event.Type == sf::Event::Closed ||
+            (Event.Type == sf::Event::KeyPressed && Event.Key.Code == sf::Keyboard::Escape) ||
+            Event.Type == sf::Event::LostFocus)
+        {
             Running = false;
+        }
 
         if (Event.Type == sf::Event::MouseButtonPressed &&
             Event.MouseButton.Button == sf::Mouse::Left)
