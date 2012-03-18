@@ -9,7 +9,7 @@ Explosion::Explosion(ExplosionTemplate NewTemplate, map<string, sf::Texture> &Te
     Shape.SetPosition(Pos);
 
     Sound.SetBuffer(Sounds[Template.SoundRes]);
-    Sound.SetAttenuation(0.05f);
+    Sound.SetAttenuation(0.01f);
     Sound.SetPosition(Pos.x, Pos.y, 0.f);
     Sound.Play();
 

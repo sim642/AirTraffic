@@ -19,12 +19,12 @@ Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textu
     Shape.SetRotation(Rot);
 
     TakeoffSound.SetBuffer(Sounds[Template.TakeoffRes]);
-    TakeoffSound.SetAttenuation(0.05f);
+    TakeoffSound.SetAttenuation(0.01f);
     FlySound.SetBuffer(Sounds[Template.FlyRes]);
     FlySound.SetLoop(true);
-    FlySound.SetAttenuation(0.05f);
+    FlySound.SetAttenuation(0.01f);
     LandingSound.SetBuffer(Sounds[Template.LandingRes]);
-    LandingSound.SetAttenuation(0.05f);
+    LandingSound.SetAttenuation(0.01f);
 
     Radius = Template.Radius;
     Speed = Template.Speed;
