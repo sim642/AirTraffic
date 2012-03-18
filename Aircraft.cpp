@@ -122,6 +122,33 @@ void Aircraft::SetRunway(Runway *NewLand)
     Land = NewLand;
 }
 
+void Aircraft::Pause(bool Status)
+{
+    if (Status)
+    {
+        TakeoffSound.Pause();
+        FlySound.Pause();
+        LandingSound.Pause();
+    }
+    else
+    {
+        if (TakeoffSound.GetStatus() == sf::Sound::Paused)
+        {
+            TakeoffSound.Play();
+        }
+
+        if (FlySound.GetStatus() == sf::Sound::Paused)
+        {
+            FlySound.Play();
+        }
+
+        if (LandingSound.GetStatus() == sf::Sound::Paused)
+        {
+            LandingSound.Play();
+        }
+    }
+}
+
 bool Aircraft::Step(float FT, sf::Vector2f Wind)
 {
     bool Die = false;

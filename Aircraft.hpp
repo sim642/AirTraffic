@@ -73,6 +73,8 @@ class Aircraft
 
         void SetRunway(Runway *NewLand);
 
+        void Pause(bool Status);
+
         bool Step(float FT, sf::Vector2f Wind);
         void Draw(sf::RenderWindow &App);
     private:

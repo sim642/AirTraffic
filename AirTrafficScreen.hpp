@@ -33,6 +33,8 @@ class AirTrafficScreen : public Screen
         void Step();
         void Draw();
 
+        void Pause(bool Status);
+
         boost::property_tree::ptree Data;
 
         vector<AircraftTemplate> AircraftTemplates;

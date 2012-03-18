@@ -29,6 +29,8 @@ class Explosion
 
         bool Deadly();
 
+        void Pause(bool Status);
+
         bool Step(float FT);
         void Draw(sf::RenderWindow &App);
     protected:

@@ -37,6 +37,21 @@ bool Explosion::Deadly()
     return (Time / TTL) < 0.60f;
 }
 
+void Explosion::Pause(bool Status)
+{
+    if (Status)
+    {
+        Sound.Pause();
+    }
+    else
+    {
+        if (Sound.GetStatus() == sf::Sound::Paused)
+        {
+            Sound.Play();
+        }
+    }
+}
+
 bool Explosion::Step(float FT)
 {
     Time += FT;

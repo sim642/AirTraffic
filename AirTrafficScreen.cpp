@@ -35,6 +35,8 @@ AirTrafficScreen::~AirTrafficScreen()
 
 AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
 {
+    Pause(false);
+
     FrameTimer.Restart();
     Running = true;
     while (Running)
@@ -44,6 +46,7 @@ AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
         Draw();
     }
 
+    Pause(true);
     return MenuType;
 }
 
@@ -508,6 +511,31 @@ void AirTrafficScreen::Draw()
     App.Draw(Circle(sf::Vector2f(750.f, 50.f), 5.f, sf::Color::Red));
 
     App.Display();
+}
+
+void AirTrafficScreen::Pause(bool Status)
+{
+    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    {
+        it->Pause(Status);
+    }
+
+    for (boost::ptr_list<Explosion>::iterator it = Explosions.begin(); it != Explosions.end(); ++it)
+    {
+        it->Pause(Status);
+    }
+
+    if (Status)
+    {
+        AlarmSound.Pause();
+    }
+    else
+    {
+        if (AlarmSound.GetStatus() == sf::Sound::Paused)
+        {
+            AlarmSound.Play();
+        }
+    }
 }
 
 void AirTrafficScreen::LoadTexture(const string &FileName)
