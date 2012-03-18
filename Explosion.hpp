@@ -2,6 +2,7 @@
 #define EXPLOSION_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 #include <map>
 
@@ -11,6 +12,7 @@ struct ExplosionTemplate
 {
     string Name;
     string Res;
+    string SoundRes;
     float Radius;
     float Time;
 };
@@ -19,7 +21,7 @@ class Explosion
 {
     public:
         friend class Aircraft;
-        Explosion(ExplosionTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos);
+        Explosion(ExplosionTemplate NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos);
         ExplosionTemplate GetTemplate();
 
         sf::Vector2f GetPos();
@@ -37,6 +39,8 @@ class Explosion
 
         float TTL, Time;
         float Radius;
+
+        sf::Sound Sound;
 };
 
 #endif // EXPLOSION_H

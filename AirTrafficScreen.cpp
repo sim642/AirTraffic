@@ -141,6 +141,8 @@ void AirTrafficScreen::LoadResources()
         Temp.Name = Cur.get<string>("name");
         Temp.Res = Cur.get<string>("res");
         LoadTexture(Temp.Res);
+        Temp.SoundRes = Cur.get("soundres", "");
+        LoadSound(Temp.SoundRes);
         Temp.Radius = Cur.get<float>("radius");
         Temp.Time = Cur.get<float>("time");
 
@@ -699,7 +701,7 @@ void AirTrafficScreen::SpawnExplosion(sf::Vector2f Pos)
     vector<ExplosionTemplate>::iterator it = ExplosionTemplates.begin();
     it += rand() % ExplosionTemplates.size();
     ExplosionTemplate &Temp = *it;
-    Explosions.push_back(new Explosion(Temp, Textures, Pos));
+    Explosions.push_back(new Explosion(Temp, Textures, Sounds, Pos));
 }
 
 void AirTrafficScreen::SpawnScenery()

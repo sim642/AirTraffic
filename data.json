@@ -109,6 +109,7 @@
         {
             "name": "exp1",
             "res": "Exp2.png",
+            "soundres": "exp.wav",
             "radius": 128,
             "time": 3.0
         }

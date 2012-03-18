@@ -1,12 +1,17 @@
 #include "Explosion.hpp"
 #include "Math.hpp"
 
-Explosion::Explosion(ExplosionTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos) : Template(NewTemplate), Time(0.f)
+Explosion::Explosion(ExplosionTemplate NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos) : Template(NewTemplate), Time(0.f)
 {
     const sf::Texture &Texture = Textures[Template.Res];
     Shape.SetTexture(Texture);
     Shape.SetOrigin(Texture.GetWidth() / 2, Texture.GetHeight() / 2);
     Shape.SetPosition(Pos);
+
+    Sound.SetBuffer(Sounds[Template.SoundRes]);
+    Sound.SetAttenuation(0.05f);
+    Sound.SetPosition(Pos.x, Pos.y, 0.f);
+    Sound.Play();
 
     Radius = Template.Radius;
     TTL = Template.Time;
