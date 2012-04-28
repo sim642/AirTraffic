@@ -34,6 +34,7 @@
 			<Add option="-DSFML_STATIC" />
 		</Compiler>
 		<Linker>
+			<Add option="-lsfml-network-s" />
 			<Add option="-lsfml-audio-s" />
 			<Add option="-lsfml-graphics-s" />
 			<Add option="-lsfml-window-s" />
@@ -54,6 +55,8 @@
 		<Unit filename="Math.hpp" />
 		<Unit filename="MenuScreen.cpp" />
 		<Unit filename="MenuScreen.hpp" />
+		<Unit filename="Networker.cpp" />
+		<Unit filename="Networker.hpp" />
 		<Unit filename="Path.cpp" />
 		<Unit filename="Path.hpp" />
 		<Unit filename="Runway.cpp" />

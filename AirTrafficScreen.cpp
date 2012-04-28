@@ -4,6 +4,9 @@
 #include "Math.hpp"
 #include "GraphUtil.hpp"
 
+#include <iostream>
+using namespace std;
+
 AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), Background(NULL)
 {
     LoadResources();
@@ -42,6 +45,8 @@ AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
     while (Running)
     {
         HandleEvents();
+        if (Net.IsActive())
+            HandleNet();
         Step();
         Draw();
     }
@@ -182,6 +187,57 @@ void AirTrafficScreen::LoadResources()
     AlarmSound.SetBuffer(Sounds["alarm.wav"]);
 }
 
+void AirTrafficScreen::SetupNet()
+{
+    string Input;
+    cout << "S/C? ";
+    cin >> Input;
+    if (Input == "S" || Input == "s")
+    {
+        Net.SetupServer();
+    }
+    else if (Input == "C" || Input == "c")
+    {
+        cout << "IP? ";
+        cin >> Input;
+        Net.SetupClient(Input);
+    }
+    else
+        throw "shit";
+}
+
+void AirTrafficScreen::HandleNet()
+{
+    sf::Packet Packet;
+    if (Net.Receive(Packet))
+    {
+        cout << "Received!" << endl;
+        sf::Uint32 SourceId;
+        PacketType Type;
+        Packet >> SourceId >> Type;
+        if (Type == PacketTypes::SurfaceUpdate)
+        {
+            string Name;
+            Packet >> Name;
+
+            vector<SurfaceTemplate>::iterator it = SurfaceTemplates.begin();
+            for (; it != SurfaceTemplates.end(); ++it)
+            {
+                if (it->Name == Name)
+                    break;
+            }
+
+            if (it != SurfaceTemplates.end())
+            {
+                if (Background)
+                    delete Background;
+
+                Background = new Surface(*it, Textures);
+            }
+        }
+    }
+}
+
 void AirTrafficScreen::HandleEvents()
 {
     const sf::Vector2f MousePos(sf::Mouse::GetPosition(App).x, sf::Mouse::GetPosition(App).y);
@@ -190,8 +246,8 @@ void AirTrafficScreen::HandleEvents()
     while (App.PollEvent(Event))
     {
         if (Event.Type == sf::Event::Closed ||
-            (Event.Type == sf::Event::KeyPressed && Event.Key.Code == sf::Keyboard::Escape) ||
-            Event.Type == sf::Event::LostFocus)
+            (Event.Type == sf::Event::KeyPressed && Event.Key.Code == sf::Keyboard::Escape) /*||
+            Event.Type == sf::Event::LostFocus*/)
         {
             Running = false;
         }
@@ -324,7 +380,7 @@ void AirTrafficScreen::Step()
         }
         else if (it3 != Explosions.end() && it3->Deadly())
         {
-            sf::Vector2f Pos1 = it->GetPos(), Pos2 = it3->GetPos();
+            sf::Vector2f Pos1 = it->GetPos()/*, Pos2 = it3->GetPos()*/;
             SpawnExplosion(Pos1);
             Score -= 5000;
 
@@ -790,4 +846,11 @@ void AirTrafficScreen::PickSurface()
     SurfaceTemplate &Temp = *it;
 
     Background = new Surface(Temp, Textures);
+
+    if (Net.IsActive() && Net.IsServer())
+    {
+        sf::Packet Packet;
+        Packet << 0 << PacketTypes::SurfaceUpdate << Temp.Name;
+        Net.SendTcp(Packet);
+    }
 }

@@ -27,6 +27,7 @@ MenuScreen::MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATS) : Scr
     Cursor.SetColor(SelectionColor);
 
     Items.push_back("New game");
+    Items.push_back("Net");
     Items.push_back("Exit");
 }
 
@@ -74,6 +75,10 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                             ATS->Reset();
                             return AirTrafficType;
                         }
+                        else if (Selected == "Net")
+                        {
+                            ATS->SetupNet();
+                        }
                         else if (Selected == "Exit")
                         {
                             return ExitType;
@@ -105,6 +110,8 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
             }
         }
 
+        ATS->HandleNet();
+
         App.Clear();
 
         if (Paused)
@@ -125,7 +132,7 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
         App.Draw(FadeSpr);
 
         App.Draw(TitleText);
-        for (int i = 0; i < Items.size(); i++)
+        for (unsigned int i = 0; i < Items.size(); i++)
         {
             ItemText.SetPosition(100.f, 250.f + i * 70.f);
             ItemText.SetString(Items[i]);

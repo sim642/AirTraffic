@@ -12,6 +12,7 @@
 #include "Explosion.hpp"
 #include "Scenery.hpp"
 #include "Surface.hpp"
+#include "Networker.hpp"
 
 using namespace std;
 
@@ -24,6 +25,8 @@ class AirTrafficScreen : public Screen
         virtual ScreenType Run(const ScreenType &OldScreen);
 
         void Reset();
+        void SetupNet();
+        void HandleNet();
     private:
         bool Running;
         sf::Clock FrameTimer;
@@ -34,6 +37,9 @@ class AirTrafficScreen : public Screen
         void Draw();
 
         void Pause(bool Status);
+
+        Networker Net;
+        //void HandleNet();
 
         boost::property_tree::ptree Data;
 
