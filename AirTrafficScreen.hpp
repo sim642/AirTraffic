@@ -25,7 +25,10 @@ class AirTrafficScreen : public Screen
         virtual ScreenType Run(const ScreenType &OldScreen);
 
         void Reset();
-        void SetupNet();
+        void SetupClient(const string &Host);
+        void SetupServer();
+        void KillNet();
+
         void HandleNet();
     private:
         bool Running;

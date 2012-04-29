@@ -26,9 +26,10 @@ MenuScreen::MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATS) : Scr
     Cursor.SetString(">");
     Cursor.SetColor(SelectionColor);
 
-    Items.push_back("New game");
-    Items.push_back("Net");
-    Items.push_back("Exit");
+    AddItemEnd("New game");
+    AddItemEnd("Join game");
+    AddItemEnd("Host server");
+    AddItemEnd("Exit");
 }
 
 MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
@@ -36,9 +37,9 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
     ItemSelected = 0;
     bool Paused = OldScreen == AirTrafficType;
 
-    if (Paused && Items.front() != "Continue")
+    if (Paused && !HasItem("Continue"))
     {
-        Items.insert(Items.begin(), "Continue");
+        AddItemStart("Continue");
     }
 
     sf::Texture PauseTex;
@@ -75,9 +76,33 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                             ATS->Reset();
                             return AirTrafficType;
                         }
-                        else if (Selected == "Net")
+                        else if (Selected == "Join game")
                         {
-                            ATS->SetupNet();
+                            AddItemBefore("Disconnect", "Join game");
+                            RemoveItem("Join game");
+                            RemoveItem("Host server");
+                            RemoveItem("New game");
+                            ATS->SetupClient("localhost");
+                            return AirTrafficType;
+                        }
+                        else if (Selected == "Host server")
+                        {
+                            AddItemBefore("Disconnect", "Join game");
+                            RemoveItem("Join game");
+                            RemoveItem("Host server");
+                            ATS->SetupServer();
+                            return AirTrafficType;
+                        }
+                        else if (Selected == "Disconnect")
+                        {
+                            if (!HasItem("New game"))
+                                AddItemAfter("New game", "Continue");
+                            AddItemAfter("Join game", "Disconnect");
+                            AddItemAfter("Host server", "Join game");
+                            RemoveItem("Disconnect");
+                            RemoveItem("Continue");
+                            ItemSelected = 0;
+                            ATS->KillNet();
                         }
                         else if (Selected == "Exit")
                         {
@@ -145,4 +170,47 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
 
         App.Display();
     }
+}
+
+void MenuScreen::AddItemStart(const string &Item)
+{
+    Items.insert(Items.begin(), Item);
+}
+
+void MenuScreen::AddItemEnd(const string &Item)
+{
+    Items.push_back(Item);
+}
+
+void MenuScreen::AddItemBefore(const string &Item, const string &Before)
+{
+    vector<string>::iterator it = find(Items.begin(), Items.end(), Before);
+    if (it == Items.end())
+        return;
+
+    Items.insert(it, Item);
+}
+
+void MenuScreen::AddItemAfter(const string &Item, const string &After)
+{
+    vector<string>::iterator it = find(Items.begin(), Items.end(), After);
+    if (it == Items.end())
+        return;
+
+    Items.insert(it + 1, Item);
+}
+
+void MenuScreen::RemoveItem(const string &Item)
+{
+    vector<string>::iterator it = find(Items.begin(), Items.end(), Item);
+    if (it == Items.end())
+        return;
+
+    Items.erase(it);
+}
+
+bool MenuScreen::HasItem(const string &Item)
+{
+    vector<string>::iterator it = find(Items.begin(), Items.end(), Item);
+    return it != Items.end();
 }

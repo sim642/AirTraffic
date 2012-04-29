@@ -15,6 +15,13 @@ class MenuScreen : public Screen
         virtual ScreenType Run(const ScreenType &OldScreen);
 
     private:
+        void AddItemStart(const string &Item);
+        void AddItemEnd(const string &Item);
+        void AddItemBefore(const string &Item, const string &Before);
+        void AddItemAfter(const string &Item, const string &After);
+        void RemoveItem(const string &Item);
+        bool HasItem(const string &Item);
+
         AirTrafficScreen *ATS;
 
         sf::Texture GrassTex;

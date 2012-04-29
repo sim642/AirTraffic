@@ -205,23 +205,21 @@ void AirTrafficScreen::LoadResources()
     AlarmSound.SetBuffer(Sounds["alarm.wav"]);
 }
 
-void AirTrafficScreen::SetupNet()
+void AirTrafficScreen::SetupClient(const string &Host)
 {
-    string Input;
-    cout << "S/C? ";
-    cin >> Input;
-    if (Input == "S" || Input == "s")
-    {
-        Net.SetupServer();
-    }
-    else if (Input == "C" || Input == "c")
-    {
-        cout << "IP? ";
-        cin >> Input;
-        Net.SetupClient(Input);
-    }
-    else
-        throw "shit";
+    Net.SetupClient(Host);
+    Reset(); // not fully needed
+}
+
+void AirTrafficScreen::SetupServer()
+{
+    Net.SetupServer();
+    Reset();
+}
+
+void AirTrafficScreen::KillNet()
+{
+    Net.Kill();
 }
 
 void AirTrafficScreen::HandleNet()
