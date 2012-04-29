@@ -66,6 +66,12 @@ void Networker::SendTcp(sf::Packet &Packet)
 
 void Networker::SendTcp(sf::Packet &Packet, sf::Uint32 Id)
 {
+    if (Id == 0)
+    {
+        SendTcp(Packet);
+        return;
+    }
+
     for (vector<ClientPair*>::iterator it = ServerConns.begin(); it != ServerConns.end(); ++it)
     {
         ClientPair &Pair = **it;

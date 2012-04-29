@@ -80,15 +80,6 @@ void AirTrafficScreen::Reset()
         SpawnRunway();
     }
 
-    if (Net.IsActive() && Net.IsServer())
-    {
-        sf::Packet Packet;
-        Packet << 0 << PacketTypes::RunwayUpdate;
-        for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
-            Packet << it->GetTemplate().Name << it->GetPos().x << it->GetPos().y << it->GetAngle();
-        Net.SendTcp(Packet);
-    }
-
     for (int n = 0; n < 2; n++)
     {
         SpawnScenery();
@@ -96,11 +87,7 @@ void AirTrafficScreen::Reset()
 
     if (Net.IsActive() && Net.IsServer())
     {
-        sf::Packet Packet;
-        Packet << 0 << PacketTypes::SceneryUpdate;
-        for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
-            Packet << it->GetTemplate().Name << it->GetPos().x << it->GetPos().y << it->GetAngle();
-        Net.SendTcp(Packet);
+        SendGameData();
     }
 }
 
@@ -232,6 +219,10 @@ void AirTrafficScreen::HandleNet()
             sf::Uint32 Id;
             Packet >> Id;
             cout << "Connected (" << Id << ")" << endl;
+            if (Net.IsServer())
+            {
+                SendGameData(Id);
+            }
             break;
         }
         case Networker::Disconnected:
@@ -323,6 +314,27 @@ void AirTrafficScreen::HandleNet()
         {
             break;
         }
+    }
+}
+
+void AirTrafficScreen::SendGameData(const sf::Uint32 Id)
+{
+    Net.SendTcp(sf::Packet() << 0 << PacketTypes::SurfaceUpdate << Background->GetTemplate().Name); // surface
+
+    { // Runways
+        sf::Packet Packet;
+        Packet << 0 << PacketTypes::RunwayUpdate;
+        for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+            Packet << it->GetTemplate().Name << it->GetPos().x << it->GetPos().y << it->GetAngle();
+        Net.SendTcp(Packet);
+    }
+
+    { // Scenery
+        sf::Packet Packet;
+        Packet << 0 << PacketTypes::SceneryUpdate;
+        for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
+            Packet << it->GetTemplate().Name << it->GetPos().x << it->GetPos().y << it->GetAngle();
+        Net.SendTcp(Packet);
     }
 }
 
@@ -934,9 +946,4 @@ void AirTrafficScreen::PickSurface()
     SurfaceTemplate &Temp = *it;
 
     Background = new Surface(Temp, Textures);
-
-    if (Net.IsActive() && Net.IsServer())
-    {
-        Net.SendTcp(sf::Packet() << 0 << PacketTypes::SurfaceUpdate << Temp.Name);
-    }
 }

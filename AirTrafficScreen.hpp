@@ -43,6 +43,7 @@ class AirTrafficScreen : public Screen
 
         Networker Net;
         //void HandleNet();
+        void SendGameData(const sf::Uint32 Id = 0);
 
         boost::property_tree::ptree Data;
 
