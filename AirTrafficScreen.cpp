@@ -80,9 +80,27 @@ void AirTrafficScreen::Reset()
         SpawnRunway();
     }
 
+    if (Net.IsActive() && Net.IsServer())
+    {
+        sf::Packet Packet;
+        Packet << 0 << PacketTypes::RunwayUpdate;
+        for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+            Packet << it->GetTemplate().Name << it->GetPos().x << it->GetPos().y << it->GetAngle();
+        Net.SendTcp(Packet);
+    }
+
     for (int n = 0; n < 2; n++)
     {
         SpawnScenery();
+    }
+
+    if (Net.IsActive() && Net.IsServer())
+    {
+        sf::Packet Packet;
+        Packet << 0 << PacketTypes::SceneryUpdate;
+        for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
+            Packet << it->GetTemplate().Name << it->GetPos().x << it->GetPos().y << it->GetAngle();
+        Net.SendTcp(Packet);
     }
 }
 
@@ -235,15 +253,15 @@ void AirTrafficScreen::HandleNet()
             {
                 case PacketTypes::SurfaceUpdate:
                 {
+                    if (Net.IsServer())
+                        break;
                     string Name;
                     Packet >> Name;
 
                     vector<SurfaceTemplate>::iterator it = SurfaceTemplates.begin();
                     for (; it != SurfaceTemplates.end(); ++it)
-                    {
                         if (it->Name == Name)
                             break;
-                    }
 
                     if (it != SurfaceTemplates.end())
                     {
@@ -251,6 +269,48 @@ void AirTrafficScreen::HandleNet()
                             delete Background;
 
                         Background = new Surface(*it, Textures);
+                    }
+                    break;
+                }
+                case PacketTypes::SceneryUpdate:
+                {
+                    if (Net.IsServer())
+                        break;
+                    Sceneries.clear();
+                    while (!Packet.EndOfPacket())
+                    {
+                        string Name;
+                        float X, Y, Angle;
+                        Packet >> Name >> X >> Y >> Angle;
+
+                        vector<SceneryTemplate>::iterator it = SceneryTemplates.begin();
+                        for (;it != SceneryTemplates.end(); ++it)
+                            if (it->Name == Name)
+                                break;
+
+                        if (it != SceneryTemplates.end())
+                            Sceneries.push_back(new Scenery(*it, Textures, sf::Vector2f(X, Y), Angle));
+                    }
+                    break;
+                }
+                case PacketTypes::RunwayUpdate:
+                {
+                    if (Net.IsServer())
+                        break;
+                    Runways.clear();
+                    while (!Packet.EndOfPacket())
+                    {
+                        string Name;
+                        float X, Y, Angle;
+                        Packet >> Name >> X >> Y >> Angle;
+
+                        vector<RunwayTemplate>::iterator it = RunwayTemplates.begin();
+                        for (; it != RunwayTemplates.end(); ++it)
+                            if (it->Name == Name)
+                                break;
+
+                        if (it != RunwayTemplates.end())
+                            Runways.push_back(new Runway(*it, Textures, sf::Vector2f(X, Y), Angle));
                     }
                     break;
                 }
@@ -879,8 +939,6 @@ void AirTrafficScreen::PickSurface()
 
     if (Net.IsActive() && Net.IsServer())
     {
-        sf::Packet Packet;
-        Packet << 0 << PacketTypes::SurfaceUpdate << Temp.Name;
-        Net.SendTcp(Packet);
+        Net.SendTcp(sf::Packet() << 0 << PacketTypes::SurfaceUpdate << Temp.Name);
     }
 }

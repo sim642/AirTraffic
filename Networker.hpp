@@ -11,7 +11,9 @@ namespace PacketTypes
     enum PacketType
     {
         ConnectionResponse,
-        SurfaceUpdate
+        SurfaceUpdate,
+        SceneryUpdate,
+        RunwayUpdate
     };
 }
 typedef PacketTypes::PacketType PacketType;
@@ -20,13 +22,17 @@ sf::Packet& operator>> (sf::Packet &Packet, PacketType &Type);
 sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
 
 /** General packets
-sf::Uint32 SourceId, PacketType Type
+    sf::Uint32 SourceId, PacketType Type
 **/
 /** Packets
---ConnectResponse--
-sf::Uint32 Id, sf::Uint32 UdpPort
---SurfaceUpdate--
-string Name
+--0. ConnectResponse--
+    sf::Uint32 Id, sf::Uint32 UdpPort
+--1. SurfaceUpdate--
+    string Name
+--2. SceneryUpdate--
+    [string Name, float X, float Y, float Angle]
+--3. RunwayUpdate--
+    [string Name, float X, float Y, float Angle]
 **/
 
 class Networker
