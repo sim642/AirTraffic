@@ -34,6 +34,14 @@ class Networker
     public:
         static const unsigned int Port = 4444;
 
+        enum ReceiveStatus
+        {
+            Connected,
+            Disconnected,
+            NewPacket,
+            NoPacket
+        };
+
         Networker();
         ~Networker();
 
@@ -44,7 +52,7 @@ class Networker
         void SendTcp(sf::Packet &Packet);
         void SendTcp(sf::Packet &Packet, sf::Uint32 Id);
 
-        bool Receive(sf::Packet &Packet);
+        ReceiveStatus Receive(sf::Packet &Packet);
 
         bool IsActive();
         bool IsServer();

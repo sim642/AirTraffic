@@ -209,31 +209,61 @@ void AirTrafficScreen::SetupNet()
 void AirTrafficScreen::HandleNet()
 {
     sf::Packet Packet;
-    if (Net.Receive(Packet))
+    switch (Net.Receive(Packet))
     {
-        cout << "Received!" << endl;
-        sf::Uint32 SourceId;
-        PacketType Type;
-        Packet >> SourceId >> Type;
-        if (Type == PacketTypes::SurfaceUpdate)
+        case Networker::Connected:
         {
-            string Name;
-            Packet >> Name;
-
-            vector<SurfaceTemplate>::iterator it = SurfaceTemplates.begin();
-            for (; it != SurfaceTemplates.end(); ++it)
+            sf::Uint32 Id;
+            Packet >> Id;
+            cout << "Connected (" << Id << ")" << endl;
+            break;
+        }
+        case Networker::Disconnected:
+        {
+            sf::Uint32 Id;
+            Packet >> Id;
+            cout << "Disconnected (" << Id << ")" << endl;
+            break;
+        }
+        case Networker::NewPacket:
+        {
+            sf::Uint32 SourceId;
+            PacketType Type;
+            Packet >> SourceId >> Type;
+            cout << "Packet (Id " << SourceId << " Type " << Type << ")" << endl;
+            switch (Type)
             {
-                if (it->Name == Name)
+                case PacketTypes::SurfaceUpdate:
+                {
+                    string Name;
+                    Packet >> Name;
+
+                    vector<SurfaceTemplate>::iterator it = SurfaceTemplates.begin();
+                    for (; it != SurfaceTemplates.end(); ++it)
+                    {
+                        if (it->Name == Name)
+                            break;
+                    }
+
+                    if (it != SurfaceTemplates.end())
+                    {
+                        if (Background)
+                            delete Background;
+
+                        Background = new Surface(*it, Textures);
+                    }
                     break;
+                }
+                default:
+                {
+                    break;
+                }
             }
-
-            if (it != SurfaceTemplates.end())
-            {
-                if (Background)
-                    delete Background;
-
-                Background = new Surface(*it, Textures);
-            }
+            break;
+        }
+        case Networker::NoPacket:
+        {
+            break;
         }
     }
 }

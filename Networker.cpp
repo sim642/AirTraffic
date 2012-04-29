@@ -6,13 +6,11 @@ using namespace std;
 Networker::Networker() : Active(false)
 {
     CleanConns();
-    cout << "Networker constructed" << endl;
 }
 
 Networker::~Networker()
 {
     CleanConns();
-    cout << "Networker destoried" << endl;
 }
 
 void Networker::SetupClient(const sf::IpAddress &NewIp)
@@ -26,7 +24,6 @@ void Networker::SetupClient(const sf::IpAddress &NewIp)
 
     Selector.Add(ClientSocket.Tcp);
     //Selector.Add(Udp);
-    cout << "Client set up" << endl;
 }
 
 void Networker::SetupServer()
@@ -40,14 +37,12 @@ void Networker::SetupServer()
 
     Selector.Add(ServerTcp);
     Selector.Add(Udp);
-    cout << "Server set up" << endl;
 }
 
 void Networker::Kill()
 {
     Active = false;
     CleanConns();
-    cout << "Networker killed" << endl;
 }
 
 void Networker::SendTcp(sf::Packet &Packet)
@@ -67,8 +62,6 @@ void Networker::SendTcp(sf::Packet &Packet)
     }
     else
         ClientSocket.Tcp.Send(Packet);
-
-    cout << "Sent all" << endl;
 }
 
 void Networker::SendTcp(sf::Packet &Packet, sf::Uint32 Id)
@@ -82,19 +75,17 @@ void Networker::SendTcp(sf::Packet &Packet, sf::Uint32 Id)
             break;
         }
     }
-    cout << "Sent one" << endl;
 }
 
-bool Networker::Receive(sf::Packet &Packet)
+Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
 {
+    Packet.Clear();
     if (Active && Selector.Wait(sf::Milliseconds(1)))
     {
-        cout << "Got" << endl;
         if (Server)
         {
             if (Selector.IsReady(ServerTcp))
             {
-                // new client
                 ClientPair *NewPair = new ClientPair;
                 if (ServerTcp.Accept(NewPair->Tcp) == sf::Socket::Done)
                 {
@@ -105,7 +96,10 @@ bool Networker::Receive(sf::Packet &Packet)
 
                     sf::Packet NewPacket;
                     NewPacket << 0 << PacketTypes::ConnectionResponse << Pair.Id << Port + Pair.Id;
-                    SendTcp(Packet, Pair.Id);
+                    SendTcp(NewPacket, Pair.Id);
+
+                    Packet << Pair.Id;
+                    return Connected;
                 }
                 else
                     delete NewPair;
@@ -124,14 +118,15 @@ bool Networker::Receive(sf::Packet &Packet)
                         sf::Socket::Status Status = Pair.Tcp.Receive(Packet);
                         if (Status == sf::Socket::Done)
                         {
-                            return true;
+                            return NewPacket;
                         }
                         else if (Status == sf::Socket::Disconnected)
                         {
-                            cout << "Disconnected " << Pair.Id << endl;
                             Selector.Remove(Pair.Tcp);
                             it = ServerConns.erase(it);
-                            return false;
+
+                            Packet << Pair.Id;
+                            return Disconnected;
                         }
                         else
                             ++it;
@@ -157,13 +152,14 @@ bool Networker::Receive(sf::Packet &Packet)
                         Udp.Bind(UdpPort);
                         Selector.Add(Udp);
                     }
-                    return true;
+                    return NewPacket;
                 }
                 else if (Status == sf::Socket::Disconnected)
                 {
-                    cout << "Disconnected" << endl;
                     Kill();
-                    return false;
+
+                    Packet << 0;
+                    return Disconnected;
                 }
             }
             else if (Selector.IsReady(Udp))
@@ -172,7 +168,7 @@ bool Networker::Receive(sf::Packet &Packet)
             }
         }
     }
-    return false;
+    return NoPacket;
 }
 
 bool Networker::IsActive()
@@ -198,8 +194,6 @@ void Networker::CleanConns()
     for (vector<ClientPair*>::iterator it = ServerConns.begin(); it != ServerConns.end(); ++it)
         delete *it;
     ServerConns.clear();
-
-    cout << "Connections cleared" << endl;
 }
 
 sf::Packet& operator>> (sf::Packet &Packet, PacketType &Type)
