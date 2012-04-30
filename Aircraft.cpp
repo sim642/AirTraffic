@@ -262,14 +262,14 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
             sf::Vector2f Runway = Land->GetPos() + PolarToRect(sf::Vector2f(Land->GetLength() * 1.5f, Land->GetAngle()));
             float Dist = Distance(Me, LandPoint);
 
-            Speed = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, Template.Speed, 0.f);
+            Speed = Map(Dist, 0.f, Land->GetLength() * 1.1f, Template.Speed, 0.f);
 
             if (Land->GetTemplate().Directional)
             {
                 Shape.SetRotation(Angle(Me - Runway));
             }
 
-            float Scale = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, 1.f, 0.65f);
+            float Scale = Map(Dist, 0.f, Land->GetLength() * 1.1f, 1.f, 0.65f);
             Shape.SetScale(Scale, Scale);
             Radius = Template.Radius * Scale;
 
@@ -284,14 +284,14 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
             sf::Vector2f Runway = Land->GetPos() + PolarToRect(sf::Vector2f(Land->GetLength() * 1.5f, Land->GetAngle()));
             float Dist = Distance(Me, Land->GetPos());
 
-            Speed = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, 10.f, Template.Speed);
+            Speed = Map(Dist, 0.f, Land->GetLength() * 1.1f, 10.f, Template.Speed);
 
             if (Land->GetTemplate().Directional)
             {
                 Shape.SetRotation(Angle(Me - Runway));
             }
 
-            float Scale = wr::Map(Dist, 0.f, Land->GetLength() * 1.1f, 0.65f, 1.f);
+            float Scale = Map(Dist, 0.f, Land->GetLength() * 1.1f, 0.65f, 1.f);
             Shape.SetScale(Scale, Scale);
             Radius = Template.Radius * Scale;
 
