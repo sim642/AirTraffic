@@ -29,7 +29,8 @@ class AirTrafficScreen : public Screen
         void SetupServer();
         void KillNet();
 
-        void HandleNet();
+        void StepNet();
+        void Draw();
     private:
         bool Running;
         sf::Clock FrameTimer;
@@ -37,12 +38,11 @@ class AirTrafficScreen : public Screen
         void LoadResources();
         void HandleEvents();
         void Step();
-        void Draw();
 
         void Pause(bool Status);
 
         Networker Net;
-        //void HandleNet();
+        void HandleNet();
         void SendGameData(const sf::Uint32 Id = 0);
 
         boost::property_tree::ptree Data;

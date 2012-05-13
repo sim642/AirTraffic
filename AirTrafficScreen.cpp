@@ -48,11 +48,22 @@ AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
         if (Net.IsActive())
             HandleNet();
         Step();
+        App.Clear();
         Draw();
+        App.Display();
     }
 
     Pause(true);
     return MenuType;
+}
+
+void AirTrafficScreen::StepNet()
+{
+    if (Net.IsActive())
+    {
+        HandleNet();
+        Step();
+    }
 }
 
 void AirTrafficScreen::Reset()
@@ -662,8 +673,6 @@ void AirTrafficScreen::Draw()
 
     App.Draw(Line(sf::Vector2f(750.f, 50.f), sf::Vector2f(750.f, 50.f) + Wind * 4.f, 3.f, sf::Color::White));
     App.Draw(Circle(sf::Vector2f(750.f, 50.f), 5.f, sf::Color::Red));
-
-    App.Display();
 }
 
 void AirTrafficScreen::Pause(bool Status)

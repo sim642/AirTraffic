@@ -100,7 +100,6 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                             AddItemAfter("Join game", "Disconnect");
                             AddItemAfter("Host server", "Join game");
                             RemoveItem("Disconnect");
-                            RemoveItem("Continue");
                             ItemSelected = 0;
                             ATS->KillNet();
                         }
@@ -135,13 +134,13 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
             }
         }
 
-        ATS->HandleNet();
+        ATS->StepNet();
 
         App.Clear();
 
         if (Paused)
         {
-            App.Draw(PauseSpr);
+            ATS->Draw();
         }
         else
         {
