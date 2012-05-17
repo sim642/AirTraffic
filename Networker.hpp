@@ -13,7 +13,9 @@ namespace PacketTypes
         ConnectionResponse,
         SurfaceUpdate,
         SceneryUpdate,
-        RunwayUpdate
+        RunwayUpdate,
+        ScoreUpdate,
+        WindUpdate
     };
 }
 typedef PacketTypes::PacketType PacketType;
@@ -25,7 +27,7 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
     sf::Uint32 SourceId, PacketType Type
 **/
 /** Packets
---0. ConnectResponse--
+--0. ConnectionResponse--
     sf::Uint32 Id, sf::Uint32 UdpPort
 --1. SurfaceUpdate--
     string Name
@@ -33,6 +35,10 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
     [string Name, float X, float Y, float Angle]
 --3. RunwayUpdate--
     [string Name, float X, float Y, float Angle]
+--4. ScoreUpdate--
+    sf::Int32 Score
+--5. WindUpdate--
+    float X, float Y
 **/
 
 class Networker
@@ -62,6 +68,7 @@ class Networker
 
         bool IsActive();
         bool IsServer();
+        bool IsClient();
     private:
         struct ClientPair
         {

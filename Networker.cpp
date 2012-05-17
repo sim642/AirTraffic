@@ -184,7 +184,12 @@ bool Networker::IsActive()
 
 bool Networker::IsServer()
 {
-    return Server;
+    return Active && Server;
+}
+
+bool Networker::IsClient()
+{
+    return Active && !Server;
 }
 
 void Networker::CleanConns()
