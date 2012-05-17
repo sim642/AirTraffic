@@ -19,7 +19,7 @@ struct SceneryTemplate
 class Scenery
 {
     public:
-        Scenery(SceneryTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot);
+        Scenery(const SceneryTemplate &NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot);
         SceneryTemplate GetTemplate();
 
         bool Colliding(const Scenery &Other);
@@ -31,7 +31,7 @@ class Scenery
         void Step(float FT);
         void Draw(sf::RenderWindow &App);
     private:
-        const SceneryTemplate Template;
+        const SceneryTemplate &Template;
         AnimSprite Shape;
 };
 

@@ -1,7 +1,7 @@
 #include "Explosion.hpp"
 #include "Math.hpp"
 
-Explosion::Explosion(ExplosionTemplate NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos) : Template(NewTemplate), Time(0.f)
+Explosion::Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos) : Template(NewTemplate), Time(0.f)
 {
     const sf::Texture &Texture = Textures[Template.Res];
     Shape.SetTexture(Texture);

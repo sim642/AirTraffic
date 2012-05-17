@@ -1,4 +1,5 @@
 #include "AirTrafficScreen.hpp"
+#include <iterator>
 #include <boost/lexical_cast.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include "Math.hpp"
@@ -129,7 +130,7 @@ void AirTrafficScreen::LoadResources()
         Temp.Length = Cur.get<float>("length");
         Temp.Directional = Cur.get<bool>("directional");
 
-        RunwayTemplates.push_back(Temp);
+        RunwayTemplates.insert(make_pair(Temp.Name, Temp));
     }
 
     for (boost::property_tree::ptree::iterator it = DataAircrafts.begin(); it != DataAircrafts.end(); ++it)
@@ -157,7 +158,7 @@ void AirTrafficScreen::LoadResources()
             Temp.Runways.push_back(it2->second.get_value<string>());
         }
 
-        AircraftTemplates.push_back(Temp);
+        AircraftTemplates.insert(make_pair(Temp.Name, Temp));
     }
 
     for (boost::property_tree::ptree::iterator it = DataExplosions.begin(); it != DataExplosions.end(); ++it)
@@ -172,7 +173,7 @@ void AirTrafficScreen::LoadResources()
         Temp.Radius = Cur.get<float>("radius");
         Temp.Time = Cur.get<float>("time");
 
-        ExplosionTemplates.push_back(Temp);
+        ExplosionTemplates.insert(make_pair(Temp.Name, Temp));
     }
 
     for (boost::property_tree::ptree::iterator it = DataSceneries.begin(); it != DataSceneries.end(); ++it)
@@ -185,7 +186,7 @@ void AirTrafficScreen::LoadResources()
         Temp.FrameSize = sf::Vector2i(Cur.get("framew", -1), Cur.get("frameh", -1));
         Temp.FrameRate = Cur.get("framerate", 0.f);
 
-        SceneryTemplates.push_back(Temp);
+        SceneryTemplates.insert(make_pair(Temp.Name, Temp));
     }
 
     for (boost::property_tree::ptree::iterator it = DataSurfaces.begin(); it != DataSurfaces.end(); ++it)
@@ -196,7 +197,7 @@ void AirTrafficScreen::LoadResources()
         Temp.Res = Cur.get<string>("res");
         LoadTexture(Temp.Res);
 
-        SurfaceTemplates.push_back(Temp);
+        SurfaceTemplates.insert(make_pair(Temp.Name, Temp));
     }
 
     LoadSound("alarm.wav");
@@ -258,17 +259,14 @@ void AirTrafficScreen::HandleNet()
                     string Name;
                     Packet >> Name;
 
-                    vector<SurfaceTemplate>::iterator it = SurfaceTemplates.begin();
-                    for (; it != SurfaceTemplates.end(); ++it)
-                        if (it->Name == Name)
-                            break;
+                    map<string, SurfaceTemplate>::iterator it = SurfaceTemplates.find(Name);
 
                     if (it != SurfaceTemplates.end())
                     {
                         if (Background)
                             delete Background;
 
-                        Background = new Surface(*it, Textures);
+                        Background = new Surface(it->second, Textures);
                     }
                     break;
                 }
@@ -283,13 +281,10 @@ void AirTrafficScreen::HandleNet()
                         float X, Y, Angle;
                         Packet >> Name >> X >> Y >> Angle;
 
-                        vector<SceneryTemplate>::iterator it = SceneryTemplates.begin();
-                        for (;it != SceneryTemplates.end(); ++it)
-                            if (it->Name == Name)
-                                break;
+                        map<string, SceneryTemplate>::iterator it = SceneryTemplates.find(Name);
 
                         if (it != SceneryTemplates.end())
-                            Sceneries.push_back(new Scenery(*it, Textures, sf::Vector2f(X, Y), Angle));
+                            Sceneries.push_back(new Scenery(it->second, Textures, sf::Vector2f(X, Y), Angle));
                     }
                     break;
                 }
@@ -304,13 +299,10 @@ void AirTrafficScreen::HandleNet()
                         float X, Y, Angle;
                         Packet >> Name >> X >> Y >> Angle;
 
-                        vector<RunwayTemplate>::iterator it = RunwayTemplates.begin();
-                        for (; it != RunwayTemplates.end(); ++it)
-                            if (it->Name == Name)
-                                break;
+                        map<string, RunwayTemplate>::iterator it = RunwayTemplates.find(Name);
 
                         if (it != RunwayTemplates.end())
-                            Runways.push_back(new Runway(*it, Textures, sf::Vector2f(X, Y), Angle));
+                            Runways.push_back(new Runway(it->second, Textures, sf::Vector2f(X, Y), Angle));
                     }
                     break;
                 }
@@ -744,9 +736,9 @@ void AirTrafficScreen::LoadSound(const string &FileName)
 
 void AirTrafficScreen::SpawnRunway()
 {
-    vector<RunwayTemplate>::iterator it = RunwayTemplates.begin();
-    it += rand() % RunwayTemplates.size();
-    RunwayTemplate &Temp = *it;
+    map<string, RunwayTemplate>::iterator it = RunwayTemplates.begin();
+    advance(it, rand() % RunwayTemplates.size());
+    const RunwayTemplate &Temp = it->second;
 
     sf::Vector2f Pos;
     float Angle;
@@ -785,16 +777,16 @@ void AirTrafficScreen::SpawnRunway()
 
 void AirTrafficScreen::SpawnAircraft()
 {
-    vector<AircraftTemplate>::iterator it;
+    map<string, AircraftTemplate>::iterator it;
     bool CanLand = false;
     do
     {
         it = AircraftTemplates.begin();
-        it += rand() % AircraftTemplates.size();
+        advance(it, rand() % AircraftTemplates.size());
 
         for (boost::ptr_list<Runway>::iterator it2 = Runways.begin(); it2 != Runways.end(); ++it2)
         {
-            vector<string> &Landable = it->Runways;
+            vector<string> &Landable = it->second.Runways;
             if (find(Landable.begin(), Landable.end(), it2->GetTemplate().Name) != Landable.end())
             {
                 CanLand = true;
@@ -804,7 +796,7 @@ void AirTrafficScreen::SpawnAircraft()
     }
     while (!CanLand);
 
-    AircraftTemplate &Temp = *it;
+    const AircraftTemplate &Temp = it->second;
 
     sf::Vector2f Pos;
     float Angle;
@@ -819,7 +811,7 @@ void AirTrafficScreen::SpawnAircraft()
 
         for (boost::ptr_list<Runway>::iterator it2 = Runways.begin(); it2 != Runways.end(); ++it2)
         {
-            vector<string> &Landable = Temp.Runways;
+            const vector<string> &Landable = Temp.Runways;
             if (find(Landable.begin(), Landable.end(), it2->GetTemplate().Name) != Landable.end())
             {
                 Rws.push_back(&*it2);
@@ -913,17 +905,17 @@ void AirTrafficScreen::SpawnAircraft()
 
 void AirTrafficScreen::SpawnExplosion(sf::Vector2f Pos)
 {
-    vector<ExplosionTemplate>::iterator it = ExplosionTemplates.begin();
-    it += rand() % ExplosionTemplates.size();
-    ExplosionTemplate &Temp = *it;
+    map<string, ExplosionTemplate>::iterator it = ExplosionTemplates.begin();
+    advance(it, rand() % ExplosionTemplates.size());
+    const ExplosionTemplate &Temp = it->second;
     Explosions.push_back(new Explosion(Temp, Textures, Sounds, Pos));
 }
 
 void AirTrafficScreen::SpawnScenery()
 {
-    vector<SceneryTemplate>::iterator it = SceneryTemplates.begin();
-    it += rand() % SceneryTemplates.size();
-    SceneryTemplate &Temp = *it;
+    map<string, SceneryTemplate>::iterator it = SceneryTemplates.begin();
+    advance(it, rand() % SceneryTemplates.size());
+    const SceneryTemplate &Temp = it->second;
 
     sf::Vector2f Pos;
     float Angle;
@@ -975,9 +967,9 @@ void AirTrafficScreen::PickSurface()
         delete Background;
     }
 
-    vector<SurfaceTemplate>::iterator it = SurfaceTemplates.begin();
-    it += rand() % SurfaceTemplates.size();
-    SurfaceTemplate &Temp = *it;
+    map<string, SurfaceTemplate>::iterator it = SurfaceTemplates.begin();
+    advance(it, rand() % SurfaceTemplates.size());
+    const SurfaceTemplate &Temp = it->second;
 
     Background = new Surface(Temp, Textures);
 }

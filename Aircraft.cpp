@@ -2,7 +2,7 @@
 #include "Math.hpp"
 #include <iostream>
 
-Aircraft::Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway) : Template(NewTemplate), Land(NewRunway), Turning(0.f)
+Aircraft::Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway) : Template(NewTemplate), Land(NewRunway), Turning(0.f)
 {
     const sf::Texture &Texture = Textures[Template.Res];
     if (Template.FrameSize.x >= 0 || Template.FrameSize.y >= 0)

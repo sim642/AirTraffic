@@ -15,12 +15,12 @@ struct SurfaceTemplate
 class Surface
 {
     public:
-        Surface(SurfaceTemplate NewTemplate, map<string, sf::Texture> &Textures);
+        Surface(const SurfaceTemplate &NewTemplate, map<string, sf::Texture> &Textures);
         SurfaceTemplate GetTemplate();
 
         void Draw(sf::RenderWindow &App);
     private:
-        const SurfaceTemplate Template;
+        const SurfaceTemplate &Template;
         sf::Sprite Shape;
 };
 

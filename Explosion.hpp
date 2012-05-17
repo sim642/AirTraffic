@@ -21,7 +21,7 @@ class Explosion
 {
     public:
         friend class Aircraft;
-        Explosion(ExplosionTemplate NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos);
+        Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos);
         ExplosionTemplate GetTemplate();
 
         sf::Vector2f GetPos();
@@ -35,7 +35,7 @@ class Explosion
         void Draw(sf::RenderWindow &App);
     protected:
     private:
-        const ExplosionTemplate Template;
+        const ExplosionTemplate &Template;
 
         sf::Sprite Shape;
 

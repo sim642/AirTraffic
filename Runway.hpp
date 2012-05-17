@@ -21,7 +21,7 @@ class Runway
 {
     public:
         friend class Scenery;
-        Runway(RunwayTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot);
+        Runway(const RunwayTemplate &NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot);
         RunwayTemplate GetTemplate();
 
         bool OnMe(sf::Vector2f Pos);
@@ -35,7 +35,7 @@ class Runway
         void Draw(sf::RenderWindow &App);
     protected:
     private:
-        const RunwayTemplate Template;
+        const RunwayTemplate &Template;
         sf::Sprite Shape;
 
         float Radius;

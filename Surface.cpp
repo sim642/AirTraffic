@@ -1,6 +1,6 @@
 #include "Surface.hpp"
 
-Surface::Surface(SurfaceTemplate NewTemplate, map<string, sf::Texture> &Textures) : Template(NewTemplate)
+Surface::Surface(const SurfaceTemplate &NewTemplate, map<string, sf::Texture> &Textures) : Template(NewTemplate)
 {
     Shape.SetTexture(Textures[Template.Res]);
 }

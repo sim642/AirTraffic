@@ -1,6 +1,6 @@
 #include "Scenery.hpp"
 
-Scenery::Scenery(SceneryTemplate NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
+Scenery::Scenery(const SceneryTemplate &NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
 {
     const sf::Texture &Texture = Textures[Template.Res];
     if (Template.FrameSize.x >= 0 || Template.FrameSize.y >= 0)

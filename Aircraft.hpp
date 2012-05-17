@@ -52,7 +52,7 @@ class Aircraft
             OutRight
         };
 
-        Aircraft(AircraftTemplate NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway = 0);
+        Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway = 0);
         AircraftTemplate GetTemplate();
 
         sf::Vector2f GetPos();
@@ -78,7 +78,7 @@ class Aircraft
         bool Step(float FT, sf::Vector2f Wind);
         void Draw(sf::RenderWindow &App);
     private:
-        const AircraftTemplate Template;
+        const AircraftTemplate &Template;
 
         float Radius;
         float Speed;

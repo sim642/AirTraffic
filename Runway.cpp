@@ -1,7 +1,7 @@
 #include "Runway.hpp"
 #include "Math.hpp"
 
-Runway::Runway(RunwayTemplate NewTemplate, map<string, sf::Texture> &Texture, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
+Runway::Runway(const RunwayTemplate &NewTemplate, map<string, sf::Texture> &Texture, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
 {
     Shape.SetTexture(Texture[Template.Res]);
     Shape.SetOrigin(Template.Center);

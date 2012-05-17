@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include <vector>
+#include <map>
 #include <boost/ptr_container/ptr_list.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include "Screen.hpp"
@@ -47,11 +47,11 @@ class AirTrafficScreen : public Screen
 
         boost::property_tree::ptree Data;
 
-        vector<AircraftTemplate> AircraftTemplates;
-        vector<RunwayTemplate> RunwayTemplates;
-        vector<ExplosionTemplate> ExplosionTemplates;
-        vector<SceneryTemplate> SceneryTemplates;
-        vector<SurfaceTemplate> SurfaceTemplates;
+        map<string, AircraftTemplate> AircraftTemplates;
+        map<string, RunwayTemplate> RunwayTemplates;
+        map<string, ExplosionTemplate> ExplosionTemplates;
+        map<string, SceneryTemplate> SceneryTemplates;
+        map<string, SurfaceTemplate> SurfaceTemplates;
 
         boost::ptr_list<Aircraft> Aircrafts;
         boost::ptr_list<Runway> Runways;
