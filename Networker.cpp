@@ -20,6 +20,8 @@ void Networker::SetupClient(const sf::IpAddress &NewIp)
     Server = false;
     Active = true;
     ClientSocket.Tcp.Connect(NewIp, Port);
+    ClientSocket.Ip = NewIp;
+    ClientSocket.UdpPort = Port;
     //Udp.Bind(Port); //temp
 
     Selector.Add(ClientSocket.Tcp);
@@ -83,6 +85,44 @@ void Networker::SendTcp(sf::Packet &Packet, sf::Uint32 Id)
     }
 }
 
+void Networker::SendUdp(sf::Packet &Packet)
+{
+    if (Server)
+    {
+        sf::Packet Info = Packet;
+        sf::Uint32 SourceId;
+        Info >> SourceId;
+
+        for (vector<ClientPair*>::iterator it = ServerConns.begin(); it != ServerConns.end(); ++it)
+        {
+            ClientPair &Pair = **it;
+            if (Pair.Id != SourceId)
+                Udp.Send(Packet, Pair.Ip, Pair.UdpPort);
+        }
+    }
+    else
+        Udp.Send(Packet, ClientSocket.Ip, ClientSocket.UdpPort);
+}
+
+void Networker::SendUdp(sf::Packet &Packet, sf::Uint32 Id)
+{
+    if (Id == 0)
+    {
+        SendUdp(Packet);
+        return;
+    }
+
+    for (vector<ClientPair*>::iterator it = ServerConns.begin(); it != ServerConns.end(); ++it)
+    {
+        ClientPair &Pair = **it;
+        if (Pair.Id == Id)
+        {
+            Udp.Send(Packet, Pair.Ip, Pair.UdpPort);
+            break;
+        }
+    }
+}
+
 Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
 {
     Packet.Clear();
@@ -97,11 +137,13 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
                 {
                     ClientPair &Pair = *NewPair;
                     Pair.Id = ServerConns.empty() ? 1 : ServerConns.back()->Id + 1;
+                    Pair.Ip = Pair.Tcp.GetRemoteAddress();
+                    Pair.UdpPort = Port + Pair.Id;
                     ServerConns.push_back(NewPair);
                     Selector.Add(Pair.Tcp);
 
                     sf::Packet NewPacket;
-                    NewPacket << 0 << PacketTypes::ConnectionResponse << Pair.Id << Port + Pair.Id;
+                    NewPacket << 0 << PacketTypes::ConnectionResponse << Pair.Id << Pair.UdpPort;
                     SendTcp(NewPacket, Pair.Id);
 
                     Packet << Pair.Id;
@@ -112,7 +154,13 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
             }
             else if (Selector.IsReady(Udp))
             {
-
+                sf::IpAddress Ip;
+                sf::Uint16 UdpPort;
+                sf::Socket::Status Status = Udp.Receive(Packet, Ip, UdpPort); // need to validate source ip
+                if (Status == sf::Socket::Done)
+                {
+                    return NewPacket;
+                }
             }
             else
             {
@@ -153,7 +201,7 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
                     Info >> SourceId >> Type;
                     if (Type == PacketTypes::ConnectionResponse)
                     {
-                        sf::Uint32 UdpPort;
+                        sf::Uint16 UdpPort;
                         Info >> ClientSocket.Id >> UdpPort;
                         Udp.Bind(UdpPort);
                         Selector.Add(Udp);
@@ -170,7 +218,13 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
             }
             else if (Selector.IsReady(Udp))
             {
-
+                sf::IpAddress Ip;
+                sf::Uint16 UdpPort;
+                sf::Socket::Status Status = Udp.Receive(Packet, Ip, UdpPort); // need to validate source ip
+                if (Status == sf::Socket::Done)
+                {
+                    return NewPacket;
+                }
             }
         }
     }

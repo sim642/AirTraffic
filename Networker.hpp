@@ -28,7 +28,7 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
 **/
 /** Packets
 --0. ConnectionResponse--
-    sf::Uint32 Id, sf::Uint32 UdpPort
+    sf::Uint32 Id, sf::Uint16 UdpPort
 --1. SurfaceUpdate--
     string Name
 --2. SceneryUpdate--
@@ -63,6 +63,8 @@ class Networker
 
         void SendTcp(sf::Packet &Packet);
         void SendTcp(sf::Packet &Packet, sf::Uint32 Id);
+        void SendUdp(sf::Packet &Packet);
+        void SendUdp(sf::Packet &Packet, sf::Uint32 Id);
 
         ReceiveStatus Receive(sf::Packet &Packet);
 
@@ -74,6 +76,8 @@ class Networker
         {
             sf::Uint32 Id;
             sf::TcpSocket Tcp;
+            sf::IpAddress Ip;
+            sf::Uint16 UdpPort;
         };
 
         void CleanConns();
