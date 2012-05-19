@@ -61,6 +61,8 @@ class AirTrafficScreen : public Screen
         Surface *Background;
         sf::Sound AlarmSound;
 
+        sf::Sprite Pointer;
+
         Aircraft *Pathing;
 
         int Score;
