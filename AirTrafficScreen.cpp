@@ -202,8 +202,6 @@ void AirTrafficScreen::LoadResources()
     }
 
     LoadTexture("Pointer.png");
-    Pointer.SetTexture(Textures["Pointer.png"]);
-    Pointer.SetColor(sf::Color::Red);
 
     LoadSound("alarm.wav");
     AlarmSound.SetBuffer(Sounds["alarm.wav"]);
@@ -406,7 +404,7 @@ void AirTrafficScreen::HandleEvents()
         {
             if (Net.IsActive())
             {
-                Net.SendUdp(sf::Packet() << Net.GetId() << PacketTypes::PointerUpdate << Event.MouseMoved.X << Event.MouseMoved.Y);
+                Net.SendUdp(sf::Packet() << Net.GetId() << PacketTypes::PointerUpdate << Event.MouseMove.X << Event.MouseMove.Y);
             }
 
             if (Pathing != NULL)
@@ -717,7 +715,7 @@ void AirTrafficScreen::Draw()
     for (map<sf::Uint32, sf::Vector2i>::iterator it = Pointers.begin(); it != Pointers.end(); ++it)
     {
         sf::Sprite Pointer(Textures["Pointer.png"]);
-        Pointer.SetPosition(it->second);
+        Pointer.SetPosition(sf::Vector2f(it->second.x, it->second.y));
         App.Draw(Pointer);
     }
 }
