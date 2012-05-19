@@ -463,7 +463,7 @@ void AirTrafficScreen::Step()
     sf::Listener::SetPosition(MousePos.x, MousePos.y, 100.f);
     //sf::Listener::SetDirection(0.f, 0.f, -100.f);
 
-    float SpawnTime = wr::Map(PlayTime, 0.f, 120.f, 5.f, 0.5f);
+    float SpawnTime = Map(PlayTime, 0.f, 120.f, 5.f, 0.5f);
     if (SpawnTime < 0.5f)
         SpawnTime = 0.5f;
 
@@ -660,9 +660,9 @@ void AirTrafficScreen::Draw()
                 float MinDist = (R1 + R2) / 2.5f;
                 App.Draw(Circle(Pos1,
                                            R1 - 3.f,
-                                           sf::Color(255, 255, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
+                                           sf::Color(255, 255, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
                                            3.f,
-                                           sf::Color(255, 255, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
+                                           sf::Color(255, 255, 0, Map<float>(Dist, MinDist, MaxDist, 255, 64))));
             }
         }
         // with other aircraft
@@ -680,14 +680,14 @@ void AirTrafficScreen::Draw()
                 float MinDist = (R1 + R2) / 1.3f;
                 App.Draw(Circle(Pos1,
                                            R1 - 3.f,
-                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
+                                           sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
                                            3.f,
-                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
+                                           sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 255, 64))));
                 App.Draw(Circle(Pos2,
                                            R2 - 3.f,
-                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 128, 32)),
+                                           sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
                                            3.f,
-                                           sf::Color(255, 0, 0, wr::Map<float>(Dist, MinDist, MaxDist, 255, 64))));
+                                           sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 255, 64))));
             }
         }
     }

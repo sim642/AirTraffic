@@ -2,12 +2,17 @@
 #define MATH_H
 
 #include <cmath>
-#include <wrench/Math.hpp>
 #include <SFML/System/Vector2.hpp>
 
 using namespace std;
 
 const float PI = 3.14159265f;
+
+template<typename T>
+inline T Map(T X, T InMin, T InMax, T OutMin, T OutMax)
+{
+    return (X - InMin) * (OutMax - OutMin) / (InMax - InMin) + OutMin;
+}
 
 inline float DegToRad(float Deg)
 {
