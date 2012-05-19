@@ -246,6 +246,11 @@ bool Networker::IsClient()
     return Active && !Server;
 }
 
+sf::Uint32 Networker::GetId()
+{
+    return Server ? 0 : ClientSocket.Id;
+}
+
 void Networker::CleanConns()
 {
     Active = false;

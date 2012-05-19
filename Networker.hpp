@@ -15,7 +15,8 @@ namespace PacketTypes
         SceneryUpdate,
         RunwayUpdate,
         ScoreUpdate,
-        WindUpdate
+        WindUpdate,
+        PointerUpdate
     };
 }
 typedef PacketTypes::PacketType PacketType;
@@ -39,6 +40,8 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
     sf::Int32 Score
 --5. WindUpdate--
     float X, float Y
+--6. PointerUpdate--
+    sf::Int32 X, sf::Int32 Y
 **/
 
 class Networker
@@ -71,6 +74,8 @@ class Networker
         bool IsActive();
         bool IsServer();
         bool IsClient();
+
+        sf::Uint32 GetId();
     private:
         struct ClientPair
         {

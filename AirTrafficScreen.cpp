@@ -40,7 +40,6 @@ AirTrafficScreen::~AirTrafficScreen()
 AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
 {
     Pause(false);
-    App.ShowMouseCursor(false);
 
     FrameTimer.Restart();
     Running = true;
@@ -56,7 +55,6 @@ AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
     }
 
     Pause(true);
-    App.ShowMouseCursor(true);
 
     return MenuType;
 }
@@ -249,6 +247,8 @@ void AirTrafficScreen::HandleNet()
             sf::Uint32 Id;
             Packet >> Id;
             cout << "Disconnected (" << Id << ")" << endl;
+
+            Pointers.erase(Id);
             break;
         }
         case Networker::NewPacket:
@@ -327,6 +327,13 @@ void AirTrafficScreen::HandleNet()
                     Packet >> Wind.x >> Wind.y;
                     break;
                 }
+                case PacketTypes::PointerUpdate:
+                {
+                    sf::Vector2i PointerPos;
+                    Packet >> PointerPos.x >> PointerPos.y;
+                    Pointers[SourceId] = PointerPos;
+                    break;
+                }
             }
             break;
         }
@@ -397,7 +404,10 @@ void AirTrafficScreen::HandleEvents()
         }
         else if (Event.Type == sf::Event::MouseMoved)
         {
-            Pointer.SetPosition(sf::Vector2f(Event.MouseMove.X, Event.MouseMove.Y));
+            if (Net.IsActive())
+            {
+                Net.SendUdp(sf::Packet() << Net.GetId() << PacketTypes::PointerUpdate << Event.MouseMoved.X << Event.MouseMoved.Y);
+            }
 
             if (Pathing != NULL)
             {
@@ -703,8 +713,13 @@ void AirTrafficScreen::Draw()
     App.Draw(Line(sf::Vector2f(750.f, 50.f), sf::Vector2f(750.f, 50.f) + Wind * 4.f, 3.f, sf::Color::White));
     App.Draw(Circle(sf::Vector2f(750.f, 50.f), 5.f, sf::Color::Red));
 
-    // pointer
-    App.Draw(Pointer);
+    // pointers
+    for (map<sf::Uint32, sf::Vector2i>::iterator it = Pointers.begin(); it != Pointers.end(); ++it)
+    {
+        sf::Sprite Pointer(Textures["Pointer.png"]);
+        Pointer.SetPosition(it->second);
+        App.Draw(Pointer);
+    }
 }
 
 void AirTrafficScreen::Pause(bool Status)
