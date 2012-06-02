@@ -313,5 +313,17 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
 
 void Aircraft::Draw(sf::RenderWindow& App)
 {
+    Shape.SetColor(sf::Color::White);
     App.Draw(Shape);
+}
+
+void Aircraft::DrawShadow(sf::RenderWindow &App)
+{
+    Shape.SetColor(sf::Color(0, 0, 0, 127));
+
+    float Scale = Map(Speed / Template.Speed, 0.f, 1.f, 1.f, 0.9f);
+
+    sf::Transform Transform;
+    Transform.Scale(sf::Vector2f(Scale, Scale), sf::Vector2f(App.GetWidth() / 2, App.GetHeight() * 0.8f));
+    App.Draw(Shape, Transform);
 }

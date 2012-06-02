@@ -77,6 +77,7 @@ class Aircraft
 
         bool Step(float FT, sf::Vector2f Wind);
         void Draw(sf::RenderWindow &App);
+        void DrawShadow(sf::RenderWindow &App);
     private:
         const AircraftTemplate Template;
 
