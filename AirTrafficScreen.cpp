@@ -382,11 +382,12 @@ void AirTrafficScreen::HandleEvents()
         if (Event.Type == sf::Event::MouseButtonPressed &&
             Event.MouseButton.Button == sf::Mouse::Left)
         {
-            for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+            for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
             {
-                if (it->Pathable() && it->OnMe(MousePos))
+                Aircraft &Ac = *it->second;
+                if (Ac.Pathable() && Ac.OnMe(MousePos))
                 {
-                    Pathing = &*it;
+                    Pathing = &Ac;
                     Pathing->GetPath().Clear();
                     Pathing->GetPath().TryAddPoint(MousePos);
 
@@ -480,12 +481,14 @@ void AirTrafficScreen::Step()
         Net.SendTcp(sf::Packet() << 0 << PacketTypes::WindUpdate << Wind.x << Wind.y);
     }
 
-    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); )
+    for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); )
     {
-        boost::ptr_list<Aircraft>::iterator it2 = it;
+        Aircraft &Ac = *it->second;
+
+        boost::ptr_map<sf::Uint32, Aircraft>::iterator it2 = it;
         for (++it2; it2 != Aircrafts.end(); ++it2)
         {
-            if (it->Colliding(*it2))
+            if (Ac.Colliding(*it2->second))
             {
                 break;
             }
@@ -494,7 +497,7 @@ void AirTrafficScreen::Step()
         boost::ptr_list<Explosion>::iterator it3 = Explosions.begin();
         for (; it3 != Explosions.end(); ++it3)
         {
-            if (it->Colliding(*it3))
+            if (Ac.Colliding(*it3))
             {
                 break;
             }
@@ -504,13 +507,13 @@ void AirTrafficScreen::Step()
 
         if (it2 != Aircrafts.end())
         {
-            sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
+            sf::Vector2f Pos1 = Ac.GetPos(), Pos2 = it2->second->GetPos();
             SpawnExplosion(Pos1);
             SpawnExplosion(Pos2);
             Score -= 10000;
             ScoreUpdate = true;
 
-            if (Pathing == &*it || Pathing == &*it2) // take care if were drawing a path
+            if (Pathing == it->second || Pathing == it2->second) // take care if were drawing a path
             {
                 Pathing = NULL;
             }
@@ -520,24 +523,24 @@ void AirTrafficScreen::Step()
         }
         else if (it3 != Explosions.end() && it3->Deadly())
         {
-            sf::Vector2f Pos1 = it->GetPos()/*, Pos2 = it3->GetPos()*/;
+            sf::Vector2f Pos1 = Ac.GetPos()/*, Pos2 = it3->GetPos()*/;
             SpawnExplosion(Pos1);
             Score -= 5000;
             ScoreUpdate = true;
 
-            if (Pathing == &*it)
+            if (Pathing == it->second)
             {
                 Pathing = NULL;
             }
 
             it = Aircrafts.erase(it);
         }
-        else if (it->Step(FT, Wind))
+        else if (Ac.Step(FT, Wind))
         {
             Score += 1000;
             ScoreUpdate = true;
 
-            if (Pathing == &*it) // take care if were drawing a path
+            if (Pathing == it->second) // take care if were drawing a path
             {
                 Pathing = NULL;
             }
@@ -631,24 +634,26 @@ void AirTrafficScreen::Draw()
     }
 
     // aircraft paths
-    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
-        it->GetPath().Draw(App);
+        it->second->GetPath().Draw(App);
     }
     // aircrafts
-    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
-        it->Draw(App);
+        it->second->Draw(App);
     }
     // aircraft collision warnings
     bool AlarmOn = false;
-    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
+        const Aircraft &Ac = *it->second;
+
         // with explosion
         for (boost::ptr_list<Explosion>::iterator it2 = Explosions.begin(); it2 != Explosions.end(); ++it2)
         {
-            sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
-            float R1 = it->GetRadius(), R2 = it2->GetRadius();
+            sf::Vector2f Pos1 = Ac.GetPos(), Pos2 = it2->GetPos();
+            float R1 = Ac.GetRadius(), R2 = it2->GetRadius();
             float MaxDist = (R1 + R2) / 1.5f;
             float Dist = Distance(Pos1, Pos2);
 
@@ -664,15 +669,17 @@ void AirTrafficScreen::Draw()
             }
         }
         // with other aircraft
-        boost::ptr_list<Aircraft>::iterator it2 = it;
+        boost::ptr_map<sf::Uint32, Aircraft>::iterator it2 = it;
         for (++it2; it2 != Aircrafts.end(); ++it2)
         {
-            sf::Vector2f Pos1 = it->GetPos(), Pos2 = it2->GetPos();
-            float R1 = it->GetRadius(), R2 = it2->GetRadius();
+            const Aircraft &Ac2 = *it2->second;
+
+            sf::Vector2f Pos1 = Ac.GetPos(), Pos2 = Ac2.GetPos();
+            float R1 = Ac.GetRadius(), R2 = Ac2.GetRadius();
             float MaxDist = 1.75 * (R1 + R2);
             float Dist = Distance(Pos1, Pos2);
 
-            if (it->OnRunway() == it2->OnRunway() && Dist < MaxDist)
+            if (Ac.OnRunway() == Ac2.OnRunway() && Dist < MaxDist)
             {
                 AlarmOn = true;
                 float MinDist = (R1 + R2) / 1.3f;
@@ -722,9 +729,9 @@ void AirTrafficScreen::Draw()
 
 void AirTrafficScreen::Pause(bool Status)
 {
-    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
-        it->Pause(Status);
+        it->second->Pause(Status);
     }
 
     for (boost::ptr_list<Explosion>::iterator it = Explosions.begin(); it != Explosions.end(); ++it)
@@ -855,9 +862,11 @@ void AirTrafficScreen::SpawnAircraft()
             Pos = (*it2)->GetPos();
             New = new Aircraft(Temp, Textures, Sounds, Pos, Angle, *it2);
 
-            for (boost::ptr_list<Aircraft>::iterator it3 = Aircrafts.begin(); it3 != Aircrafts.end(); ++it3)
+            for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it3 = Aircrafts.begin(); it3 != Aircrafts.end(); ++it3)
             {
-                if (it3->Colliding(*New) || it3->GetLand() == *it2)
+                const Aircraft &Ac = *it3->second;
+
+                if (Ac.Colliding(*New) || Ac.GetLand() == *it2)
                 {
                     Ready = false;
                     break;
@@ -908,9 +917,9 @@ void AirTrafficScreen::SpawnAircraft()
             }
 
             New = new Aircraft(Temp, Textures, Sounds, Pos, Angle);
-            for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+            for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
             {
-                if (it->Colliding(*New))
+                if (it->second->Colliding(*New))
                 {
                     Ready = false;
                     break;
@@ -927,7 +936,8 @@ void AirTrafficScreen::SpawnAircraft()
 
     if (Ready)
     {
-        Aircrafts.push_back(New);
+        sf::Uint32 Id = Aircrafts.empty() ? 0 : Aircrafts.rbegin()->first + 1;
+        Aircrafts.insert(Id, New);
     }
 }
 

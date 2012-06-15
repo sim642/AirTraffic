@@ -46,27 +46,27 @@ Aircraft::Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture>
     }
 }
 
-AircraftTemplate Aircraft::GetTemplate()
+const AircraftTemplate& Aircraft::GetTemplate() const
 {
     return Template;
 }
 
-sf::Vector2f Aircraft::GetPos()
+sf::Vector2f Aircraft::GetPos() const
 {
     return Shape.GetPosition();
 }
 
-float Aircraft::GetAngle()
+float Aircraft::GetAngle() const
 {
     return Shape.GetRotation();
 }
 
-Runway* Aircraft::GetLand()
+Runway* const Aircraft::GetLand() const
 {
     return Land;
 }
 
-float Aircraft::GetRadius()
+float Aircraft::GetRadius() const
 {
     return Radius;
 }
@@ -102,7 +102,7 @@ Aircraft::OutDirections Aircraft::GetOutDirection()
     return OutDirection;
 }
 
-bool Aircraft::Colliding(const Aircraft &Other)
+bool Aircraft::Colliding(const Aircraft &Other) const
 {
     const sf::Vector2f &Me = Shape.GetPosition();
     const sf::Vector2f &Pos = Other.Shape.GetPosition();
@@ -110,7 +110,7 @@ bool Aircraft::Colliding(const Aircraft &Other)
            InRange(Me, Pos, (Radius + Other.Radius) / 1.3f);
 }
 
-bool Aircraft::Colliding(const Explosion &Exp)
+bool Aircraft::Colliding(const Explosion &Exp) const
 {
     const sf::Vector2f &Me = Shape.GetPosition();
     const sf::Vector2f &Pos = Exp.Shape.GetPosition();

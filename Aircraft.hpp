@@ -53,12 +53,12 @@ class Aircraft
         };
 
         Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway = 0);
-        AircraftTemplate GetTemplate();
+        const AircraftTemplate& GetTemplate() const;
 
-        sf::Vector2f GetPos();
-        float GetAngle();
-        Runway* GetLand();
-        float GetRadius();
+        sf::Vector2f GetPos() const;
+        float GetAngle() const;
+        Runway* const GetLand() const;
+        float GetRadius() const;
 
         Path& GetPath();
         bool OnMe(sf::Vector2f);
@@ -68,8 +68,8 @@ class Aircraft
         Directions GetDirection();
         OutDirections GetOutDirection();
 
-        bool Colliding(const Aircraft &Other);
-        bool Colliding(const Explosion &Exp);
+        bool Colliding(const Aircraft &Other) const;
+        bool Colliding(const Explosion &Exp) const;
 
         void SetRunway(Runway *NewLand);
 

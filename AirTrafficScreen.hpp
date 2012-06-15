@@ -5,6 +5,7 @@
 #include <SFML/Audio.hpp>
 #include <map>
 #include <boost/ptr_container/ptr_list.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include "Screen.hpp"
 #include "Aircraft.hpp"
@@ -53,7 +54,7 @@ class AirTrafficScreen : public Screen
         map<string, SceneryTemplate> SceneryTemplates;
         map<string, SurfaceTemplate> SurfaceTemplates;
 
-        boost::ptr_list<Aircraft> Aircrafts;
+        boost::ptr_map<sf::Uint32, Aircraft> Aircrafts;
         boost::ptr_list<Runway> Runways;
         boost::ptr_list<Explosion> Explosions;
         boost::ptr_list<Scenery> Sceneries;
