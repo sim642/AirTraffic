@@ -36,7 +36,7 @@ class MenuScreen : public Screen
 
         vector<string> Items;
         sf::Text ItemText;
-        int ItemSelected;
+        unsigned int ItemSelected;
         sf::Text Cursor;
         sf::Color SelectionColor;
 };

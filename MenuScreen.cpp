@@ -118,10 +118,7 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                         break;
 
                     case sf::Keyboard::Up:
-                        if (--ItemSelected < 0)
-                        {
-                            ItemSelected += Items.size();
-                        }
+                        ItemSelected = (ItemSelected == 0 ? Items.size() : ItemSelected) - 1;
                         break;
 
                     case sf::Keyboard::Down:
