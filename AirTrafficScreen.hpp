@@ -55,6 +55,7 @@ class AirTrafficScreen : public Screen
         map<string, SurfaceTemplate> SurfaceTemplates;
 
         boost::ptr_map<sf::Uint32, Aircraft> Aircrafts;
+        sf::Uint32 AidNext;
         boost::ptr_list<Runway> Runways;
         boost::ptr_list<Explosion> Explosions;
         boost::ptr_list<Scenery> Sceneries;

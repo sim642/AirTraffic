@@ -53,6 +53,8 @@ class Aircraft
         };
 
         Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway = 0);
+        Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway, States NewState, OutDirections NewOutDirection);
+        Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway, States NewState, sf::Vector2f NewLandPoint);
         const AircraftTemplate& GetTemplate() const;
 
         sf::Vector2f GetPos() const;
@@ -65,8 +67,10 @@ class Aircraft
 
         bool Pathable();
         bool OnRunway() const;
+        States GetState();
         Directions GetDirection();
         OutDirections GetOutDirection();
+        sf::Vector2f GetLandPoint();
 
         bool Colliding(const Aircraft &Other) const;
         bool Colliding(const Explosion &Exp) const;
@@ -78,6 +82,8 @@ class Aircraft
         bool Step(float FT, sf::Vector2f Wind);
         void Draw(sf::RenderWindow &App);
     private:
+        void Setup(map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot);
+
         const AircraftTemplate &Template;
 
         float Radius;
@@ -89,7 +95,6 @@ class Aircraft
 
         Runway *Land;
 
-        float Turning;
         States State;
         Directions Direction;
         OutDirections OutDirection;

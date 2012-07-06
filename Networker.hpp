@@ -16,7 +16,12 @@ namespace PacketTypes
         RunwayUpdate,
         ScoreUpdate,
         WindUpdate,
-        PointerUpdate
+        PointerUpdate,
+        AircraftSpawn,
+        AircraftCreateOut,
+        AircraftCreateIn,
+        AircraftUpdate,
+        AircraftDestroy
     };
 }
 typedef PacketTypes::PacketType PacketType;
@@ -42,6 +47,15 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
     float X, float Y
 --6. PointerUpdate--
     sf::Int32 X, sf::Int32 Y
+--7. AircraftSpawn--
+    sf::Uint32 Aid, string Name, float X, float Y, float Angle, sf::Int32 Runway(-1 = None)
+--8. AircraftCreateOut--
+    sf::Uint32 Aid, string Name, float X, float Y, float Angle, sf::Int32 Runway(-1 = None), sf::Uint16 State, sf::Uint16 OutDirection
+--9. AircraftCreateIn--
+    sf::Uint32 Aid, string Name, float X, float Y, float Angle, sf::Int32 Runway(-1 = None), sf::Uint16 State, float LandX, float LandY
+--10. AircraftUpdate--
+--11. AircraftDestory--
+    sf::Uint32 Aid
 **/
 
 class Networker

@@ -82,6 +82,7 @@ void AirTrafficScreen::Reset()
     WindTime = 0.f;
 
     Aircrafts.clear();
+    AidNext = 0;
     Runways.clear();
     Explosions.clear();
     Sceneries.clear();
@@ -332,6 +333,78 @@ void AirTrafficScreen::HandleNet()
                     Pointers[SourceId] = PointerPos;
                     break;
                 }
+                case PacketTypes::AircraftSpawn:
+                case PacketTypes::AircraftCreateOut:
+                case PacketTypes::AircraftCreateIn:
+                {
+                    if (Net.IsServer())
+                        break;
+
+                    sf::Uint32 Aid;
+                    string Name;
+                    sf::Vector2f Pos;
+                    float Angle;
+                    sf::Int32 Rw;
+                    Packet >> Aid >> Name >> Pos.x >> Pos.y >> Angle >> Rw;
+
+                    map<string, AircraftTemplate>::iterator it = AircraftTemplates.find(Name);
+
+                    if (it != AircraftTemplates.end())
+                    {
+                        Runway *Land = 0;
+                        if (Rw >= 0)
+                        {
+                            boost::ptr_list<Runway>::iterator it2 = Runways.begin();
+                            advance(it2, Rw);
+                            Land = &*it2;
+                        }
+
+                        Aircraft *Ac;
+
+                        switch (Type)
+                        {
+                            case PacketTypes::AircraftSpawn:
+                                Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land);
+                                break;
+                            case PacketTypes::AircraftCreateOut:
+                            {
+                                sf::Uint16 State;
+                                sf::Uint16 OutDirection;
+                                Packet >> State >> OutDirection;
+                                Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land, static_cast<Aircraft::States>(State), static_cast<Aircraft::OutDirections>(OutDirection));
+                                break;
+                            }
+                            case PacketTypes::AircraftCreateIn:
+                            {
+                                sf::Uint16 State;
+                                sf::Vector2f LandPoint;
+                                Packet >> State >> LandPoint.x >> LandPoint.y;
+                                Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land, static_cast<Aircraft::States>(State), LandPoint);
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+
+                        Aircrafts.insert(Aid, Ac);
+                    }
+                    break;
+                }
+                case PacketTypes::AircraftDestroy:
+                {
+                    if (Net.IsServer())
+                        break;
+
+                    sf::Uint32 Aid;
+                    Packet >> Aid;
+
+                    boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.find(Aid);
+                    if (it != Aircrafts.end())
+                    {
+                        Aircrafts.erase(it);
+                    }
+                    break;
+                }
             }
             break;
         }
@@ -361,6 +434,40 @@ void AirTrafficScreen::SendGameData(const sf::Uint32 Id)
         Packet << 0 << PacketTypes::SceneryUpdate;
         for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
             Packet << it->GetTemplate().Name << it->GetPos().x << it->GetPos().y << it->GetAngle();
+        Net.SendTcp(Packet, Id);
+    }
+
+    // Aircrafts
+    for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    {
+        sf::Packet Packet;
+        Packet << 0 << (it->second->GetDirection() == Aircraft::In ? PacketTypes::AircraftCreateIn : PacketTypes::AircraftCreateOut);
+        Packet << it->first << it->second->GetTemplate().Name << it->second->GetPos().x << it->second->GetPos().y << it->second->GetAngle();
+        if (it->second->GetLand() == NULL)
+            Packet << -1;
+        else
+        {
+            boost::ptr_list<Runway>::iterator it2 = Runways.begin();
+            for (; it2 != Runways.end(); ++it2)
+            {
+                if (&*it2 == it->second->GetLand())
+                    break;
+            }
+            sf::Int32 Rw = distance(Runways.begin(), it2);
+            Packet << Rw;
+        }
+        Packet << static_cast<sf::Uint16>(it->second->GetState());
+
+        if (it->second->GetDirection() == Aircraft::In)
+        {
+            const sf::Vector2f &LandPoint = it->second->GetLandPoint();
+            Packet << LandPoint.x << LandPoint.y;
+        }
+        else
+        {
+            Packet << static_cast<sf::Uint16>(it->second->GetOutDirection());
+        }
+
         Net.SendTcp(Packet, Id);
     }
 }
@@ -466,13 +573,13 @@ void AirTrafficScreen::Step()
     if (SpawnTime < 0.5f)
         SpawnTime = 0.5f;
 
-    if (Spawner > SpawnTime)
+    if ((!Net.IsActive() || Net.IsServer()) && Spawner > SpawnTime)
     {
         SpawnAircraft();
         Spawner = 0.f;
     }
 
-    if (WindTime > 0.5f) // may need changing
+    if ((!Net.IsActive() || Net.IsServer()) && WindTime > 0.5f) // may need changing
     {
         Wind = Rotate(Wind, Random(-5.f, 5.f));
         Wind *= Random(0.95f, 1.05f);
@@ -518,6 +625,9 @@ void AirTrafficScreen::Step()
                 Pathing = NULL;
             }
 
+            Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it->first);
+            Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it2->first);
+
             Aircrafts.erase(it2);
             it = Aircrafts.erase(it);
         }
@@ -533,6 +643,8 @@ void AirTrafficScreen::Step()
                 Pathing = NULL;
             }
 
+            Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it->first);
+
             it = Aircrafts.erase(it);
         }
         else if (Ac.Step(FT, Wind))
@@ -544,6 +656,8 @@ void AirTrafficScreen::Step()
             {
                 Pathing = NULL;
             }
+
+            Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it->first);
 
             it = Aircrafts.erase(it);
         }
@@ -936,8 +1050,21 @@ void AirTrafficScreen::SpawnAircraft()
 
     if (Ready)
     {
-        sf::Uint32 Id = Aircrafts.empty() ? 0 : Aircrafts.rbegin()->first + 1;
-        Aircrafts.insert(Id, New);
+        sf::Uint32 Aid = AidNext++;
+        Aircrafts.insert(Aid, New);
+
+        sf::Int32 Rw = -1;
+        if (New->GetLand() != 0)
+        {
+            Rw = 0;
+            for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it, Rw++)
+            {
+                if (&*it == New->GetLand())
+                    break;
+            }
+        }
+
+        Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftSpawn << Aid << Temp.Name << New->GetPos().x << New->GetPos().y << New->GetAngle() << Rw);
     }
 }
 
