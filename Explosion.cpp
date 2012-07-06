@@ -1,7 +1,7 @@
 #include "Explosion.hpp"
 #include "Math.hpp"
 
-Explosion::Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos) : Template(NewTemplate), Time(0.f)
+Explosion::Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float NewTime) : Template(NewTemplate), Time(NewTime)
 {
     const sf::Texture &Texture = Textures[Template.Res];
     Shape.SetTexture(Texture);
@@ -11,6 +11,7 @@ Explosion::Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Textu
     Sound.SetBuffer(Sounds[Template.SoundRes]);
     Sound.SetAttenuation(0.01f);
     Sound.SetPosition(Pos.x, Pos.y, 0.f);
+    Sound.SetPlayingOffset(sf::Seconds(Time));
     Sound.Play();
 
     Radius = Template.Radius;
@@ -35,6 +36,11 @@ float Explosion::GetRadius()
 bool Explosion::Deadly()
 {
     return (Time / TTL) < 0.60f;
+}
+
+float Explosion::GetTime()
+{
+    return Time;
 }
 
 void Explosion::Pause(bool Status)

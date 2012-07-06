@@ -21,7 +21,8 @@ namespace PacketTypes
         AircraftCreateOut,
         AircraftCreateIn,
         AircraftUpdate,
-        AircraftDestroy
+        AircraftDestroy,
+        ExplosionUpdate
     };
 }
 typedef PacketTypes::PacketType PacketType;
@@ -56,6 +57,8 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
 --10. AircraftUpdate--
 --11. AircraftDestory--
     sf::Uint32 Aid
+--12. ExplosionUpdate--
+    [string Name, float X, float Y, float Time]
 **/
 
 class Networker

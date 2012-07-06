@@ -21,13 +21,14 @@ class Explosion
 {
     public:
         friend class Aircraft;
-        Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos);
+        Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float NewTime = 0.f);
         ExplosionTemplate GetTemplate();
 
         sf::Vector2f GetPos();
         float GetRadius();
 
         bool Deadly();
+        float GetTime();
 
         void Pause(bool Status);
 

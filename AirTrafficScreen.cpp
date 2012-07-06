@@ -405,6 +405,25 @@ void AirTrafficScreen::HandleNet()
                     }
                     break;
                 }
+                case PacketTypes::ExplosionUpdate:
+                {
+                    if (Net.IsServer())
+                        break;
+
+                    while (!Packet.EndOfPacket())
+                    {
+                        string Name;
+                        sf::Vector2f Pos;
+                        float Time;
+                        Packet >> Name >> Pos.x >> Pos.y >> Time;
+
+                        map<string, ExplosionTemplate>::iterator it = ExplosionTemplates.find(Name);
+
+                        if (it != ExplosionTemplates.end())
+                            Explosions.push_back(new Explosion(it->second, Textures, Sounds, Pos, Time));
+                    }
+                    break;
+                }
             }
             break;
         }
@@ -468,6 +487,19 @@ void AirTrafficScreen::SendGameData(const sf::Uint32 Id)
             Packet << static_cast<sf::Uint16>(it->second->GetOutDirection());
         }
 
+        Net.SendTcp(Packet, Id);
+    }
+
+    // Explosions
+    {
+        sf::Packet Packet;
+        Packet << 0 << PacketTypes::ExplosionUpdate;
+
+        for (boost::ptr_list<Explosion>::iterator it = Explosions.begin(); it != Explosions.end(); ++it)
+        {
+            const sf::Vector2f &Pos = it->GetPos();
+            Packet << it->GetTemplate().Name << Pos.x << Pos.y << it->GetTime();
+        }
         Net.SendTcp(Packet, Id);
     }
 }
@@ -592,83 +624,91 @@ void AirTrafficScreen::Step()
     {
         Aircraft &Ac = *it->second;
 
-        boost::ptr_map<sf::Uint32, Aircraft>::iterator it2 = it;
-        for (++it2; it2 != Aircrafts.end(); ++it2)
+        if (!Net.IsActive() || Net.IsServer())
         {
-            if (Ac.Colliding(*it2->second))
+            boost::ptr_map<sf::Uint32, Aircraft>::iterator it2 = it;
+            for (++it2; it2 != Aircrafts.end(); ++it2)
             {
-                break;
-            }
-        }
-
-        boost::ptr_list<Explosion>::iterator it3 = Explosions.begin();
-        for (; it3 != Explosions.end(); ++it3)
-        {
-            if (Ac.Colliding(*it3))
-            {
-                break;
-            }
-        }
-
-        bool ScoreUpdate = false;
-
-        if (it2 != Aircrafts.end())
-        {
-            sf::Vector2f Pos1 = Ac.GetPos(), Pos2 = it2->second->GetPos();
-            SpawnExplosion(Pos1);
-            SpawnExplosion(Pos2);
-            Score -= 10000;
-            ScoreUpdate = true;
-
-            if (Pathing == it->second || Pathing == it2->second) // take care if were drawing a path
-            {
-                Pathing = NULL;
+                if (Ac.Colliding(*it2->second))
+                {
+                    break;
+                }
             }
 
-            Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it->first);
-            Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it2->first);
-
-            Aircrafts.erase(it2);
-            it = Aircrafts.erase(it);
-        }
-        else if (it3 != Explosions.end() && it3->Deadly())
-        {
-            sf::Vector2f Pos1 = Ac.GetPos()/*, Pos2 = it3->GetPos()*/;
-            SpawnExplosion(Pos1);
-            Score -= 5000;
-            ScoreUpdate = true;
-
-            if (Pathing == it->second)
+            boost::ptr_list<Explosion>::iterator it3 = Explosions.begin();
+            for (; it3 != Explosions.end(); ++it3)
             {
-                Pathing = NULL;
+                if (Ac.Colliding(*it3))
+                {
+                    break;
+                }
             }
 
-            Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it->first);
+            bool ScoreUpdate = false;
 
-            it = Aircrafts.erase(it);
-        }
-        else if (Ac.Step(FT, Wind))
-        {
-            Score += 1000;
-            ScoreUpdate = true;
-
-            if (Pathing == it->second) // take care if were drawing a path
+            if (it2 != Aircrafts.end())
             {
-                Pathing = NULL;
+                sf::Vector2f Pos1 = Ac.GetPos(), Pos2 = it2->second->GetPos();
+                SpawnExplosion(Pos1);
+                SpawnExplosion(Pos2);
+                Score -= 10000;
+                ScoreUpdate = true;
+
+                if (Pathing == it->second || Pathing == it2->second) // take care if were drawing a path
+                {
+                    Pathing = NULL;
+                }
+
+                Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it->first);
+                Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it2->first);
+
+                Aircrafts.erase(it2);
+                it = Aircrafts.erase(it);
+            }
+            else if (it3 != Explosions.end() && it3->Deadly())
+            {
+                sf::Vector2f Pos1 = Ac.GetPos()/*, Pos2 = it3->GetPos()*/;
+                SpawnExplosion(Pos1);
+                Score -= 5000;
+                ScoreUpdate = true;
+
+                if (Pathing == it->second)
+                {
+                    Pathing = NULL;
+                }
+
+                Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it->first);
+
+                it = Aircrafts.erase(it);
+            }
+            else if (Ac.Step(FT, Wind))
+            {
+                Score += 1000;
+                ScoreUpdate = true;
+
+                if (Pathing == it->second) // take care if were drawing a path
+                {
+                    Pathing = NULL;
+                }
+
+                Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it->first);
+
+                it = Aircrafts.erase(it);
+            }
+            else
+            {
+                ++it;
             }
 
-            Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftDestroy << it->first);
-
-            it = Aircrafts.erase(it);
+            if (ScoreUpdate)
+            {
+                Net.SendTcp(sf::Packet() << 0 << PacketTypes::ScoreUpdate << Score);
+            }
         }
         else
         {
+            Ac.Step(FT, Wind);
             ++it;
-        }
-
-        if (ScoreUpdate)
-        {
-            Net.SendTcp(sf::Packet() << 0 << PacketTypes::ScoreUpdate << Score);
         }
     }
 
@@ -1074,6 +1114,11 @@ void AirTrafficScreen::SpawnExplosion(sf::Vector2f Pos)
     advance(it, rand() % ExplosionTemplates.size());
     const ExplosionTemplate &Temp = it->second;
     Explosions.push_back(new Explosion(Temp, Textures, Sounds, Pos));
+
+    if (Net.IsServer())
+    {
+        Net.SendTcp(sf::Packet() << 0 << PacketTypes::ExplosionUpdate << Temp.Name << Pos.x << Pos.y << 0.f);
+    }
 }
 
 void AirTrafficScreen::SpawnScenery()
