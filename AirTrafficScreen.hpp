@@ -67,6 +67,7 @@ class AirTrafficScreen : public Screen
 
         Aircraft *Pathing;
         sf::Uint32 PathingAid;
+        void PathingFinish(Aircraft *Ac);
 
         int Score;
 

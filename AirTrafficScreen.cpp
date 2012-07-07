@@ -438,7 +438,7 @@ void AirTrafficScreen::HandleNet()
                         if (it != Aircrafts.end())
                         {
                             it->second->GetPath().TryAddPoint(Pos);
-                            // TODO: Add highlight
+                            PathingFinish(it->second);
                         }
 
                         if (Net.IsServer())
@@ -605,37 +605,7 @@ void AirTrafficScreen::HandleEvents()
                     {
                         Net.SendTcp(sf::Packet() << Net.GetId() << PacketTypes::PathUpdate << PathingAid << MousePos.x << MousePos.y);
                     }
-                    Pathing->GetPath().Highlight = false;
-                    if (Pathing->GetDirection() == Aircraft::In)
-                    {
-                        Runway *Land = 0;
-                        for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
-                        {
-                            vector<string> Landable = Pathing->GetTemplate().Runways;
-                            if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end() &&
-                                it->OnMe(P[P.NumPoints() - 1]) &&
-                                abs(AngleDiff(P.NumPoints() < 2 ? Pathing->GetAngle() : P.EndAngle(), it->GetAngle())) <= it->GetTemplate().LandAngle)
-                            {
-                                Land = &*it;
-                                Pathing->GetPath().Highlight = true;
-                                break;
-                            }
-                        }
-                        Pathing->SetRunway(Land);
-                    }
-                    else
-                    {
-                        sf::Vector2f Point = P[P.NumPoints() - 1];
-                        Aircraft::OutDirections OutDirection = Pathing->GetOutDirection();
-
-                        if ((OutDirection == Aircraft::OutUp && Point.y < 50) ||
-                          (OutDirection == Aircraft::OutDown && Point.y > 550) ||
-                          (OutDirection == Aircraft::OutLeft && Point.x < 50) ||
-                          (OutDirection == Aircraft::OutRight && Point.x > 750))
-                        {
-                            Pathing->GetPath().Highlight = true;
-                        }
-                    }
+                    PathingFinish(Pathing);
                 }
             }
 
@@ -955,6 +925,43 @@ void AirTrafficScreen::Pause(bool Status)
         if (AlarmSound.GetStatus() == sf::Sound::Paused)
         {
             AlarmSound.Play();
+        }
+    }
+}
+
+void AirTrafficScreen::PathingFinish(Aircraft *Ac)
+{
+    Path &P = Ac->GetPath();
+
+    Ac->GetPath().Highlight = false;
+    if (Ac->GetDirection() == Aircraft::In)
+    {
+        Runway *Land = 0;
+        for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+        {
+            vector<string> Landable = Ac->GetTemplate().Runways;
+            if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end() &&
+                it->OnMe(P[P.NumPoints() - 1]) &&
+                abs(AngleDiff(P.NumPoints() < 2 ? Ac->GetAngle() : P.EndAngle(), it->GetAngle())) <= it->GetTemplate().LandAngle)
+            {
+                Land = &*it;
+                Ac->GetPath().Highlight = true;
+                break;
+            }
+        }
+        Ac->SetRunway(Land);
+    }
+    else
+    {
+        sf::Vector2f Point = P[P.NumPoints() - 1];
+        Aircraft::OutDirections OutDirection = Ac->GetOutDirection();
+
+        if ((OutDirection == Aircraft::OutUp && Point.y < 50) ||
+          (OutDirection == Aircraft::OutDown && Point.y > 550) ||
+          (OutDirection == Aircraft::OutLeft && Point.x < 50) ||
+          (OutDirection == Aircraft::OutRight && Point.x > 750))
+        {
+            Ac->GetPath().Highlight = true;
         }
     }
 }
