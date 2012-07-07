@@ -2,24 +2,16 @@
 #include "Math.hpp"
 #include <iostream>
 
-Aircraft::Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway) : Template(NewTemplate), Land(NewRunway)
+Aircraft::Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot) : Template(NewTemplate), Land(0), State(FlyingIn), Direction(Aircraft::In)
 {
     Setup(Textures, Sounds, Pos, Rot);
+    FlySound.Play();
+}
 
-    if (NewRunway != 0)
-    {
-        TakeoffSound.Play();
-        State = TakingOff;
-        Direction = Out;
-        // random shouldn't be here
-        OutDirection = static_cast<OutDirections>(Random(OutUp, OutRight)); //right order
-    }
-    else
-    {
-        FlySound.Play();
-        State = FlyingIn;
-        Direction = In;
-    }
+Aircraft::Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway, OutDirections NewOutDirection) : Template(NewTemplate), Land(NewRunway), State(TakingOff), Direction(Aircraft::Out), OutDirection(NewOutDirection)
+{
+    Setup(Textures, Sounds, Pos, Rot);
+    TakeoffSound.Play();
 }
 
 Aircraft::Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway, States NewState, OutDirections NewOutDirection) : Template(NewTemplate), Land(NewRunway), State(NewState), Direction(Aircraft::Out), OutDirection(NewOutDirection)

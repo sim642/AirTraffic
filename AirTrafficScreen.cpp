@@ -368,8 +368,20 @@ void AirTrafficScreen::HandleNet()
                             switch (Type)
                             {
                                 case PacketTypes::AircraftSpawn:
-                                    Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land);
+                                {
+                                    if (Packet.EndOfPacket()) // in
+                                    {
+                                        Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle);
+                                    }
+                                    else // out
+                                    {
+                                        sf::Uint16 OutDirection;
+                                        Packet >> OutDirection;
+                                        Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land, static_cast<Aircraft::OutDirections>(OutDirection));
+                                    }
+
                                     break;
+                                }
                                 case PacketTypes::AircraftCreateOut:
                                 {
                                     sf::Uint16 State;
@@ -1074,7 +1086,8 @@ void AirTrafficScreen::SpawnAircraft()
             Ready = true;
             Angle = (*it2)->GetAngle();
             Pos = (*it2)->GetPos();
-            New = new Aircraft(Temp, Textures, Sounds, Pos, Angle, *it2);
+            Aircraft::OutDirections OutDirection = static_cast<Aircraft::OutDirections>(Random(Aircraft::OutUp, Aircraft::OutRight)); //right order, shitty random
+            New = new Aircraft(Temp, Textures, Sounds, Pos, Angle, *it2, OutDirection);
 
             for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it3 = Aircrafts.begin(); it3 != Aircrafts.end(); ++it3)
             {
@@ -1164,7 +1177,13 @@ void AirTrafficScreen::SpawnAircraft()
             }
         }
 
-        Net.SendTcp(sf::Packet() << 0 << PacketTypes::AircraftSpawn << Aid << Temp.Name << New->GetPos().x << New->GetPos().y << New->GetAngle() << Rw);
+        sf::Packet Packet;
+        Packet << 0 << PacketTypes::AircraftSpawn << Aid << Temp.Name << New->GetPos().x << New->GetPos().y << New->GetAngle() << Rw;
+        if (New->GetDirection() == Aircraft::Out)
+        {
+            Packet << static_cast<sf::Uint16>(New->GetOutDirection());
+        }
+        Net.SendTcp(Packet);
     }
 }
 

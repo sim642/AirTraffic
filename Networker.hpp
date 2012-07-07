@@ -51,7 +51,7 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
 --6. PointerUpdate--
     sf::Int32 X, sf::Int32 Y
 --7. AircraftSpawn--
-    sf::Uint32 Aid, string Name, float X, float Y, float Angle, sf::Int32 Runway(-1 = None)
+    sf::Uint32 Aid, string Name, float X, float Y, float Angle, sf::Int32 Runway(-1 = None) [, sf::Uint16 OutDirection]
 --8. AircraftCreateOut--
     sf::Uint32 Aid, string Name, float X, float Y, float Angle, sf::Int32 Runway(-1 = None), sf::Uint16 State, sf::Uint16 OutDirection
 --9. AircraftCreateIn--
