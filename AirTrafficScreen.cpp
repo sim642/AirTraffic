@@ -228,210 +228,216 @@ void AirTrafficScreen::KillNet()
 void AirTrafficScreen::HandleNet()
 {
     sf::Packet Packet;
-    switch (Net.Receive(Packet))
+    Networker::ReceiveStatus ReceiveStatus;
+
+    do
     {
-        case Networker::Connected:
+        switch (ReceiveStatus = Net.Receive(Packet))
         {
-            sf::Uint32 Id;
-            Packet >> Id;
-            cout << "Connected (" << Id << ")" << endl;
-            if (Net.IsServer())
+            case Networker::Connected:
             {
-                SendGameData(Id);
+                sf::Uint32 Id;
+                Packet >> Id;
+                cout << "Connected (" << Id << ")" << endl;
+                if (Net.IsServer())
+                {
+                    SendGameData(Id);
+                }
+                break;
             }
-            break;
-        }
-        case Networker::Disconnected:
-        {
-            sf::Uint32 Id;
-            Packet >> Id;
-            cout << "Disconnected (" << Id << ")" << endl;
-
-            Pointers.erase(Id);
-            break;
-        }
-        case Networker::NewPacket:
-        {
-            sf::Uint32 SourceId;
-            PacketType Type;
-            Packet >> SourceId >> Type;
-            cout << "Packet (Id " << SourceId << " Type " << Type << ")" << endl;
-            switch (Type)
+            case Networker::Disconnected:
             {
-                case PacketTypes::SurfaceUpdate:
+                sf::Uint32 Id;
+                Packet >> Id;
+                cout << "Disconnected (" << Id << ")" << endl;
+
+                Pointers.erase(Id);
+                break;
+            }
+            case Networker::NewPacket:
+            {
+                sf::Uint32 SourceId;
+                PacketType Type;
+                Packet >> SourceId >> Type;
+                cout << "Packet (Id " << SourceId << " Type " << Type << ")" << endl;
+                switch (Type)
                 {
-                    if (Net.IsServer())
-                        break;
-                    string Name;
-                    Packet >> Name;
-
-                    map<string, SurfaceTemplate>::iterator it = SurfaceTemplates.find(Name);
-
-                    if (it != SurfaceTemplates.end())
+                    case PacketTypes::SurfaceUpdate:
                     {
-                        if (Background)
-                            delete Background;
-
-                        Background = new Surface(it->second, Textures);
-                    }
-                    break;
-                }
-                case PacketTypes::SceneryUpdate:
-                {
-                    if (Net.IsServer())
-                        break;
-                    Sceneries.clear();
-                    while (!Packet.EndOfPacket())
-                    {
+                        if (Net.IsServer())
+                            break;
                         string Name;
-                        float X, Y, Angle;
-                        Packet >> Name >> X >> Y >> Angle;
+                        Packet >> Name;
 
-                        map<string, SceneryTemplate>::iterator it = SceneryTemplates.find(Name);
+                        map<string, SurfaceTemplate>::iterator it = SurfaceTemplates.find(Name);
 
-                        if (it != SceneryTemplates.end())
-                            Sceneries.push_back(new Scenery(it->second, Textures, sf::Vector2f(X, Y), Angle));
-                    }
-                    break;
-                }
-                case PacketTypes::RunwayUpdate:
-                {
-                    if (Net.IsServer())
-                        break;
-                    Runways.clear();
-                    while (!Packet.EndOfPacket())
-                    {
-                        string Name;
-                        float X, Y, Angle;
-                        Packet >> Name >> X >> Y >> Angle;
-
-                        map<string, RunwayTemplate>::iterator it = RunwayTemplates.find(Name);
-
-                        if (it != RunwayTemplates.end())
-                            Runways.push_back(new Runway(it->second, Textures, sf::Vector2f(X, Y), Angle));
-                    }
-                    break;
-                }
-                case PacketTypes::ScoreUpdate:
-                {
-                    if (Net.IsServer())
-                        break;
-                    Packet >> Score;
-                    break;
-                }
-                case PacketTypes::WindUpdate:
-                {
-                    if (Net.IsServer())
-                        break;
-                    Packet >> Wind.x >> Wind.y;
-                    break;
-                }
-                case PacketTypes::PointerUpdate:
-                {
-                    sf::Vector2i PointerPos;
-                    Packet >> PointerPos.x >> PointerPos.y;
-                    Pointers[SourceId] = PointerPos;
-                    break;
-                }
-                case PacketTypes::AircraftSpawn:
-                case PacketTypes::AircraftCreateOut:
-                case PacketTypes::AircraftCreateIn:
-                {
-                    if (Net.IsServer())
-                        break;
-
-                    sf::Uint32 Aid;
-                    string Name;
-                    sf::Vector2f Pos;
-                    float Angle;
-                    sf::Int32 Rw;
-                    Packet >> Aid >> Name >> Pos.x >> Pos.y >> Angle >> Rw;
-
-                    map<string, AircraftTemplate>::iterator it = AircraftTemplates.find(Name);
-
-                    if (it != AircraftTemplates.end())
-                    {
-                        Runway *Land = 0;
-                        if (Rw >= 0)
+                        if (it != SurfaceTemplates.end())
                         {
-                            boost::ptr_list<Runway>::iterator it2 = Runways.begin();
-                            advance(it2, Rw);
-                            Land = &*it2;
+                            if (Background)
+                                delete Background;
+
+                            Background = new Surface(it->second, Textures);
                         }
-
-                        Aircraft *Ac;
-
-                        switch (Type)
+                        break;
+                    }
+                    case PacketTypes::SceneryUpdate:
+                    {
+                        if (Net.IsServer())
+                            break;
+                        Sceneries.clear();
+                        while (!Packet.EndOfPacket())
                         {
-                            case PacketTypes::AircraftSpawn:
-                                Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land);
-                                break;
-                            case PacketTypes::AircraftCreateOut:
-                            {
-                                sf::Uint16 State;
-                                sf::Uint16 OutDirection;
-                                Packet >> State >> OutDirection;
-                                Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land, static_cast<Aircraft::States>(State), static_cast<Aircraft::OutDirections>(OutDirection));
-                                break;
-                            }
-                            case PacketTypes::AircraftCreateIn:
-                            {
-                                sf::Uint16 State;
-                                sf::Vector2f LandPoint;
-                                Packet >> State >> LandPoint.x >> LandPoint.y;
-                                Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land, static_cast<Aircraft::States>(State), LandPoint);
-                                break;
-                            }
-                            default:
-                                break;
+                            string Name;
+                            float X, Y, Angle;
+                            Packet >> Name >> X >> Y >> Angle;
+
+                            map<string, SceneryTemplate>::iterator it = SceneryTemplates.find(Name);
+
+                            if (it != SceneryTemplates.end())
+                                Sceneries.push_back(new Scenery(it->second, Textures, sf::Vector2f(X, Y), Angle));
                         }
-
-                        Aircrafts.insert(Aid, Ac);
-                    }
-                    break;
-                }
-                case PacketTypes::AircraftDestroy:
-                {
-                    if (Net.IsServer())
                         break;
-
-                    sf::Uint32 Aid;
-                    Packet >> Aid;
-
-                    boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.find(Aid);
-                    if (it != Aircrafts.end())
-                    {
-                        Aircrafts.erase(it);
                     }
-                    break;
-                }
-                case PacketTypes::ExplosionUpdate:
-                {
-                    if (Net.IsServer())
-                        break;
-
-                    while (!Packet.EndOfPacket())
+                    case PacketTypes::RunwayUpdate:
                     {
+                        if (Net.IsServer())
+                            break;
+                        Runways.clear();
+                        while (!Packet.EndOfPacket())
+                        {
+                            string Name;
+                            float X, Y, Angle;
+                            Packet >> Name >> X >> Y >> Angle;
+
+                            map<string, RunwayTemplate>::iterator it = RunwayTemplates.find(Name);
+
+                            if (it != RunwayTemplates.end())
+                                Runways.push_back(new Runway(it->second, Textures, sf::Vector2f(X, Y), Angle));
+                        }
+                        break;
+                    }
+                    case PacketTypes::ScoreUpdate:
+                    {
+                        if (Net.IsServer())
+                            break;
+                        Packet >> Score;
+                        break;
+                    }
+                    case PacketTypes::WindUpdate:
+                    {
+                        if (Net.IsServer())
+                            break;
+                        Packet >> Wind.x >> Wind.y;
+                        break;
+                    }
+                    case PacketTypes::PointerUpdate:
+                    {
+                        sf::Vector2i PointerPos;
+                        Packet >> PointerPos.x >> PointerPos.y;
+                        Pointers[SourceId] = PointerPos;
+                        break;
+                    }
+                    case PacketTypes::AircraftSpawn:
+                    case PacketTypes::AircraftCreateOut:
+                    case PacketTypes::AircraftCreateIn:
+                    {
+                        if (Net.IsServer())
+                            break;
+
+                        sf::Uint32 Aid;
                         string Name;
                         sf::Vector2f Pos;
-                        float Time;
-                        Packet >> Name >> Pos.x >> Pos.y >> Time;
+                        float Angle;
+                        sf::Int32 Rw;
+                        Packet >> Aid >> Name >> Pos.x >> Pos.y >> Angle >> Rw;
 
-                        map<string, ExplosionTemplate>::iterator it = ExplosionTemplates.find(Name);
+                        map<string, AircraftTemplate>::iterator it = AircraftTemplates.find(Name);
 
-                        if (it != ExplosionTemplates.end())
-                            Explosions.push_back(new Explosion(it->second, Textures, Sounds, Pos, Time));
+                        if (it != AircraftTemplates.end())
+                        {
+                            Runway *Land = 0;
+                            if (Rw >= 0)
+                            {
+                                boost::ptr_list<Runway>::iterator it2 = Runways.begin();
+                                advance(it2, Rw);
+                                Land = &*it2;
+                            }
+
+                            Aircraft *Ac;
+
+                            switch (Type)
+                            {
+                                case PacketTypes::AircraftSpawn:
+                                    Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land);
+                                    break;
+                                case PacketTypes::AircraftCreateOut:
+                                {
+                                    sf::Uint16 State;
+                                    sf::Uint16 OutDirection;
+                                    Packet >> State >> OutDirection;
+                                    Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land, static_cast<Aircraft::States>(State), static_cast<Aircraft::OutDirections>(OutDirection));
+                                    break;
+                                }
+                                case PacketTypes::AircraftCreateIn:
+                                {
+                                    sf::Uint16 State;
+                                    sf::Vector2f LandPoint;
+                                    Packet >> State >> LandPoint.x >> LandPoint.y;
+                                    Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle, Land, static_cast<Aircraft::States>(State), LandPoint);
+                                    break;
+                                }
+                                default:
+                                    break;
+                            }
+
+                            Aircrafts.insert(Aid, Ac);
+                        }
+                        break;
                     }
-                    break;
+                    case PacketTypes::AircraftDestroy:
+                    {
+                        if (Net.IsServer())
+                            break;
+
+                        sf::Uint32 Aid;
+                        Packet >> Aid;
+
+                        boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.find(Aid);
+                        if (it != Aircrafts.end())
+                        {
+                            Aircrafts.erase(it);
+                        }
+                        break;
+                    }
+                    case PacketTypes::ExplosionUpdate:
+                    {
+                        if (Net.IsServer())
+                            break;
+
+                        while (!Packet.EndOfPacket())
+                        {
+                            string Name;
+                            sf::Vector2f Pos;
+                            float Time;
+                            Packet >> Name >> Pos.x >> Pos.y >> Time;
+
+                            map<string, ExplosionTemplate>::iterator it = ExplosionTemplates.find(Name);
+
+                            if (it != ExplosionTemplates.end())
+                                Explosions.push_back(new Explosion(it->second, Textures, Sounds, Pos, Time));
+                        }
+                        break;
+                    }
                 }
+                break;
             }
-            break;
-        }
-        case Networker::NoPacket:
-        {
-            break;
+            case Networker::NoPacket:
+            {
+                break;
+            }
         }
     }
+    while (ReceiveStatus != Networker::NoPacket);
 }
 
 void AirTrafficScreen::SendGameData(const sf::Uint32 Id)
