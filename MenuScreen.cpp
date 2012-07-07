@@ -82,7 +82,11 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                             RemoveItem("Join game");
                             RemoveItem("Host server");
                             RemoveItem("New game");
-                            ATS->SetupClient("localhost");
+
+                            string Host;
+                            cout << "Host: ";
+                            getline(cin, Host);
+                            ATS->SetupClient(Host);
                             return AirTrafficType;
                         }
                         else if (Selected == "Host server")
