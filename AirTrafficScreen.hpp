@@ -66,6 +66,7 @@ class AirTrafficScreen : public Screen
         map<sf::Uint32, sf::Vector2i> Pointers;
 
         Aircraft *Pathing;
+        sf::Uint32 PathingAid;
 
         int Score;
 

@@ -428,6 +428,42 @@ void AirTrafficScreen::HandleNet()
                         }
                         break;
                     }
+                    case PacketTypes::PathUpdate:
+                    {
+                        sf::Uint32 Aid;
+                        sf::Vector2f Pos;
+                        Packet >> Aid >> Pos.x >> Pos.y;
+
+                        boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.find(Aid);
+                        if (it != Aircrafts.end())
+                        {
+                            it->second->GetPath().TryAddPoint(Pos);
+                            // TODO: Add highlight
+                        }
+
+                        if (Net.IsServer())
+                        {
+                            Net.SendTcp(sf::Packet() << SourceId << PacketTypes::PathUpdate << Aid << Pos.x << Pos.y);
+                        }
+                        break;
+                    }
+                    case PacketTypes::PathClear:
+                    {
+                        sf::Uint32 Aid;
+                        Packet >> Aid;
+
+                        boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.find(Aid);
+                        if (it != Aircrafts.end())
+                        {
+                            it->second->GetPath().Clear();
+                        }
+
+                        if (Net.IsServer())
+                        {
+                            Net.SendTcp(sf::Packet() << SourceId << PacketTypes::PathClear << Aid);
+                        }
+                        break;
+                    }
                 }
                 break;
             }
@@ -533,8 +569,15 @@ void AirTrafficScreen::HandleEvents()
                 if (Ac.Pathable() && Ac.OnMe(MousePos))
                 {
                     Pathing = &Ac;
+                    PathingAid = it->first;
                     Pathing->GetPath().Clear();
                     Pathing->GetPath().TryAddPoint(MousePos);
+
+                    if (Net.IsActive())
+                    {
+                        Net.SendTcp(sf::Packet() << Net.GetId() << PacketTypes::PathClear << PathingAid);
+                        Net.SendTcp(sf::Packet() << Net.GetId() << PacketTypes::PathUpdate << PathingAid << MousePos.x << MousePos.y);
+                    }
 
                     break;
                 }
@@ -558,6 +601,10 @@ void AirTrafficScreen::HandleEvents()
                 Path &P = Pathing->GetPath();
                 if (P.TryAddPoint(MousePos))
                 {
+                    if (Net.IsActive())
+                    {
+                        Net.SendTcp(sf::Packet() << Net.GetId() << PacketTypes::PathUpdate << PathingAid << MousePos.x << MousePos.y);
+                    }
                     Pathing->GetPath().Highlight = false;
                     if (Pathing->GetDirection() == Aircraft::In)
                     {
