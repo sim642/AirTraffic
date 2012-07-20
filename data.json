@@ -97,7 +97,7 @@
             "landingres": "heli_landing.wav",
             "framew": 50,
             "frameh": 50,
-            "framerate": 20,
+            "framerate": 30,
             "radius": 25,
             "speed": 65,
             "turn": 5,
