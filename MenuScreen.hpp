@@ -34,6 +34,11 @@ class MenuScreen : public Screen
         sf::Font FontBold;
         sf::Text TitleText;
 
+        bool Input;
+        sf::Text QuestionText, UserText;
+        size_t UserTypePos;
+        sf::Text CaretText;
+
         vector<string> Items;
         sf::Text ItemText;
         unsigned int ItemSelected;

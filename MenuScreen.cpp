@@ -1,6 +1,7 @@
 #include "MenuScreen.hpp"
+#include <cctype>
 
-MenuScreen::MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATS) : Screen(NewApp), ATS(NewATS), SelectionColor(200, 255, 150)
+MenuScreen::MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATS) : Screen(NewApp), ATS(NewATS), Input(false), SelectionColor(200, 255, 150)
 {
     GrassTex.LoadFromFile("res/Grass192_2.png");
     GrassSpr.SetTexture(GrassTex);
@@ -17,6 +18,18 @@ MenuScreen::MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATS) : Scr
     TitleText.SetCharacterSize(100);
     TitleText.SetString("AirTraffic");
     TitleText.SetPosition(50.f, 90.f);
+
+    QuestionText.SetFont(FontBold);
+    QuestionText.SetCharacterSize(50);
+    QuestionText.SetPosition(100.f, 250.f);
+
+    UserText.SetFont(Font);
+    UserText.SetCharacterSize(50);
+    UserText.SetPosition(170.f, 300.f);
+
+    CaretText.SetFont(Font);
+    CaretText.SetCharacterSize(50);
+    CaretText.SetString("|");
 
     ItemText.SetFont(Font);
     ItemText.SetCharacterSize(50);
@@ -62,76 +75,130 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
             }
             else if (Event.Type == sf::Event::KeyPressed)
             {
-                switch (Event.Key.Code)
+                if (Input)
                 {
-                    case sf::Keyboard::Return:
+                    switch (Event.Key.Code)
                     {
-                        string Selected = Items[ItemSelected];
-                        if (Selected == "Continue")
+                        case sf::Keyboard::Return:
                         {
-                            return AirTrafficType;
-                        }
-                        else if (Selected == "New game")
-                        {
-                            ATS->Reset();
-                            return AirTrafficType;
-                        }
-                        else if (Selected == "Join game")
-                        {
+                            Input = false;
+
                             AddItemBefore("Disconnect", "Join game");
                             RemoveItem("Join game");
                             RemoveItem("Host server");
                             RemoveItem("New game");
 
-                            string Host;
-                            cout << "Host: ";
-                            getline(cin, Host);
-                            ATS->SetupClient(Host);
+                            ATS->SetupClient(UserText.GetString());
                             return AirTrafficType;
                         }
-                        else if (Selected == "Host server")
+
+                        case sf::Keyboard::Escape:
+                            Input = false;
+                            break;
+
+                        case sf::Keyboard::Back:
                         {
-                            AddItemBefore("Disconnect", "Join game");
-                            RemoveItem("Join game");
-                            RemoveItem("Host server");
-                            ATS->SetupServer();
-                            return AirTrafficType;
+                            if (UserTypePos > 0)
+                            {
+                                sf::String Str = UserText.GetString();
+                                Str.Erase(UserTypePos - 1);
+                                UserText.SetString(Str);
+                                UserTypePos--;
+                            }
+                            break;
                         }
-                        else if (Selected == "Disconnect")
-                        {
-                            if (!HasItem("New game"))
-                                AddItemAfter("New game", "Continue");
-                            AddItemAfter("Join game", "Disconnect");
-                            AddItemAfter("Host server", "Join game");
-                            RemoveItem("Disconnect");
-                            ItemSelected = 0;
-                            ATS->KillNet();
-                        }
-                        else if (Selected == "Exit")
-                        {
-                            return ExitType;
-                        }
-                        break;
+
+                        case sf::Keyboard::Left:
+                            if (UserTypePos > 0)
+                            {
+                                UserTypePos--;
+                            }
+                            break;
+
+                        case sf::Keyboard::Right:
+                            if (UserTypePos < UserText.GetString().GetSize())
+                            {
+                                UserTypePos++;
+                            }
+
+                        default:
+                            break;
                     }
-
-                    case sf::Keyboard::Escape:
-                        if (Paused)
-                        {
-                            return AirTrafficType;
-                        }
-                        break;
-
-                    case sf::Keyboard::Up:
-                        ItemSelected = (ItemSelected == 0 ? Items.size() : ItemSelected) - 1;
-                        break;
-
-                    case sf::Keyboard::Down:
-                        ++ItemSelected %= Items.size(); // magic
-                        break;
-
-                    default:
-                        break;
                 }
+                else
+                {
+                    switch (Event.Key.Code)
+                    {
+                        case sf::Keyboard::Return:
+                        {
+                            string Selected = Items[ItemSelected];
+                            if (Selected == "Continue")
+                            {
+                                return AirTrafficType;
+                            }
+                            else if (Selected == "New game")
+                            {
+                                ATS->Reset();
+                                return AirTrafficType;
+                            }
+                            else if (Selected == "Join game")
+                            {
+                                Input = true;
+                                QuestionText.SetString("Host: ");
+                                UserText.SetString("");
+                                UserTypePos = 0;
+                            }
+                            else if (Selected == "Host server")
+                            {
+                                AddItemBefore("Disconnect", "Join game");
+                                RemoveItem("Join game");
+                                RemoveItem("Host server");
+                                ATS->SetupServer();
+                                return AirTrafficType;
+                            }
+                            else if (Selected == "Disconnect")
+                            {
+                                if (!HasItem("New game"))
+                                    AddItemAfter("New game", "Continue");
+                                AddItemAfter("Join game", "Disconnect");
+                                AddItemAfter("Host server", "Join game");
+                                RemoveItem("Disconnect");
+                                ItemSelected = 0;
+                                ATS->KillNet();
+                            }
+                            else if (Selected == "Exit")
+                            {
+                                return ExitType;
+                            }
+                            break;
+                        }
+
+                        case sf::Keyboard::Escape:
+                            if (Paused)
+                            {
+                                return AirTrafficType;
+                            }
+                            break;
+
+                        case sf::Keyboard::Up:
+                            ItemSelected = (ItemSelected == 0 ? Items.size() : ItemSelected) - 1;
+                            break;
+
+                        case sf::Keyboard::Down:
+                            ++ItemSelected %= Items.size(); // magic
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            else if (Input && Event.Type == sf::Event::TextEntered && iswprint(Event.Text.Unicode))
+            {
+                sf::String Str = UserText.GetString();
+                Str.Insert(UserTypePos, Event.Text.Unicode);
+                UserText.SetString(Str);
+                UserTypePos++;
             }
         }
 
@@ -157,16 +224,27 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
         App.Draw(FadeSpr);
 
         App.Draw(TitleText);
-        for (unsigned int i = 0; i < Items.size(); i++)
-        {
-            ItemText.SetPosition(100.f, 250.f + i * 70.f);
-            ItemText.SetString(Items[i]);
-            ItemText.SetColor(i == ItemSelected ? SelectionColor : sf::Color::White);
-            App.Draw(ItemText);
-        }
 
-        Cursor.SetPosition(65.f, 250.f + ItemSelected * 70.f);
-        App.Draw(Cursor);
+        if (Input)
+        {
+            App.Draw(QuestionText);
+            App.Draw(UserText);
+            CaretText.SetPosition(UserText.FindCharacterPos(UserTypePos) + sf::Vector2f(-8.f, 2.f));
+            App.Draw(CaretText);
+        }
+        else
+        {
+            for (unsigned int i = 0; i < Items.size(); i++)
+            {
+                ItemText.SetPosition(100.f, 250.f + i * 70.f);
+                ItemText.SetString(Items[i]);
+                ItemText.SetColor(i == ItemSelected ? SelectionColor : sf::Color::White);
+                App.Draw(ItemText);
+            }
+
+            Cursor.SetPosition(65.f, 250.f + ItemSelected * 70.f);
+            App.Draw(Cursor);
+        }
 
         App.Display();
     }
