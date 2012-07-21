@@ -447,7 +447,7 @@ void AirTrafficScreen::HandleNet()
                         Packet >> Aid >> Pos.x >> Pos.y;
 
                         boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.find(Aid);
-                        if (it != Aircrafts.end())
+                        if (it != Aircrafts.end() && it->second->Pathable())
                         {
                             it->second->GetPath().TryAddPoint(Pos);
                             PathingFinish(it->second);
@@ -465,8 +465,9 @@ void AirTrafficScreen::HandleNet()
                         Packet >> Aid;
 
                         boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.find(Aid);
-                        if (it != Aircrafts.end())
+                        if (it != Aircrafts.end() && it->second->Pathable())
                         {
+                            it->second->SetRunway(NULL);
                             it->second->GetPath().Clear();
                         }
 
@@ -582,6 +583,7 @@ void AirTrafficScreen::HandleEvents()
                 {
                     Pathing = &Ac;
                     PathingAid = it->first;
+                    Pathing->SetRunway(NULL);
                     Pathing->GetPath().Clear();
                     Pathing->GetPath().TryAddPoint(MousePos);
 
