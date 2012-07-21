@@ -1,6 +1,6 @@
 {
-    "runways":
-    [
+	"runways":
+	[
 		{
 			"name": "runway1",
 			"res": "Runway1.png",
@@ -22,16 +22,16 @@
 			"directional": true
 		},
 		{
-            "name": "helipad",
-            "res": "Helipad.png",
-            "centerx": 25,
-            "centery": 25,
-            "radius": 20,
-            "landangle": 180,
-            "length": 10,
-            "directional": false
+			"name": "helipad",
+			"res": "Helipad.png",
+			"centerx": 25,
+			"centery": 25,
+			"radius": 20,
+			"landangle": 180,
+			"length": 10,
+			"directional": false
 		}
-    ],
+	],
 	"aircrafts":
 	[
 		{
@@ -79,60 +79,60 @@
 			"runways": ["runway1", "runway2"]
 		},
 		{
-            "name": "fat",
-            "res": "Aircraft5.png",
-            "takeoffres": "jet_takeoff.wav",
-            "flyres": "jet_fly.wav",
+			"name": "fat",
+			"res": "Aircraft5.png",
+			"takeoffres": "jet_takeoff.wav",
+			"flyres": "jet_fly.wav",
 			"landingres": "jet_landing.wav",
-            "radius": 40,
-            "speed": 130,
-            "turn": 1.25,
-            "runways": ["runway2"]
+			"radius": 40,
+			"speed": 130,
+			"turn": 1.25,
+			"runways": ["runway2"]
 		},
 		{
-            "name": "heli",
-            "res": "Heli1.png",
-            "takeoffres": "heli_takeoff.wav",
-            "flyres": "heli_fly.wav",
-            "landingres": "heli_landing.wav",
-            "framew": 50,
-            "frameh": 50,
-            "framerate": 30,
-            "radius": 25,
-            "speed": 65,
-            "turn": 5,
-            "runways": ["helipad"]
+			"name": "heli",
+			"res": "Heli1.png",
+			"takeoffres": "heli_takeoff.wav",
+			"flyres": "heli_fly.wav",
+			"landingres": "heli_landing.wav",
+			"framew": 50,
+			"frameh": 50,
+			"framerate": 30,
+			"radius": 25,
+			"speed": 65,
+			"turn": 5,
+			"runways": ["helipad"]
 		}
 	],
 	"explosions":
 	[
-        {
-            "name": "exp1",
-            "res": "Exp2.png",
-            "soundres": "exp.wav",
-            "radius": 128,
-            "time": 3.0
-        }
+		{
+			"name": "exp1",
+			"res": "Exp2.png",
+			"soundres": "exp.wav",
+			"radius": 128,
+			"time": 3.0
+		}
 	],
 	"sceneries":
 	[
-        {
-            "name": "lake",
-            "res": "lake.png",
-            "framew": 100,
-            "frameh": 100,
-            "framerate": 1.0
-        }
+		{
+			"name": "lake",
+			"res": "lake.png",
+			"framew": 100,
+			"frameh": 100,
+			"framerate": 1.0
+		}
 	],
 	"surfaces":
 	[
-        {
-            "name": "grass",
-            "res": "Grass192_2.png"
-        },
-        {
-            "name": "desert",
-            "res": "desert.png"
-        }
+		{
+			"name": "grass",
+			"res": "Grass192_2.png"
+		},
+		{
+			"name": "desert",
+			"res": "desert.png"
+		}
 	]
 }
