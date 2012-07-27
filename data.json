@@ -102,6 +102,17 @@
 			"speed": 65,
 			"turn": 5,
 			"runways": ["helipad"]
+		},
+		{
+			"name": "fighter",
+			"res": "Aircraft6.png",
+			"takeoffres": "jet_takeoff.wav",
+			"flyres": "jet_fly.wav",
+			"landingres": "jet_landing.wav",
+			"radius": 25,
+			"speed": 180,
+			"turn": 3,
+			"runways": ["runway1", "runway2"]
 		}
 	],
 	"explosions":
