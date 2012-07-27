@@ -236,13 +236,13 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
         {
             for (unsigned int i = 0; i < Items.size(); i++)
             {
-                ItemText.SetPosition(100.f, 250.f + i * 70.f);
+                ItemText.SetPosition(100.f, 220.f + i * 70.f);
                 ItemText.SetString(Items[i]);
                 ItemText.SetColor(i == ItemSelected ? SelectionColor : sf::Color::White);
                 App.Draw(ItemText);
             }
 
-            Cursor.SetPosition(65.f, 250.f + ItemSelected * 70.f);
+            Cursor.SetPosition(65.f, 220.f + ItemSelected * 70.f);
             App.Draw(Cursor);
         }
 

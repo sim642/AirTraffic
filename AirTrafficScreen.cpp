@@ -825,9 +825,9 @@ void AirTrafficScreen::Draw()
     }
 
     // aircraft shadows
-    for (boost::ptr_list<Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+    for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
-        it->DrawShadow(App);
+        it->second->DrawShadow(App);
     }
 
     // aircraft paths
