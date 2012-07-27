@@ -82,6 +82,7 @@ class Aircraft
 
         bool Step(float FT, sf::Vector2f Wind);
         void Draw(sf::RenderWindow &App);
+        void DrawShadow(sf::RenderWindow &App);
     private:
         void Setup(map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot);
 
