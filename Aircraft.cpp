@@ -202,7 +202,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
             sf::Vector2f From(400.f, 300.f);
             Shape.SetRotation(RadToDeg(atan2(Me.y - From.y, Me.x - From.x)));
 
-            if (Me.x < 0 || Me.x > 800 || Me.y < 0 || Me.y > 600)
+            if (Me.x < -Radius || Me.x > (800 + Radius) || Me.y < -Radius || Me.y > (600 + Radius))
             {
                 Die = true;
             }
