@@ -1,7 +1,6 @@
 #include "Collision.hpp"
 #include "Math.hpp"
 #include <utility>
-#include <iostream>
 
 using namespace std;
 
@@ -56,12 +55,9 @@ bool CollidingSprites(const sf::Sprite &A, const sf::Sprite &B)
 
         sf::Vector2f P1 = T.TransformPoint(0.f, 0.f);
         sf::Vector2f P2 = T.TransformPoint(i % 2 == 0 ? sf::Vector2f(Shape.GetLocalBounds().Width, 0.f) : sf::Vector2f(0.f, Shape.GetLocalBounds().Height));
-        cout << P1.x << ";" << P1.y << "  " << P2.x << ";" << P2.y << endl;
 
         sf::Vector2f Edge = P1 - P2; // alternate edge
         Axes[i] = Normalize(sf::Vector2f(-Edge.y, Edge.x)); // perpendicular vector
-
-        cout << " " << Axes[i].x << ";" << Axes[i].y << endl;
     }
 
     for (int i = 0; i < 4; i++) // test all axes
@@ -69,17 +65,9 @@ bool CollidingSprites(const sf::Sprite &A, const sf::Sprite &B)
         Projection PA = Project(A, Axes[i]);
         Projection PB = Project(B, Axes[i]);
 
-        cout << "." << PA.first << "-" << PA.second << "  " << PB.first << "-" << PB.second << endl;
-
         if (!ProjectionIntersect(PA, PB))
-        {
-            cout << "NO INTER" << endl;
             return false;
-        }
     }
 
-    cout << "INTER" << endl;
-    cout << endl;
-
-    return true; /// HOLY FUCKING FIX
+    return true;
 }
