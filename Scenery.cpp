@@ -1,4 +1,5 @@
 #include "Scenery.hpp"
+#include "Collision.hpp"
 
 Scenery::Scenery(const SceneryTemplate &NewTemplate, map<string, sf::Texture> &Textures, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
 {
@@ -24,12 +25,12 @@ SceneryTemplate Scenery::GetTemplate()
 
 bool Scenery::Colliding(const Scenery &Other)
 {
-    return Shape.GetGlobalBounds().Intersects(Other.Shape.GetGlobalBounds());
+    return CollidingSprites(Shape, Other.Shape);
 }
 
 bool Scenery::Colliding(const Runway &Other)
 {
-    return Shape.GetGlobalBounds().Intersects(Other.Shape.GetGlobalBounds());
+    return CollidingSprites(Shape, Other.Shape);
 }
 
 sf::Vector2f Scenery::GetPos()

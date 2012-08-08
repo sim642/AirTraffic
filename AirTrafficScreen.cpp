@@ -89,12 +89,12 @@ void AirTrafficScreen::Reset()
 
     PickSurface();
 
-    for (int n = 0; n < 2; n++)
+    for (int n = 0; n < 3; n++)
     {
         SpawnRunway();
     }
 
-    for (int n = 0; n < 2; n++)
+    for (int n = 0; n < 5; n++)
     {
         SpawnScenery();
     }

@@ -48,6 +48,8 @@
 		<Unit filename="Aircraft.hpp" />
 		<Unit filename="AnimSprite.cpp" />
 		<Unit filename="AnimSprite.hpp" />
+		<Unit filename="Collision.cpp" />
+		<Unit filename="Collision.hpp" />
 		<Unit filename="Explosion.cpp" />
 		<Unit filename="Explosion.hpp" />
 		<Unit filename="GraphUtil.cpp" />
