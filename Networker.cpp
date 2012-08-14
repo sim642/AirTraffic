@@ -156,10 +156,18 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
             {
                 sf::IpAddress Ip;
                 sf::Uint16 UdpPort;
-                sf::Socket::Status Status = Udp.Receive(Packet, Ip, UdpPort); // need to validate source ip
+                sf::Socket::Status Status = Udp.Receive(Packet, Ip, UdpPort);
                 if (Status == sf::Socket::Done)
                 {
-                    return NewPacket;
+                    vector<ClientPair*>::iterator it;
+                    for (it = ServerConns.begin(); it != ServerConns.end(); ++it)
+                    {
+                        ClientPair &Pair = **it;
+                        if (Pair.Ip == Ip)
+                        {
+                            return NewPacket;
+                        }
+                    }
                 }
             }
             else
@@ -220,8 +228,8 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
             {
                 sf::IpAddress Ip;
                 sf::Uint16 UdpPort;
-                sf::Socket::Status Status = Udp.Receive(Packet, Ip, UdpPort); // need to validate source ip
-                if (Status == sf::Socket::Done)
+                sf::Socket::Status Status = Udp.Receive(Packet, Ip, UdpPort);
+                if (Status == sf::Socket::Done && Ip == ClientSocket.Ip)
                 {
                     return NewPacket;
                 }
