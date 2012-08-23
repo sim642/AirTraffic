@@ -66,6 +66,8 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
 
     while (1)
     {
+        bool ItemPicked = false;
+
         sf::Event Event;
         while (App.PollEvent(Event))
         {
@@ -131,45 +133,7 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                     {
                         case sf::Keyboard::Return:
                         {
-                            string Selected = Items[ItemSelected];
-                            if (Selected == "Continue")
-                            {
-                                return AirTrafficType;
-                            }
-                            else if (Selected == "New game")
-                            {
-                                ATS->Reset();
-                                return AirTrafficType;
-                            }
-                            else if (Selected == "Join game")
-                            {
-                                Input = true;
-                                QuestionText.SetString("Host: ");
-                                UserText.SetString("");
-                                UserTypePos = 0;
-                            }
-                            else if (Selected == "Host server")
-                            {
-                                AddItemBefore("Disconnect", "Join game");
-                                RemoveItem("Join game");
-                                RemoveItem("Host server");
-                                ATS->SetupServer();
-                                return AirTrafficType;
-                            }
-                            else if (Selected == "Disconnect")
-                            {
-                                if (!HasItem("New game"))
-                                    AddItemAfter("New game", "Continue");
-                                AddItemAfter("Join game", "Disconnect");
-                                AddItemAfter("Host server", "Join game");
-                                RemoveItem("Disconnect");
-                                ItemSelected = 0;
-                                ATS->KillNet();
-                            }
-                            else if (Selected == "Exit")
-                            {
-                                return ExitType;
-                            }
+                            ItemPicked = true;
                             break;
                         }
 
@@ -199,6 +163,78 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                 Str.Insert(UserTypePos, Event.Text.Unicode);
                 UserText.SetString(Str);
                 UserTypePos++;
+            }
+            else if (Event.Type == sf::Event::MouseMoved || Event.Type == sf::Event::MouseButtonPressed)
+            {
+                for (unsigned int i = 0; i < Items.size(); i++)
+                {
+                    ItemText.SetPosition(100.f, 220.f + i * 70.f);
+                    ItemText.SetString(Items[i]);
+
+                    sf::Vector2f MousePos;
+                    if (Event.Type == sf::Event::MouseMoved)
+                    {
+                        MousePos = sf::Vector2f(Event.MouseMove.X, Event.MouseMove.Y);
+                    }
+                    else if (Event.Type == sf::Event::MouseButtonPressed)
+                    {
+                        MousePos = sf::Vector2f(Event.MouseButton.X, Event.MouseButton.Y);
+                    }
+
+                    if (ItemText.GetGlobalBounds().Contains(MousePos))
+                    {
+                        ItemSelected = i;
+                        if (Event.Type == sf::Event::MouseButtonPressed)
+                        {
+                            ItemPicked = true;
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (ItemPicked)
+        {
+            string Selected = Items[ItemSelected];
+            if (Selected == "Continue")
+            {
+                return AirTrafficType;
+            }
+            else if (Selected == "New game")
+            {
+                ATS->Reset();
+                return AirTrafficType;
+            }
+            else if (Selected == "Join game")
+            {
+                Input = true;
+                QuestionText.SetString("Host: ");
+                UserText.SetString("");
+                UserTypePos = 0;
+            }
+            else if (Selected == "Host server")
+            {
+                AddItemBefore("Disconnect", "Join game");
+                RemoveItem("Join game");
+                RemoveItem("Host server");
+                ATS->SetupServer();
+                return AirTrafficType;
+            }
+            else if (Selected == "Disconnect")
+            {
+                if (!HasItem("New game"))
+                    AddItemAfter("New game", "Continue");
+                AddItemAfter("Join game", "Disconnect");
+                AddItemAfter("Host server", "Join game");
+                RemoveItem("Disconnect");
+                ItemSelected = 0;
+                ATS->KillNet();
+            }
+            else if (Selected == "Exit")
+            {
+                return ExitType;
             }
         }
 
