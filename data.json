@@ -133,6 +133,13 @@
 			"framew": 100,
 			"frameh": 100,
 			"framerate": 1.0
+		},
+		{
+			"name": "tower",
+			"res": "Tower.png",
+			"framew": 96,
+			"frameh": 48,
+			"framerate": 1.0
 		}
 	],
 	"surfaces":
