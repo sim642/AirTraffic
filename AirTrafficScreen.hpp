@@ -64,6 +64,10 @@ class AirTrafficScreen : public Screen
         sf::Sound AlarmSound;
 
         map<sf::Uint32, sf::Vector2i> Pointers;
+        sf::Vector2f PointerLast;
+        static const float PointerLerp = 0.65f;
+
+        static const float SoundSpeed = 1000.f;
 
         Aircraft *Pathing;
         sf::Uint32 PathingAid;

@@ -73,6 +73,8 @@ class Aircraft
         OutDirections GetOutDirection();
         sf::Vector2f GetLandPoint();
 
+        sf::Vector2f GetVelocity();
+
         bool Colliding(const Aircraft &Other) const;
         bool Colliding(const Explosion &Exp) const;
 
@@ -83,6 +85,8 @@ class Aircraft
         bool Step(float FT, sf::Vector2f Wind);
         void Draw(sf::RenderWindow &App);
         void DrawShadow(sf::RenderWindow &App);
+
+        void SetPitch(float Pitch);
     private:
         void Setup(map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot);
 

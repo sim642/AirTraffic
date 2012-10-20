@@ -119,6 +119,11 @@ sf::Vector2f Aircraft::GetLandPoint()
     return LandPoint;
 }
 
+sf::Vector2f Aircraft::GetVelocity()
+{
+    return sf::Vector2f(cos(DegToRad(Shape.GetRotation())), sin(DegToRad(Shape.GetRotation()))) * Speed;
+}
+
 bool Aircraft::Colliding(const Aircraft &Other) const
 {
     const sf::Vector2f &Me = Shape.GetPosition();
@@ -345,4 +350,11 @@ void Aircraft::DrawShadow(sf::RenderWindow &App)
     sf::Transform Transform;
     Transform.Scale(sf::Vector2f(Scale, Scale), sf::Vector2f(App.GetWidth() / 2, App.GetHeight() * 0.8f));
     App.Draw(Shape, Transform);
+}
+
+void Aircraft::SetPitch(float Pitch)
+{
+    TakeoffSound.SetPitch(Pitch);
+    FlySound.SetPitch(Pitch);
+    LandingSound.SetPitch(Pitch);
 }
