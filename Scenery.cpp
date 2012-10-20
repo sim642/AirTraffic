@@ -16,6 +16,7 @@ Scenery::Scenery(const SceneryTemplate &NewTemplate, map<string, sf::Texture> &T
     }
     Shape.SetPosition(Pos);
     Shape.SetRotation(Rot);
+    Shape.SetFrame(rand() % Shape.GetFrameCount());
 }
 
 SceneryTemplate Scenery::GetTemplate()
