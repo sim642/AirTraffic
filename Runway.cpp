@@ -4,10 +4,10 @@
 
 Runway::Runway(const RunwayTemplate &NewTemplate, map<string, sf::Texture> &Texture, sf::Vector2f Pos, float Rot) : Template(NewTemplate)
 {
-    Shape.SetTexture(Texture[Template.Res]);
-    Shape.SetOrigin(Template.Center);
-    Shape.SetPosition(Pos);
-    Shape.SetRotation(Rot);
+    Shape.setTexture(Texture[Template.Res]);
+    Shape.setOrigin(Template.Center);
+    Shape.setPosition(Pos);
+    Shape.setRotation(Rot);
 
     Radius = Template.Radius;
 }
@@ -19,7 +19,7 @@ RunwayTemplate Runway::GetTemplate()
 
 bool Runway::OnMe(sf::Vector2f Pos)
 {
-    const sf::Vector2f &Me = Shape.GetPosition();
+    const sf::Vector2f &Me = Shape.getPosition();
     return InRange(Me, Pos, Radius);
 }
 
@@ -30,12 +30,12 @@ bool Runway::Colliding(const Runway &Other)
 
 sf::Vector2f Runway::GetPos()
 {
-    return Shape.GetPosition();
+    return Shape.getPosition();
 }
 
 float Runway::GetAngle()
 {
-    return Shape.GetRotation();
+    return Shape.getRotation();
 }
 
 float Runway::GetLength()
@@ -45,7 +45,7 @@ float Runway::GetLength()
 
 void Runway::Draw(sf::RenderWindow &App)
 {
-    App.Draw(Shape);
+    App.draw(Shape);
 }
 
 

@@ -5,13 +5,13 @@
 Aircraft::Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot) : Template(NewTemplate), Land(0), State(FlyingIn), Direction(Aircraft::In)
 {
     Setup(Textures, Sounds, Pos, Rot);
-    FlySound.Play();
+    FlySound.play();
 }
 
 Aircraft::Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway, OutDirections NewOutDirection) : Template(NewTemplate), Land(NewRunway), State(TakingOff), Direction(Aircraft::Out), OutDirection(NewOutDirection)
 {
     Setup(Textures, Sounds, Pos, Rot);
-    TakeoffSound.Play();
+    TakeoffSound.play();
 }
 
 Aircraft::Aircraft(const AircraftTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, Runway *NewRunway, States NewState, OutDirections NewOutDirection) : Template(NewTemplate), Land(NewRunway), State(NewState), Direction(Aircraft::Out), OutDirection(NewOutDirection)
@@ -30,23 +30,23 @@ void Aircraft::Setup(map<string, sf::Texture> &Textures, map<string, sf::SoundBu
     if (Template.FrameSize.x >= 0 || Template.FrameSize.y >= 0)
     {
         Shape = AnimSprite(Texture, Template.FrameSize, Template.FrameRate);
-        Shape.SetOrigin(Template.FrameSize.x / 2.f, Template.FrameSize.y / 2.f);
+        Shape.setOrigin(Template.FrameSize.x / 2.f, Template.FrameSize.y / 2.f);
     }
     else
     {
-        Shape = AnimSprite(Texture, sf::Vector2i(Texture.GetWidth(), Texture.GetHeight()), 0.f);
-        Shape.SetOrigin(Texture.GetWidth() / 2, Texture.GetWidth() / 2);
+        Shape = AnimSprite(Texture, sf::Vector2i(Texture.getSize()), 0.f);
+        Shape.setOrigin(sf::Vector2f(Texture.getSize()) / 2.f);
     }
-    Shape.SetPosition(Pos);
-    Shape.SetRotation(Rot);
+    Shape.setPosition(Pos);
+    Shape.setRotation(Rot);
 
-    TakeoffSound.SetBuffer(Sounds[Template.TakeoffRes]);
-    TakeoffSound.SetAttenuation(0.01f);
-    FlySound.SetBuffer(Sounds[Template.FlyRes]);
-    FlySound.SetLoop(true);
-    FlySound.SetAttenuation(0.01f);
-    LandingSound.SetBuffer(Sounds[Template.LandingRes]);
-    LandingSound.SetAttenuation(0.01f);
+    TakeoffSound.setBuffer(Sounds[Template.TakeoffRes]);
+    TakeoffSound.setAttenuation(0.01f);
+    FlySound.setBuffer(Sounds[Template.FlyRes]);
+    FlySound.setLoop(true);
+    FlySound.setAttenuation(0.01f);
+    LandingSound.setBuffer(Sounds[Template.LandingRes]);
+    LandingSound.setAttenuation(0.01f);
 
     Radius = Template.Radius;
     Speed = Template.Speed;
@@ -60,12 +60,12 @@ const AircraftTemplate& Aircraft::GetTemplate() const
 
 sf::Vector2f Aircraft::GetPos() const
 {
-    return Shape.GetPosition();
+    return Shape.getPosition();
 }
 
 float Aircraft::GetAngle() const
 {
-    return Shape.GetRotation();
+    return Shape.getRotation();
 }
 
 Runway* const Aircraft::GetLand() const
@@ -85,7 +85,7 @@ Path& Aircraft::GetPath()
 
 bool Aircraft::OnMe(sf::Vector2f Pos)
 {
-    const sf::Vector2f &Me = Shape.GetPosition();
+    const sf::Vector2f &Me = Shape.getPosition();
     return InRange(Me, Pos, Radius);
 }
 
@@ -121,21 +121,21 @@ sf::Vector2f Aircraft::GetLandPoint()
 
 sf::Vector2f Aircraft::GetVelocity()
 {
-    return sf::Vector2f(cos(DegToRad(Shape.GetRotation())), sin(DegToRad(Shape.GetRotation()))) * Speed;
+    return sf::Vector2f(cos(DegToRad(Shape.getRotation())), sin(DegToRad(Shape.getRotation()))) * Speed;
 }
 
 bool Aircraft::Colliding(const Aircraft &Other) const
 {
-    const sf::Vector2f &Me = Shape.GetPosition();
-    const sf::Vector2f &Pos = Other.Shape.GetPosition();
+    const sf::Vector2f &Me = Shape.getPosition();
+    const sf::Vector2f &Pos = Other.Shape.getPosition();
     return OnRunway() == Other.OnRunway() &&
            InRange(Me, Pos, (Radius + Other.Radius) / 1.3f);
 }
 
 bool Aircraft::Colliding(const Explosion &Exp) const
 {
-    const sf::Vector2f &Me = Shape.GetPosition();
-    const sf::Vector2f &Pos = Exp.Shape.GetPosition();
+    const sf::Vector2f &Me = Shape.getPosition();
+    const sf::Vector2f &Pos = Exp.Shape.getPosition();
     return InRange(Me, Pos, (Radius + Exp.Radius) / 2.5f);
 }
 
@@ -148,25 +148,25 @@ void Aircraft::Pause(bool Status)
 {
     if (Status)
     {
-        TakeoffSound.Pause();
-        FlySound.Pause();
-        LandingSound.Pause();
+        TakeoffSound.pause();
+        FlySound.pause();
+        LandingSound.pause();
     }
     else
     {
-        if (TakeoffSound.GetStatus() == sf::Sound::Paused)
+        if (TakeoffSound.getStatus() == sf::Sound::Paused)
         {
-            TakeoffSound.Play();
+            TakeoffSound.play();
         }
 
-        if (FlySound.GetStatus() == sf::Sound::Paused)
+        if (FlySound.getStatus() == sf::Sound::Paused)
         {
-            FlySound.Play();
+            FlySound.play();
         }
 
-        if (LandingSound.GetStatus() == sf::Sound::Paused)
+        if (LandingSound.getStatus() == sf::Sound::Paused)
         {
-            LandingSound.Play();
+            LandingSound.play();
         }
     }
 }
@@ -175,10 +175,10 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
 {
     bool Die = false;
 
-    const sf::Vector2f &Me = Shape.GetPosition();
-    TakeoffSound.SetPosition(Me.x, Me.y, 0.f);
-    FlySound.SetPosition(Me.x, Me.y, 0.f);
-    LandingSound.SetPosition(Me.x, Me.y, 0.f);
+    const sf::Vector2f &Me = Shape.getPosition();
+    TakeoffSound.setPosition(Me.x, Me.y, 0.f);
+    FlySound.setPosition(Me.x, Me.y, 0.f);
+    LandingSound.setPosition(Me.x, Me.y, 0.f);
 
     Shape.Update(FT);
 
@@ -189,7 +189,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
         case FlyingIn:
         {
             sf::Vector2f To(400.f, 300.f);
-            Shape.SetRotation(RadToDeg(atan2(To.y - Me.y, To.x - Me.x)));
+            Shape.setRotation(RadToDeg(atan2(To.y - Me.y, To.x - Me.x)));
 
             if (P.NumPoints() > 0)
             {
@@ -205,7 +205,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
         case FlyingOut:
         {
             sf::Vector2f From(400.f, 300.f);
-            Shape.SetRotation(RadToDeg(atan2(Me.y - From.y, Me.x - From.x)));
+            Shape.setRotation(RadToDeg(atan2(Me.y - From.y, Me.x - From.x)));
 
             if (Me.x < -Radius || Me.x > (800 + Radius) || Me.y < -Radius || Me.y > (600 + Radius))
             {
@@ -215,7 +215,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
         }
         case FlyingFree:
         {
-            float Angle = AngleFix(Shape.GetRotation()), AddAngle;
+            float Angle = AngleFix(Shape.getRotation()), AddAngle;
             if ((Me.x < 100 && Angle > 180) ||
                 (Me.x > 700 && Angle < 180) ||
                 (Me.y < 100 && (Angle > 90 && Angle < 270)) ||
@@ -238,7 +238,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
             }
 
             Angle += AddAngle;
-            Shape.SetRotation(AngleFix(Angle));
+            Shape.setRotation(AngleFix(Angle));
 
             if (P.NumPoints() > 0)
             {
@@ -263,15 +263,15 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
 
             float Target = RadToDeg(atan2(To.y - Me.y, To.x - Me.x));
 
-            Shape.SetRotation(Target);
+            Shape.setRotation(Target);
 
             if (Land &&
                 P.NumPoints() == 0 &&
                 Land->OnMe(Me) &&
                 abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle)
             {
-                FlySound.Stop();
-                LandingSound.Play();
+                FlySound.stop();
+                LandingSound.play();
                 State = Landing;
                 LandPoint = Me;
             }
@@ -290,11 +290,11 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
 
             if (Land->GetTemplate().Directional)
             {
-                Shape.SetRotation(Angle(Me - Runway));
+                Shape.setRotation(Angle(Me - Runway));
             }
 
             float Scale = Map(Dist, 0.f, Land->GetLength() * 1.1f, 1.f, 0.65f);
-            Shape.SetScale(Scale, Scale);
+            Shape.setScale(Scale, Scale);
             Radius = Template.Radius * Scale;
 
             if (Dist > Land->GetLength())
@@ -312,16 +312,16 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
 
             if (Land->GetTemplate().Directional)
             {
-                Shape.SetRotation(Angle(Me - Runway));
+                Shape.setRotation(Angle(Me - Runway));
             }
 
             float Scale = Map(Dist, 0.f, Land->GetLength() * 1.1f, 0.65f, 1.f);
-            Shape.SetScale(Scale, Scale);
+            Shape.setScale(Scale, Scale);
             Radius = Template.Radius * Scale;
 
             if (Dist > Land->GetLength())
             {
-                FlySound.Play();
+                FlySound.play();
                 State = FlyingFree;
                 Land = 0;
             }
@@ -329,32 +329,32 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
         }
     }
 
-    Shape.Move(sf::Vector2f(cos(DegToRad(Shape.GetRotation())), sin(DegToRad(Shape.GetRotation()))) * FT * Speed);
-    Shape.Move(Wind * FT);
+    Shape.move(sf::Vector2f(cos(DegToRad(Shape.getRotation())), sin(DegToRad(Shape.getRotation()))) * FT * Speed);
+    Shape.move(Wind * FT);
 
     return Die;
 }
 
 void Aircraft::Draw(sf::RenderWindow& App)
 {
-    Shape.SetColor(sf::Color::White);
-    App.Draw(Shape);
+    Shape.setColor(sf::Color::White);
+    App.draw(Shape);
 }
 
 void Aircraft::DrawShadow(sf::RenderWindow &App)
 {
-    Shape.SetColor(sf::Color(0, 0, 0, 127));
+    Shape.setColor(sf::Color(0, 0, 0, 127));
 
     float Scale = Map(Speed / Template.Speed, 0.f, 1.f, 1.f, 0.9f);
 
     sf::Transform Transform;
-    Transform.Scale(sf::Vector2f(Scale, Scale), sf::Vector2f(App.GetWidth() / 2, App.GetHeight() * 0.8f));
-    App.Draw(Shape, Transform);
+    Transform.scale(sf::Vector2f(Scale, Scale), sf::Vector2f(App.getSize().x / 2, App.getSize().y * 0.8f));
+    App.draw(Shape, Transform);
 }
 
 void Aircraft::SetPitch(float Pitch)
 {
-    TakeoffSound.SetPitch(Pitch);
-    FlySound.SetPitch(Pitch);
-    LandingSound.SetPitch(Pitch);
+    TakeoffSound.setPitch(Pitch);
+    FlySound.setPitch(Pitch);
+    LandingSound.setPitch(Pitch);
 }

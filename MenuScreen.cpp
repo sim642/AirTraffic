@@ -3,41 +3,41 @@
 
 MenuScreen::MenuScreen(sf::RenderWindow &NewApp, AirTrafficScreen *NewATS) : Screen(NewApp), ATS(NewATS), Input(false), SelectionColor(200, 255, 150)
 {
-    GrassTex.LoadFromFile("res/Grass192_2.png");
-    GrassSpr.SetTexture(GrassTex);
+    GrassTex.loadFromFile("res/Grass192_2.png");
+    GrassSpr.setTexture(GrassTex);
 
     sf::Image FadeImg;
-    FadeImg.Create(App.GetWidth(), App.GetHeight(), sf::Color(0, 0, 0, 127));
-    FadeTex.LoadFromImage(FadeImg);
-    FadeSpr.SetTexture(FadeTex);
+    FadeImg.create(App.getSize().x, App.getSize().y, sf::Color(0, 0, 0, 127));
+    FadeTex.loadFromImage(FadeImg);
+    FadeSpr.setTexture(FadeTex);
 
-    Font.LoadFromFile("res/Play-Regular.ttf");
-    FontBold.LoadFromFile("res/Play-Bold.ttf");
+    Font.loadFromFile("res/Play-Regular.ttf");
+    FontBold.loadFromFile("res/Play-Bold.ttf");
 
-    TitleText.SetFont(FontBold);
-    TitleText.SetCharacterSize(100);
-    TitleText.SetString("AirTraffic");
-    TitleText.SetPosition(50.f, 90.f);
+    TitleText.setFont(FontBold);
+    TitleText.setCharacterSize(100);
+    TitleText.setString("AirTraffic");
+    TitleText.setPosition(50.f, 90.f);
 
-    QuestionText.SetFont(FontBold);
-    QuestionText.SetCharacterSize(50);
-    QuestionText.SetPosition(100.f, 250.f);
+    QuestionText.setFont(FontBold);
+    QuestionText.setCharacterSize(50);
+    QuestionText.setPosition(100.f, 250.f);
 
-    UserText.SetFont(Font);
-    UserText.SetCharacterSize(50);
-    UserText.SetPosition(170.f, 300.f);
+    UserText.setFont(Font);
+    UserText.setCharacterSize(50);
+    UserText.setPosition(170.f, 300.f);
 
-    CaretText.SetFont(Font);
-    CaretText.SetCharacterSize(50);
-    CaretText.SetString("|");
+    CaretText.setFont(Font);
+    CaretText.setCharacterSize(50);
+    CaretText.setString("|");
 
-    ItemText.SetFont(Font);
-    ItemText.SetCharacterSize(50);
+    ItemText.setFont(Font);
+    ItemText.setCharacterSize(50);
 
-    Cursor.SetFont(Font);
-    Cursor.SetCharacterSize(50);
-    Cursor.SetString(">");
-    Cursor.SetColor(SelectionColor);
+    Cursor.setFont(Font);
+    Cursor.setCharacterSize(50);
+    Cursor.setString(">");
+    Cursor.setColor(SelectionColor);
 
     AddItemEnd("New game");
     AddItemEnd("Join game");
@@ -58,8 +58,8 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
     sf::Texture PauseTex;
     if (Paused)
     {
-        PauseTex.Create(App.GetWidth(), App.GetHeight());
-        PauseTex.Update(App);
+        PauseTex.create(App.getSize().x, App.getSize().y);
+        PauseTex.update(App);
     }
     sf::Sprite PauseSpr(PauseTex);
 
@@ -69,17 +69,17 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
         bool ItemPicked = false;
 
         sf::Event Event;
-        while (App.PollEvent(Event))
+        while (App.pollEvent(Event))
         {
-            if (Event.Type == sf::Event::Closed)
+            if (Event.type == sf::Event::Closed)
             {
                 return ExitType;
             }
-            else if (Event.Type == sf::Event::KeyPressed)
+            else if (Event.type == sf::Event::KeyPressed)
             {
                 if (Input)
                 {
-                    switch (Event.Key.Code)
+                    switch (Event.key.code)
                     {
                         case sf::Keyboard::Return:
                         {
@@ -90,7 +90,7 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                             RemoveItem("Host server");
                             RemoveItem("New game");
 
-                            ATS->SetupClient(UserText.GetString());
+                            ATS->SetupClient(UserText.getString());
                             return AirTrafficType;
                         }
 
@@ -98,13 +98,13 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                             Input = false;
                             break;
 
-                        case sf::Keyboard::Back:
+                        case sf::Keyboard::BackSpace:
                         {
                             if (UserTypePos > 0)
                             {
-                                sf::String Str = UserText.GetString();
-                                Str.Erase(UserTypePos - 1);
-                                UserText.SetString(Str);
+                                sf::String Str = UserText.getString();
+                                Str.erase(UserTypePos - 1);
+                                UserText.setString(Str);
                                 UserTypePos--;
                             }
                             break;
@@ -118,7 +118,7 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                             break;
 
                         case sf::Keyboard::Right:
-                            if (UserTypePos < UserText.GetString().GetSize())
+                            if (UserTypePos < UserText.getString().getSize())
                             {
                                 UserTypePos++;
                             }
@@ -129,7 +129,7 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                 }
                 else
                 {
-                    switch (Event.Key.Code)
+                    switch (Event.key.code)
                     {
                         case sf::Keyboard::Return:
                         {
@@ -157,34 +157,34 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                     }
                 }
             }
-            else if (Input && Event.Type == sf::Event::TextEntered && iswprint(Event.Text.Unicode))
+            else if (Input && Event.type == sf::Event::TextEntered && iswprint(Event.text.unicode))
             {
-                sf::String Str = UserText.GetString();
-                Str.Insert(UserTypePos, Event.Text.Unicode);
-                UserText.SetString(Str);
+                sf::String Str = UserText.getString();
+                Str.insert(UserTypePos, Event.text.unicode);
+                UserText.setString(Str);
                 UserTypePos++;
             }
-            else if (Event.Type == sf::Event::MouseMoved || Event.Type == sf::Event::MouseButtonPressed)
+            else if (Event.type == sf::Event::MouseMoved || Event.type == sf::Event::MouseButtonPressed)
             {
                 for (unsigned int i = 0; i < Items.size(); i++)
                 {
-                    ItemText.SetPosition(100.f, 220.f + i * 70.f);
-                    ItemText.SetString(Items[i]);
+                    ItemText.setPosition(100.f, 220.f + i * 70.f);
+                    ItemText.setString(Items[i]);
 
                     sf::Vector2f MousePos;
-                    if (Event.Type == sf::Event::MouseMoved)
+                    if (Event.type == sf::Event::MouseMoved)
                     {
-                        MousePos = sf::Vector2f(Event.MouseMove.X, Event.MouseMove.Y);
+                        MousePos = sf::Vector2f(Event.mouseMove.x, Event.mouseMove.y);
                     }
-                    else if (Event.Type == sf::Event::MouseButtonPressed)
+                    else if (Event.type == sf::Event::MouseButtonPressed)
                     {
-                        MousePos = sf::Vector2f(Event.MouseButton.X, Event.MouseButton.Y);
+                        MousePos = sf::Vector2f(Event.mouseButton.x, Event.mouseButton.y);
                     }
 
-                    if (ItemText.GetGlobalBounds().Contains(MousePos))
+                    if (ItemText.getGlobalBounds().contains(MousePos))
                     {
                         ItemSelected = i;
-                        if (Event.Type == sf::Event::MouseButtonPressed)
+                        if (Event.type == sf::Event::MouseButtonPressed)
                         {
                             ItemPicked = true;
                         }
@@ -210,8 +210,8 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
             else if (Selected == "Join game")
             {
                 Input = true;
-                QuestionText.SetString("Host: ");
-                UserText.SetString("");
+                QuestionText.setString("Host: ");
+                UserText.setString("");
                 UserTypePos = 0;
             }
             else if (Selected == "Host server")
@@ -240,7 +240,7 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
 
         ATS->StepNet();
 
-        App.Clear();
+        App.clear();
 
         if (Paused)
         {
@@ -248,41 +248,41 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
         }
         else
         {
-            for (unsigned int y = 0; y < App.GetHeight(); y += GrassTex.GetHeight())
+            for (unsigned int y = 0; y < App.getSize().y; y += GrassTex.getSize().y)
             {
-                for (unsigned int x = 0; x < App.GetWidth(); x += GrassTex.GetWidth())
+                for (unsigned int x = 0; x < App.getSize().x; x += GrassTex.getSize().x)
                 {
-                    GrassSpr.SetPosition(x, y);
-                    App.Draw(GrassSpr);
+                    GrassSpr.setPosition(x, y);
+                    App.draw(GrassSpr);
                 }
             }
         }
-        App.Draw(FadeSpr);
+        App.draw(FadeSpr);
 
-        App.Draw(TitleText);
+        App.draw(TitleText);
 
         if (Input)
         {
-            App.Draw(QuestionText);
-            App.Draw(UserText);
-            CaretText.SetPosition(UserText.FindCharacterPos(UserTypePos) + sf::Vector2f(-8.f, 2.f));
-            App.Draw(CaretText);
+            App.draw(QuestionText);
+            App.draw(UserText);
+            CaretText.setPosition(UserText.findCharacterPos(UserTypePos) + sf::Vector2f(-8.f, 2.f));
+            App.draw(CaretText);
         }
         else
         {
             for (unsigned int i = 0; i < Items.size(); i++)
             {
-                ItemText.SetPosition(100.f, 220.f + i * 70.f);
-                ItemText.SetString(Items[i]);
-                ItemText.SetColor(i == ItemSelected ? SelectionColor : sf::Color::White);
-                App.Draw(ItemText);
+                ItemText.setPosition(100.f, 220.f + i * 70.f);
+                ItemText.setString(Items[i]);
+                ItemText.setColor(i == ItemSelected ? SelectionColor : sf::Color::White);
+                App.draw(ItemText);
             }
 
-            Cursor.SetPosition(65.f, 220.f + ItemSelected * 70.f);
-            App.Draw(Cursor);
+            Cursor.setPosition(65.f, 220.f + ItemSelected * 70.f);
+            App.draw(Cursor);
         }
 
-        App.Display();
+        App.display();
     }
 }
 

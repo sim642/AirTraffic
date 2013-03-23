@@ -4,15 +4,15 @@
 Explosion::Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float NewTime) : Template(NewTemplate), Time(NewTime)
 {
     const sf::Texture &Texture = Textures[Template.Res];
-    Shape.SetTexture(Texture);
-    Shape.SetOrigin(Texture.GetWidth() / 2, Texture.GetHeight() / 2);
-    Shape.SetPosition(Pos);
+    Shape.setTexture(Texture);
+    Shape.setOrigin(sf::Vector2f(Texture.getSize()) / 2.f);
+    Shape.setPosition(Pos);
 
-    Sound.SetBuffer(Sounds[Template.SoundRes]);
-    Sound.SetAttenuation(0.01f);
-    Sound.SetPosition(Pos.x, Pos.y, 0.f);
-    Sound.SetPlayingOffset(sf::Seconds(Time));
-    Sound.Play();
+    Sound.setBuffer(Sounds[Template.SoundRes]);
+    Sound.setAttenuation(0.01f);
+    Sound.setPosition(Pos.x, Pos.y, 0.f);
+    Sound.setPlayingOffset(sf::seconds(Time));
+    Sound.play();
 
     Radius = Template.Radius;
     TTL = Template.Time;
@@ -25,7 +25,7 @@ ExplosionTemplate Explosion::GetTemplate()
 
 sf::Vector2f Explosion::GetPos()
 {
-    return Shape.GetPosition();
+    return Shape.getPosition();
 }
 
 float Explosion::GetRadius()
@@ -47,13 +47,13 @@ void Explosion::Pause(bool Status)
 {
     if (Status)
     {
-        Sound.Pause();
+        Sound.pause();
     }
     else
     {
-        if (Sound.GetStatus() == sf::Sound::Paused)
+        if (Sound.getStatus() == sf::Sound::Paused)
         {
-            Sound.Play();
+            Sound.play();
         }
     }
 }
@@ -67,6 +67,6 @@ bool Explosion::Step(float FT)
 void Explosion::Draw(sf::RenderWindow &App)
 {
     //Shape.SetColor(sf::Color(255, 255, 255, 255 - (Time / TTL) * 255));
-    Shape.SetColor(sf::Color(255, 255, 255, 255 - pow(Time / TTL, 2) * 255));
-    App.Draw(Shape);
+    Shape.setColor(sf::Color(255, 255, 255, 255 - pow(Time / TTL, 2) * 255));
+    App.draw(Shape);
 }

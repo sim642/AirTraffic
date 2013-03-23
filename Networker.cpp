@@ -19,12 +19,12 @@ void Networker::SetupClient(const sf::IpAddress &NewIp)
 
     Server = false;
     Active = true;
-    ClientSocket.Tcp.Connect(NewIp, Port);
+    ClientSocket.Tcp.connect(NewIp, Port);
     ClientSocket.Ip = NewIp;
     ClientSocket.UdpPort = Port;
     //Udp.Bind(Port); //temp
 
-    Selector.Add(ClientSocket.Tcp);
+    Selector.add(ClientSocket.Tcp);
     //Selector.Add(Udp);
 }
 
@@ -34,11 +34,11 @@ void Networker::SetupServer()
 
     Server = true;
     Active = true;
-    ServerTcp.Listen(Port);
-    Udp.Bind(Port); //temp
+    ServerTcp.listen(Port);
+    Udp.bind(Port); //temp
 
-    Selector.Add(ServerTcp);
-    Selector.Add(Udp);
+    Selector.add(ServerTcp);
+    Selector.add(Udp);
 }
 
 void Networker::Kill()
@@ -59,11 +59,11 @@ void Networker::SendTcp(sf::Packet &Packet)
         {
             ClientPair &Pair = **it;
             if (Pair.Id != SourceId)
-                Pair.Tcp.Send(Packet);
+                Pair.Tcp.send(Packet);
         }
     }
     else
-        ClientSocket.Tcp.Send(Packet);
+        ClientSocket.Tcp.send(Packet);
 }
 
 void Networker::SendTcp(sf::Packet &Packet, sf::Uint32 Id)
@@ -79,7 +79,7 @@ void Networker::SendTcp(sf::Packet &Packet, sf::Uint32 Id)
         ClientPair &Pair = **it;
         if (Pair.Id == Id)
         {
-            Pair.Tcp.Send(Packet);
+            Pair.Tcp.send(Packet);
             break;
         }
     }
@@ -97,11 +97,11 @@ void Networker::SendUdp(sf::Packet &Packet)
         {
             ClientPair &Pair = **it;
             if (Pair.Id != SourceId)
-                Udp.Send(Packet, Pair.Ip, Pair.UdpPort);
+                Udp.send(Packet, Pair.Ip, Pair.UdpPort);
         }
     }
     else
-        Udp.Send(Packet, ClientSocket.Ip, ClientSocket.UdpPort);
+        Udp.send(Packet, ClientSocket.Ip, ClientSocket.UdpPort);
 }
 
 void Networker::SendUdp(sf::Packet &Packet, sf::Uint32 Id)
@@ -117,7 +117,7 @@ void Networker::SendUdp(sf::Packet &Packet, sf::Uint32 Id)
         ClientPair &Pair = **it;
         if (Pair.Id == Id)
         {
-            Udp.Send(Packet, Pair.Ip, Pair.UdpPort);
+            Udp.send(Packet, Pair.Ip, Pair.UdpPort);
             break;
         }
     }
@@ -125,22 +125,22 @@ void Networker::SendUdp(sf::Packet &Packet, sf::Uint32 Id)
 
 Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
 {
-    Packet.Clear();
-    if (Active && Selector.Wait(sf::Milliseconds(1)))
+    Packet.clear();
+    if (Active && Selector.wait(sf::milliseconds(1)))
     {
         if (Server)
         {
-            if (Selector.IsReady(ServerTcp))
+            if (Selector.isReady(ServerTcp))
             {
                 ClientPair *NewPair = new ClientPair;
-                if (ServerTcp.Accept(NewPair->Tcp) == sf::Socket::Done)
+                if (ServerTcp.accept(NewPair->Tcp) == sf::Socket::Done)
                 {
                     ClientPair &Pair = *NewPair;
                     Pair.Id = ServerConns.empty() ? 1 : ServerConns.back()->Id + 1;
-                    Pair.Ip = Pair.Tcp.GetRemoteAddress();
+                    Pair.Ip = Pair.Tcp.getRemoteAddress();
                     Pair.UdpPort = Port + Pair.Id;
                     ServerConns.push_back(NewPair);
-                    Selector.Add(Pair.Tcp);
+                    Selector.add(Pair.Tcp);
 
                     sf::Packet NewPacket;
                     NewPacket << 0 << PacketTypes::ConnectionResponse << Pair.Id << Pair.UdpPort;
@@ -152,11 +152,11 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
                 else
                     delete NewPair;
             }
-            else if (Selector.IsReady(Udp))
+            else if (Selector.isReady(Udp))
             {
                 sf::IpAddress Ip;
                 sf::Uint16 UdpPort;
-                sf::Socket::Status Status = Udp.Receive(Packet, Ip, UdpPort);
+                sf::Socket::Status Status = Udp.receive(Packet, Ip, UdpPort);
                 if (Status == sf::Socket::Done)
                 {
                     vector<ClientPair*>::iterator it;
@@ -175,16 +175,16 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
                 for (vector<ClientPair*>::iterator it = ServerConns.begin(); it != ServerConns.end();)
                 {
                     ClientPair &Pair = **it;
-                    if (Selector.IsReady(Pair.Tcp))
+                    if (Selector.isReady(Pair.Tcp))
                     {
-                        sf::Socket::Status Status = Pair.Tcp.Receive(Packet);
+                        sf::Socket::Status Status = Pair.Tcp.receive(Packet);
                         if (Status == sf::Socket::Done)
                         {
                             return NewPacket;
                         }
                         else if (Status == sf::Socket::Disconnected)
                         {
-                            Selector.Remove(Pair.Tcp);
+                            Selector.remove(Pair.Tcp);
                             it = ServerConns.erase(it);
 
                             Packet << Pair.Id;
@@ -198,9 +198,9 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
         }
         else
         {
-            if (Selector.IsReady(ClientSocket.Tcp))
+            if (Selector.isReady(ClientSocket.Tcp))
             {
-                sf::Socket::Status Status = ClientSocket.Tcp.Receive(Packet);
+                sf::Socket::Status Status = ClientSocket.Tcp.receive(Packet);
                 if (Status == sf::Socket::Done)
                 {
                     sf::Packet Info = Packet;
@@ -211,8 +211,8 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
                     {
                         sf::Uint16 UdpPort;
                         Info >> ClientSocket.Id >> UdpPort;
-                        Udp.Bind(UdpPort);
-                        Selector.Add(Udp);
+                        Udp.bind(UdpPort);
+                        Selector.add(Udp);
                     }
                     return NewPacket;
                 }
@@ -224,11 +224,11 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
                     return Disconnected;
                 }
             }
-            else if (Selector.IsReady(Udp))
+            else if (Selector.isReady(Udp))
             {
                 sf::IpAddress Ip;
                 sf::Uint16 UdpPort;
-                sf::Socket::Status Status = Udp.Receive(Packet, Ip, UdpPort);
+                sf::Socket::Status Status = Udp.receive(Packet, Ip, UdpPort);
                 if (Status == sf::Socket::Done && Ip == ClientSocket.Ip)
                 {
                     return NewPacket;
@@ -263,11 +263,11 @@ void Networker::CleanConns()
 {
     Active = false;
     Server = false;
-    Selector.Clear();
+    Selector.clear();
     ClientSocket.Id = 0;
-    ClientSocket.Tcp.Disconnect();
-    ServerTcp.Close();
-    Udp.Unbind();
+    ClientSocket.Tcp.disconnect();
+    ServerTcp.close();
+    Udp.unbind();
 
     for (vector<ClientPair*>::iterator it = ServerConns.begin(); it != ServerConns.end(); ++it)
         delete *it;

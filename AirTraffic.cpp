@@ -7,8 +7,8 @@ AirTraffic::AirTraffic()
 {
     srand(time(NULL));
 
-    App.Create(sf::VideoMode(800, 600, 32), "AirTraffic", sf::Style::Default, sf::ContextSettings(0, 0, 16));
-    App.SetFramerateLimit(60);
+    App.create(sf::VideoMode(800, 600, 32), "AirTraffic", sf::Style::Default, sf::ContextSettings(0, 0, 16));
+    App.setFramerateLimit(60);
 
     AirTrafficScreen *ATS = new AirTrafficScreen(App);
     Screens.push_back(new MenuScreen(App, ATS));
@@ -27,6 +27,6 @@ int AirTraffic::Run()
         OldScreen = CurScreen;
     }
 
-    App.Close();
+    App.close();
     return 0;
 }

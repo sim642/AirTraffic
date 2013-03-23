@@ -21,8 +21,8 @@ AnimSprite::AnimSprite(const sf::Texture &texture, const sf::Vector2i &frameSize
 void AnimSprite::SetFrameSize(const sf::Vector2i &frameSize)
 {
     myFrameSize = frameSize;
-    myFrameCount.x = GetTexture()->GetWidth() / myFrameSize.x;
-    myFrameCount.y = GetTexture()->GetHeight() / myFrameSize.y;
+    myFrameCount.x = getTexture()->getSize().x / myFrameSize.x;
+    myFrameCount.y = getTexture()->getSize().y / myFrameSize.y;
 }
 
 const sf::Vector2i& AnimSprite::GetFrameSize() const
@@ -85,10 +85,10 @@ void AnimSprite::Update(const float &FT)
 void AnimSprite::UpdateRect()
 {
     sf::IntRect rect;
-    rect.Left = myFrameSize.x * (myFrame % myFrameCount.x);
-    rect.Top = myFrameSize.y * (myFrame / myFrameCount.x);
-    rect.Width = myFrameSize.x;
-    rect.Height = myFrameSize.y;
+    rect.left = myFrameSize.x * (myFrame % myFrameCount.x);
+    rect.top = myFrameSize.y * (myFrame / myFrameCount.x);
+    rect.width = myFrameSize.x;
+    rect.height = myFrameSize.y;
 
-    SetTextureRect(rect);
+    setTextureRect(rect);
 }

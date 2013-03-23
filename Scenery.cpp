@@ -7,15 +7,15 @@ Scenery::Scenery(const SceneryTemplate &NewTemplate, map<string, sf::Texture> &T
     if (Template.FrameSize.x >= 0 || Template.FrameSize.y >= 0)
     {
         Shape = AnimSprite(Texture, Template.FrameSize, Template.FrameRate);
-        Shape.SetOrigin(Template.FrameSize.x / 2.f, Template.FrameSize.y / 2.f);
+        Shape.setOrigin(Template.FrameSize.x / 2.f, Template.FrameSize.y / 2.f);
     }
     else
     {
-        Shape = AnimSprite(Texture, sf::Vector2i(Texture.GetWidth(), Texture.GetHeight()), 0.f);
-        Shape.SetOrigin(Texture.GetWidth() / 2, Texture.GetWidth() / 2);
+        Shape = AnimSprite(Texture, sf::Vector2i(Texture.getSize()), 0.f);
+        Shape.setOrigin(sf::Vector2f(Texture.getSize()) / 2.f);
     }
-    Shape.SetPosition(Pos);
-    Shape.SetRotation(Rot);
+    Shape.setPosition(Pos);
+    Shape.setRotation(Rot);
     Shape.SetFrame(rand() % Shape.GetFrameCount());
 }
 
@@ -36,12 +36,12 @@ bool Scenery::Colliding(const Runway &Other)
 
 sf::Vector2f Scenery::GetPos()
 {
-    return Shape.GetPosition();
+    return Shape.getPosition();
 }
 
 float Scenery::GetAngle()
 {
-    return Shape.GetRotation();
+    return Shape.getRotation();
 }
 
 void Scenery::Step(float FT)
@@ -51,5 +51,5 @@ void Scenery::Step(float FT)
 
 void Scenery::Draw(sf::RenderWindow &App)
 {
-    App.Draw(Shape);
+    App.draw(Shape);
 }

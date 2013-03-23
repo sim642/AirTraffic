@@ -2,7 +2,7 @@
 
 Surface::Surface(const SurfaceTemplate &NewTemplate, map<string, sf::Texture> &Textures) : Template(NewTemplate)
 {
-    Shape.SetTexture(Textures[Template.Res]);
+    Shape.setTexture(Textures[Template.Res]);
 }
 
 SurfaceTemplate Surface::GetTemplate()
@@ -12,12 +12,12 @@ SurfaceTemplate Surface::GetTemplate()
 
 void Surface::Draw(sf::RenderWindow &App)
 {
-    for (unsigned int y = 0; y < App.GetHeight(); y += Shape.GetTexture()->GetHeight())
+    for (unsigned int y = 0; y < App.getSize().y; y += Shape.getTexture()->getSize().y)
     {
-        for (unsigned int x = 0; x < App.GetWidth(); x += Shape.GetTexture()->GetWidth())
+        for (unsigned int x = 0; x < App.getSize().x; x += Shape.getTexture()->getSize().x)
         {
-            Shape.SetPosition(x, y);
-            App.Draw(Shape);
+            Shape.setPosition(x, y);
+            App.draw(Shape);
         }
     }
 }

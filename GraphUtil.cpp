@@ -13,14 +13,14 @@ sf::ConvexShape Line(const sf::Vector2f &Start, const sf::Vector2f &End, float T
 
     sf::ConvexShape Line;
 
-    Line.SetPointCount(4);
-    Line.SetPoint(0, Start - Normal);
-    Line.SetPoint(1, End - Normal);
-    Line.SetPoint(2, End + Normal);
-    Line.SetPoint(3, Start + Normal);
-    Line.SetFillColor(Color);
-    Line.SetOutlineThickness(Outline);
-    Line.SetOutlineColor(OutlineColor);
+    Line.setPointCount(4);
+    Line.setPoint(0, Start - Normal);
+    Line.setPoint(1, End - Normal);
+    Line.setPoint(2, End + Normal);
+    Line.setPoint(3, Start + Normal);
+    Line.setFillColor(Color);
+    Line.setOutlineThickness(Outline);
+    Line.setOutlineColor(OutlineColor);
 
     return Line;
 }
@@ -28,22 +28,22 @@ sf::ConvexShape Line(const sf::Vector2f &Start, const sf::Vector2f &End, float T
 sf::CircleShape Circle(const sf::Vector2f &Center, float Radius, const sf::Color &Color, float Outline, const sf::Color &OutlineColor)
 {
     sf::CircleShape Circle;
-    Circle.SetOrigin(Radius, Radius);
-    Circle.SetPosition(Center);
-    Circle.SetRadius(Radius);
-    Circle.SetFillColor(Color);
-    Circle.SetOutlineThickness(Outline);
-    Circle.SetOutlineColor(OutlineColor);
+    Circle.setOrigin(Radius, Radius);
+    Circle.setPosition(Center);
+    Circle.setRadius(Radius);
+    Circle.setFillColor(Color);
+    Circle.setOutlineThickness(Outline);
+    Circle.setOutlineColor(OutlineColor);
     return Circle;
 }
 
 sf::RectangleShape Rectangle(float Left, float Top, float Width, float Height, const sf::Color &Color, float Outline, const sf::Color &OutlineColor)
 {
     sf::RectangleShape Rectangle;
-    Rectangle.SetPosition(Left, Top);
-    Rectangle.SetSize(sf::Vector2f(Width, Height));
-    Rectangle.SetFillColor(Color);
-    Rectangle.SetOutlineThickness(Outline);
-    Rectangle.SetOutlineColor(OutlineColor);
+    Rectangle.setPosition(Left, Top);
+    Rectangle.setSize(sf::Vector2f(Width, Height));
+    Rectangle.setFillColor(Color);
+    Rectangle.setOutlineThickness(Outline);
+    Rectangle.setOutlineColor(OutlineColor);
     return Rectangle;
 }

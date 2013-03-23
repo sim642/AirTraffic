@@ -12,18 +12,18 @@ AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), B
 {
     LoadResources();
 
-    ScoreText.SetFont(Font);
-    ScoreText.SetCharacterSize(40);
-    ScoreText.SetPosition(sf::Vector2f(10.f, 10.f));
-    ScoreText.SetColor(sf::Color::White);
+    ScoreText.setFont(Font);
+    ScoreText.setCharacterSize(40);
+    ScoreText.setPosition(sf::Vector2f(10.f, 10.f));
+    ScoreText.setColor(sf::Color::White);
 
-    DebugText.SetFont(Font);
-    DebugText.SetCharacterSize(24);
-    DebugText.SetPosition(sf::Vector2f(10.f, 50.f));
-    DebugText.SetColor(sf::Color::White);
+    DebugText.setFont(Font);
+    DebugText.setCharacterSize(24);
+    DebugText.setPosition(sf::Vector2f(10.f, 50.f));
+    DebugText.setColor(sf::Color::White);
 
-    AlarmSound.SetLoop(true);
-    AlarmSound.SetRelativeToListener(true);
+    AlarmSound.setLoop(true);
+    AlarmSound.setRelativeToListener(true);
 
     // not needed?
     //Reset();
@@ -39,11 +39,11 @@ AirTrafficScreen::~AirTrafficScreen()
 
 AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
 {
-    PointerLast = sf::Vector2f(sf::Mouse::GetPosition(App).x, sf::Mouse::GetPosition(App).y);
+    PointerLast = sf::Vector2f(sf::Mouse::getPosition(App).x, sf::Mouse::getPosition(App).y);
 
     Pause(false);
 
-    FrameTimer.Restart();
+    FrameTimer.restart();
     Running = true;
     while (Running)
     {
@@ -51,9 +51,9 @@ AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
         if (Net.IsActive())
             HandleNet();
         Step();
-        App.Clear();
+        App.clear();
         Draw();
-        App.Display();
+        App.display();
     }
 
     Pause(true);
@@ -118,7 +118,7 @@ void AirTrafficScreen::LoadResources()
 {
     Sounds.insert(make_pair("", sf::SoundBuffer())); // empty sound for special cases
 
-    Font.LoadFromFile("res/Play-Regular.ttf");
+    Font.loadFromFile("res/Play-Regular.ttf");
 
     boost::property_tree::json_parser::read_json("data.json", Data);
 
@@ -214,7 +214,7 @@ void AirTrafficScreen::LoadResources()
     LoadTexture("Pointer.png");
 
     LoadSound("alarm.wav");
-    AlarmSound.SetBuffer(Sounds["alarm.wav"]);
+    AlarmSound.setBuffer(Sounds["alarm.wav"]);
 }
 
 void AirTrafficScreen::SetupClient(const string &Host)
@@ -294,7 +294,7 @@ void AirTrafficScreen::HandleNet()
                         if (Net.IsServer())
                             break;
                         Sceneries.clear();
-                        while (!Packet.EndOfPacket())
+                        while (!Packet.endOfPacket())
                         {
                             string Name;
                             float X, Y, Angle;
@@ -312,7 +312,7 @@ void AirTrafficScreen::HandleNet()
                         if (Net.IsServer())
                             break;
                         Runways.clear();
-                        while (!Packet.EndOfPacket())
+                        while (!Packet.endOfPacket())
                         {
                             string Name;
                             float X, Y, Angle;
@@ -378,7 +378,7 @@ void AirTrafficScreen::HandleNet()
                             {
                                 case PacketTypes::AircraftSpawn:
                                 {
-                                    if (Packet.EndOfPacket()) // in
+                                    if (Packet.endOfPacket()) // in
                                     {
                                         Ac = new Aircraft(it->second, Textures, Sounds, Pos, Angle);
                                     }
@@ -435,7 +435,7 @@ void AirTrafficScreen::HandleNet()
                         if (Net.IsServer())
                             break;
 
-                        while (!Packet.EndOfPacket())
+                        while (!Packet.endOfPacket())
                         {
                             string Name;
                             sf::Vector2f Pos;
@@ -570,20 +570,20 @@ void AirTrafficScreen::SendGameData(const sf::Uint32 Id)
 
 void AirTrafficScreen::HandleEvents()
 {
-    const sf::Vector2f MousePos(sf::Mouse::GetPosition(App).x, sf::Mouse::GetPosition(App).y);
+    const sf::Vector2f MousePos(sf::Mouse::getPosition(App).x, sf::Mouse::getPosition(App).y);
 
     sf::Event Event;
-    while (App.PollEvent(Event))
+    while (App.pollEvent(Event))
     {
-        if (Event.Type == sf::Event::Closed ||
-            (Event.Type == sf::Event::KeyPressed && Event.Key.Code == sf::Keyboard::Escape) /*||
+        if (Event.type == sf::Event::Closed ||
+            (Event.type == sf::Event::KeyPressed && Event.key.code == sf::Keyboard::Escape) /*||
             Event.Type == sf::Event::LostFocus*/)
         {
             Running = false;
         }
 
-        if (Event.Type == sf::Event::MouseButtonPressed &&
-            Event.MouseButton.Button == sf::Mouse::Left)
+        if (Event.type == sf::Event::MouseButtonPressed &&
+            Event.mouseButton.button == sf::Mouse::Left)
         {
             for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
             {
@@ -606,17 +606,17 @@ void AirTrafficScreen::HandleEvents()
                 }
             }
         }
-        else if (Event.Type == sf::Event::MouseButtonReleased &&
-                 Event.MouseButton.Button == sf::Mouse::Left &&
+        else if (Event.type == sf::Event::MouseButtonReleased &&
+                 Event.mouseButton.button == sf::Mouse::Left &&
                  Pathing != NULL)
         {
             Pathing = NULL;
         }
-        else if (Event.Type == sf::Event::MouseMoved)
+        else if (Event.type == sf::Event::MouseMoved)
         {
             if (Net.IsActive())
             {
-                Net.SendUdp(sf::Packet() << Net.GetId() << PacketTypes::PointerUpdate << Event.MouseMove.X << Event.MouseMove.Y);
+                Net.SendUdp(sf::Packet() << Net.GetId() << PacketTypes::PointerUpdate << Event.mouseMove.x << Event.mouseMove.y);
             }
 
             if (Pathing != NULL)
@@ -638,14 +638,14 @@ void AirTrafficScreen::HandleEvents()
 
 void AirTrafficScreen::Step()
 {
-    const float FT = FrameTimer.Restart().AsSeconds();
+    const float FT = FrameTimer.restart().asSeconds();
     Spawner += FT;
     PlayTime += FT;
     WindTime += FT;
 
-    sf::Vector2i MousePosi = sf::Mouse::GetPosition(App);
+    sf::Vector2i MousePosi = sf::Mouse::getPosition(App);
     sf::Vector2f MousePosf(MousePosi.x, MousePosi.y);
-    sf::Listener::SetPosition(MousePosf.x, MousePosf.y, 100.f);
+    sf::Listener::setPosition(MousePosf.x, MousePosf.y, 100.f);
     //sf::Listener::SetDirection(0.f, 0.f, -100.f);
 
     float SpawnTime = Map(PlayTime, 0.f, 120.f, 5.f, 0.5f);
@@ -793,8 +793,8 @@ void AirTrafficScreen::Step()
         it->Step(FT);
     }
 
-    ScoreText.SetString(boost::lexical_cast<string>(Score));
-    DebugText.SetString(boost::lexical_cast<string>(SpawnTime));
+    ScoreText.setString(boost::lexical_cast<string>(Score));
+    DebugText.setString(boost::lexical_cast<string>(SpawnTime));
 
     PointerLast = PointerLerp * PointerLast + (1.f - PointerLerp) * MousePosf;
 }
@@ -825,7 +825,7 @@ void AirTrafficScreen::Draw()
                 vector<string> Landable = Pathing->GetTemplate().Runways;
                 if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end())
                 {
-                    App.Draw(Circle(it->GetPos(),
+                    App.draw(Circle(it->GetPos(),
                                                it->GetTemplate().Radius - 3.f,
                                                sf::Color(0, 255, 255, 96),
                                                3.f,
@@ -837,16 +837,16 @@ void AirTrafficScreen::Draw()
                 switch (Pathing->GetOutDirection())
                 {
                     case Aircraft::OutUp:
-                        App.Draw(Rectangle(0.f, 0.f, 800.f, 50.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
+                        App.draw(Rectangle(0.f, 0.f, 800.f, 50.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
                         break;
                     case Aircraft::OutDown:
-                        App.Draw(Rectangle(0.f, 550.f, 800.f, 50.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
+                        App.draw(Rectangle(0.f, 550.f, 800.f, 50.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
                         break;
                     case Aircraft::OutLeft:
-                        App.Draw(Rectangle(0.f, 0.f, 50.f, 600.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
+                        App.draw(Rectangle(0.f, 0.f, 50.f, 600.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
                         break;
                     case Aircraft::OutRight:
-                        App.Draw(Rectangle(750.f, 0.f, 50.f, 600.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
+                        App.draw(Rectangle(750.f, 0.f, 50.f, 600.f, sf::Color(0, 255, 255, 96), 3.f, sf::Color(0, 255, 255)));
                         break;
                 }
             }
@@ -887,7 +887,7 @@ void AirTrafficScreen::Draw()
             {
                 AlarmOn = true;
                 float MinDist = (R1 + R2) / 2.5f;
-                App.Draw(Circle(Pos1,
+                App.draw(Circle(Pos1,
                                            R1 - 3.f,
                                            sf::Color(255, 255, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
                                            3.f,
@@ -909,12 +909,12 @@ void AirTrafficScreen::Draw()
             {
                 AlarmOn = true;
                 float MinDist = (R1 + R2) / 1.3f;
-                App.Draw(Circle(Pos1,
+                App.draw(Circle(Pos1,
                                            R1 - 3.f,
                                            sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
                                            3.f,
                                            sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 255, 64))));
-                App.Draw(Circle(Pos2,
+                App.draw(Circle(Pos2,
                                            R2 - 3.f,
                                            sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
                                            3.f,
@@ -922,13 +922,13 @@ void AirTrafficScreen::Draw()
             }
         }
     }
-    if (AlarmSound.GetStatus() == sf::Sound::Stopped && AlarmOn)
+    if (AlarmSound.getStatus() == sf::Sound::Stopped && AlarmOn)
     {
-        AlarmSound.Play();
+        AlarmSound.play();
     }
-    else if (AlarmSound.GetStatus() == sf::Sound::Playing && !AlarmOn)
+    else if (AlarmSound.getStatus() == sf::Sound::Playing && !AlarmOn)
     {
-        AlarmSound.Stop();
+        AlarmSound.stop();
     }
 
     // explosions
@@ -938,18 +938,18 @@ void AirTrafficScreen::Draw()
     }
 
     // hud
-    App.Draw(ScoreText);
-    App.Draw(DebugText);
+    App.draw(ScoreText);
+    App.draw(DebugText);
 
-    App.Draw(Line(sf::Vector2f(750.f, 50.f), sf::Vector2f(750.f, 50.f) + Wind * 4.f, 3.f, sf::Color::White));
-    App.Draw(Circle(sf::Vector2f(750.f, 50.f), 5.f, sf::Color::Red));
+    App.draw(Line(sf::Vector2f(750.f, 50.f), sf::Vector2f(750.f, 50.f) + Wind * 4.f, 3.f, sf::Color::White));
+    App.draw(Circle(sf::Vector2f(750.f, 50.f), 5.f, sf::Color::Red));
 
     // pointers
     for (map<sf::Uint32, sf::Vector2i>::iterator it = Pointers.begin(); it != Pointers.end(); ++it)
     {
         sf::Sprite Pointer(Textures["Pointer.png"]);
-        Pointer.SetPosition(sf::Vector2f(it->second.x, it->second.y));
-        App.Draw(Pointer);
+        Pointer.setPosition(sf::Vector2f(it->second.x, it->second.y));
+        App.draw(Pointer);
     }
 }
 
@@ -967,13 +967,13 @@ void AirTrafficScreen::Pause(bool Status)
 
     if (Status)
     {
-        AlarmSound.Pause();
+        AlarmSound.pause();
     }
     else
     {
-        if (AlarmSound.GetStatus() == sf::Sound::Paused)
+        if (AlarmSound.getStatus() == sf::Sound::Paused)
         {
-            AlarmSound.Play();
+            AlarmSound.play();
         }
     }
 }
@@ -1018,7 +1018,7 @@ void AirTrafficScreen::PathingFinish(Aircraft *Ac)
 void AirTrafficScreen::LoadTexture(const string &FileName)
 {
     sf::Texture Texture;
-    Texture.LoadFromFile("res/" + FileName);
+    Texture.loadFromFile("res/" + FileName);
     Textures.insert(make_pair(FileName, Texture));
 }
 
@@ -1027,7 +1027,7 @@ void AirTrafficScreen::LoadSound(const string &FileName)
     if (!FileName.empty())
     {
         sf::SoundBuffer Sound;
-        Sound.LoadFromFile("res/" + FileName);
+        Sound.loadFromFile("res/" + FileName);
         Sounds.insert(make_pair(FileName, Sound));
     }
 }
