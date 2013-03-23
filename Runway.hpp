@@ -32,6 +32,8 @@ class Runway
         float GetAngle();
         float GetLength();
 
+        sf::Sprite GetShape();
+
         void Draw(sf::RenderWindow &App);
     protected:
     private:

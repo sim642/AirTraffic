@@ -60,6 +60,8 @@ class AirTrafficScreen : public Screen
         boost::ptr_list<Explosion> Explosions;
         boost::ptr_list<Scenery> Sceneries;
 
+        sf::ConvexShape AirportArea;
+
         Surface *Background;
         sf::Sound AlarmSound;
 
@@ -91,6 +93,7 @@ class AirTrafficScreen : public Screen
         void SpawnExplosion(sf::Vector2f);
         void SpawnScenery();
         void PickSurface();
+        void CalculateHull();
 
         class
         {

@@ -43,6 +43,11 @@ float Runway::GetLength()
     return Template.Length;
 }
 
+sf::Sprite Runway::GetShape()
+{
+    return Shape;
+}
+
 void Runway::Draw(sf::RenderWindow &App)
 {
     App.draw(Shape);

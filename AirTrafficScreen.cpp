@@ -110,6 +110,8 @@ void AirTrafficScreen::Reset()
     {
         SendGameData();
     }
+
+    CalculateHull();
 }
 
 void AirTrafficScreen::LoadResources()
@@ -210,6 +212,7 @@ void AirTrafficScreen::LoadResources()
     }
 
     LoadTexture("Pointer.png");
+    LoadTexture("Concrete.png");
 
     LoadSound("alarm.wav");
     AlarmSound.setBuffer(Sounds["alarm.wav"]);
@@ -791,6 +794,7 @@ void AirTrafficScreen::Draw()
 {
     // surface
     Background->Draw(App);
+    App.draw(AirportArea);
 
     // sceneries
     for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
@@ -803,6 +807,7 @@ void AirTrafficScreen::Draw()
     {
         it->Draw(App);
     }
+
     // landing areas
     for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
     {
@@ -1289,4 +1294,43 @@ void AirTrafficScreen::PickSurface()
     const SurfaceTemplate &Temp = it->second;
 
     Background = new Surface(Temp, Textures);
+}
+
+void AirTrafficScreen::CalculateHull()
+{
+    vector<sf::Vector2f> Points;
+    for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+    {
+        sf::Sprite Shape = it->GetShape();
+        for (int i = 0; i < 4; i++)
+        {
+            sf::Vector2f Point;
+            switch (i)
+            {
+                case 0:
+                    Point = sf::Vector2f(0.f, 0.f);
+                    break;
+                case 1:
+                    Point = sf::Vector2f(Shape.getLocalBounds().width, 0.f);
+                    break;
+                case 2:
+                    Point = sf::Vector2f(0.f, Shape.getLocalBounds().height);
+                    break;
+                case 3:
+                    Point = sf::Vector2f(Shape.getLocalBounds().width, Shape.getLocalBounds().height);
+                    break;
+            }
+            Points.push_back(Shape.getTransform().transformPoint(Point));
+        }
+    }
+
+    AirportArea = ConvexHull(Points);
+    AirportArea.setTexture(&Textures["Concrete.png"]);
+
+    sf::FloatRect Bounds = AirportArea.getGlobalBounds();
+    sf::Vector2f Origin(Bounds.left + Bounds.width / 2.f, Bounds.top + Bounds.height / 2.f);
+    for (unsigned int i = 0; i < AirportArea.getPointCount(); i++)
+        AirportArea.setPoint(i, AirportArea.getPoint(i) - Origin);
+    AirportArea.scale(1.03f, 1.03f);
+    AirportArea.setPosition(Origin);
 }

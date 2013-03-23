@@ -106,5 +106,10 @@ inline float DotProduct(sf::Vector2f V, sf::Vector2f U)
     return V.x * U.x + V.y * U.y;
 }
 
+inline float CrossProduct(sf::Vector2f V, sf::Vector2f U)
+{
+    return V.x * U.y - V.y * U.x;
+}
+
 
 #endif // MATH_H
