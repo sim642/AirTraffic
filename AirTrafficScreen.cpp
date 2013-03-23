@@ -39,8 +39,6 @@ AirTrafficScreen::~AirTrafficScreen()
 
 AirTrafficScreen::ScreenType AirTrafficScreen::Run(const ScreenType &OldScreen)
 {
-    PointerLast = sf::Vector2f(sf::Mouse::getPosition(App).x, sf::Mouse::getPosition(App).y);
-
     Pause(false);
 
     FrameTimer.restart();
@@ -643,9 +641,9 @@ void AirTrafficScreen::Step()
     PlayTime += FT;
     WindTime += FT;
 
-    sf::Vector2i MousePosi = sf::Mouse::getPosition(App);
-    sf::Vector2f MousePosf(MousePosi.x, MousePosi.y);
-    sf::Listener::setPosition(MousePosf.x, MousePosf.y, 100.f);
+
+    sf::Vector2i MousePos = sf::Mouse::getPosition(App);
+    sf::Listener::setPosition(MousePos.x, MousePos.y, 100.f);
     //sf::Listener::SetDirection(0.f, 0.f, -100.f);
 
     float SpawnTime = Map(PlayTime, 0.f, 120.f, 5.f, 0.5f);
@@ -667,17 +665,9 @@ void AirTrafficScreen::Step()
         Net.SendTcp(sf::Packet() << 0 << PacketTypes::WindUpdate << Wind.x << Wind.y);
     }
 
-    sf::Vector2f MouseVel = (MousePosf - PointerLast) / FT;
     for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); )
     {
         Aircraft &Ac = *it->second;
-
-        const sf::Vector2f &AcVel = Ac.GetVelocity();
-        sf::Vector2f Axis = Normalize(Ac.GetPos() - MousePosf);
-        bool Towards = Distance(MousePosf, Ac.GetPos()) > Distance(MousePosf + MouseVel * FT, Ac.GetPos() + AcVel * FT);
-
-        Ac.SetPitch((SoundSpeed + (Towards ? 1 : -1) * abs(DotProduct(Axis, MouseVel))) / (SoundSpeed + (Towards ? -1 : 1) * abs(DotProduct(Axis, AcVel))));
-
 
         if (!Net.IsActive() || Net.IsServer())
         {
@@ -795,8 +785,6 @@ void AirTrafficScreen::Step()
 
     ScoreText.setString(boost::lexical_cast<string>(Score));
     DebugText.setString(boost::lexical_cast<string>(SpawnTime));
-
-    PointerLast = PointerLerp * PointerLast + (1.f - PointerLerp) * MousePosf;
 }
 
 void AirTrafficScreen::Draw()

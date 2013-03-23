@@ -119,11 +119,6 @@ sf::Vector2f Aircraft::GetLandPoint()
     return LandPoint;
 }
 
-sf::Vector2f Aircraft::GetVelocity()
-{
-    return sf::Vector2f(cos(DegToRad(Shape.getRotation())), sin(DegToRad(Shape.getRotation()))) * Speed;
-}
-
 bool Aircraft::Colliding(const Aircraft &Other) const
 {
     const sf::Vector2f &Me = Shape.getPosition();
@@ -352,9 +347,3 @@ void Aircraft::DrawShadow(sf::RenderWindow &App)
     App.draw(Shape, Transform);
 }
 
-void Aircraft::SetPitch(float Pitch)
-{
-    TakeoffSound.setPitch(Pitch);
-    FlySound.setPitch(Pitch);
-    LandingSound.setPitch(Pitch);
-}
