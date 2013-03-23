@@ -3,67 +3,67 @@
 
 AnimSprite::AnimSprite() : sf::Sprite()
 {
-    ResetTime();
-    SetFrame(0);
+    resetTime();
+    setFrame(0);
 }
 
 AnimSprite::AnimSprite(const sf::Texture &texture, const sf::Vector2i &frameSize, const float &frameRate) : sf::Sprite(texture)
 {
-    SetFrameSize(frameSize);
-    SetFrameRate(frameRate);
-    ResetTime();
-    SetFrame(0);
+    setFrameSize(frameSize);
+    setFrameRate(frameRate);
+    resetTime();
+    setFrame(0);
 
-    UpdateRect();
+    updateRect();
 }
 
 
-void AnimSprite::SetFrameSize(const sf::Vector2i &frameSize)
+void AnimSprite::setFrameSize(const sf::Vector2i &frameSize)
 {
     myFrameSize = frameSize;
     myFrameCount.x = getTexture()->getSize().x / myFrameSize.x;
     myFrameCount.y = getTexture()->getSize().y / myFrameSize.y;
 }
 
-const sf::Vector2i& AnimSprite::GetFrameSize() const
+const sf::Vector2i& AnimSprite::getFrameSize() const
 {
     return myFrameSize;
 }
 
-void AnimSprite::SetFrameRate(const float &frameRate)
+void AnimSprite::setFrameRate(const float &frameRate)
 {
     myFrameTime = 1.f / frameRate;
 }
 
-const float AnimSprite::GetFrameRate() const
+const float AnimSprite::getFrameRate() const
 {
     return 1.f / myFrameTime;
 }
 
-void AnimSprite::SetFrame(const unsigned int &frame)
+void AnimSprite::setFrame(const unsigned int &frame)
 {
     myFrame = frame;
-    const unsigned int &frameCount = GetFrameCount();
+    const unsigned int &frameCount = getFrameCount();
     if (myFrame >= frameCount)
         myFrame = frameCount - 1;
 }
 
-const unsigned int& AnimSprite::GetFrame() const
+const unsigned int& AnimSprite::getFrame() const
 {
     return myFrame;
 }
 
-const unsigned int AnimSprite::GetFrameCount() const
+const unsigned int AnimSprite::getFrameCount() const
 {
     return myFrameCount.x * myFrameCount.y;
 }
 
-void AnimSprite::ResetTime()
+void AnimSprite::resetTime()
 {
     myTime = 0.f;
 }
 
-void AnimSprite::Update(const float &FT)
+void AnimSprite::update(const float &FT)
 {
     myTime += FT;
 
@@ -77,12 +77,12 @@ void AnimSprite::Update(const float &FT)
     if (framesPassed > 0)
     {
         myFrame += framesPassed;
-        myFrame %= GetFrameCount();
-        UpdateRect();
+        myFrame %= getFrameCount();
+        updateRect();
     }
 }
 
-void AnimSprite::UpdateRect()
+void AnimSprite::updateRect()
 {
     sf::IntRect rect;
     rect.left = myFrameSize.x * (myFrame % myFrameCount.x);

@@ -180,7 +180,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
     FlySound.setPosition(Me.x, Me.y, 0.f);
     LandingSound.setPosition(Me.x, Me.y, 0.f);
 
-    Shape.Update(FT);
+    Shape.update(FT);
 
     float Turning = 0.f;
 

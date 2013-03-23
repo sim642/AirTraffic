@@ -10,21 +10,21 @@ class AnimSprite : public sf::Sprite
         AnimSprite(); // doesn't work properly
         AnimSprite(const sf::Texture &texture, const sf::Vector2i &frameSize, const float &frameRate);
 
-        void SetFrameSize(const sf::Vector2i &frameSize);
-        const sf::Vector2i& GetFrameSize() const;
+        void setFrameSize(const sf::Vector2i &frameSize);
+        const sf::Vector2i& getFrameSize() const;
 
-        void SetFrameRate(const float &frameRate);
-        const float GetFrameRate() const;
+        void setFrameRate(const float &frameRate);
+        const float getFrameRate() const;
 
-        void SetFrame(const unsigned int &frame);
-        const unsigned int& GetFrame() const;
+        void setFrame(const unsigned int &frame);
+        const unsigned int& getFrame() const;
 
-        const unsigned int GetFrameCount() const;
+        const unsigned int getFrameCount() const;
 
-        void ResetTime();
+        void resetTime();
 
-        void Update(const float &FT);
-        void UpdateRect();
+        void update(const float &FT);
+        void updateRect();
     private:
         sf::Vector2i myFrameSize;
         sf::Vector2i myFrameCount;

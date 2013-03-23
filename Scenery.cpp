@@ -16,7 +16,7 @@ Scenery::Scenery(const SceneryTemplate &NewTemplate, map<string, sf::Texture> &T
     }
     Shape.setPosition(Pos);
     Shape.setRotation(Rot);
-    Shape.SetFrame(rand() % Shape.GetFrameCount());
+    Shape.setFrame(rand() % Shape.getFrameCount());
 }
 
 SceneryTemplate Scenery::GetTemplate()
@@ -46,7 +46,7 @@ float Scenery::GetAngle()
 
 void Scenery::Step(float FT)
 {
-    Shape.Update(FT);
+    Shape.update(FT);
 }
 
 void Scenery::Draw(sf::RenderWindow &App)
