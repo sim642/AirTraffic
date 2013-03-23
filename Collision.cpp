@@ -4,33 +4,30 @@
 
 using namespace std;
 
+sf::RectangleShape SpriteToShape(const sf::Sprite &Sprite)
+{
+    sf::RectangleShape Shape(sf::Vector2f(Sprite.getLocalBounds().width, Sprite.getLocalBounds().height));
+    Shape.setOrigin(Sprite.getOrigin());
+    Shape.setPosition(Sprite.getPosition());
+    Shape.setRotation(Sprite.getRotation());
+    Shape.setScale(Sprite.getScale());
+    return Shape;
+}
+
 typedef pair<float, float> Projection;
 
-Projection Project(const sf::Sprite &Shape, const sf::Vector2f &Axis)
+Projection Project(const sf::Shape &Shape, const sf::Vector2f &Axis)
 {
     Projection P;
-    P.first = P.second = DotProduct(Axis, Shape.getTransform().transformPoint(0.f, 0.f)); // initial projection
 
-    for (int i = 1; i < 4; i++)
+    for (int i = 0; i < Shape.getPointCount(); i++)
     {
-        sf::Vector2f Point;
-        switch (i)
-        {
-            case 1:
-                Point = sf::Vector2f(Shape.getLocalBounds().width, 0.f);
-                break;
-            case 2:
-                Point = sf::Vector2f(0.f, Shape.getLocalBounds().height);
-                break;
-            case 3:
-                Point = sf::Vector2f(Shape.getLocalBounds().width, Shape.getLocalBounds().height);
-                break;
-        }
+        sf::Vector2f Point = Shape.getPoint(i);
 
         float Proj = DotProduct(Axis, Shape.getTransform().transformPoint(Point));
-        if (Proj < P.first)
+        if (i == 0 || Proj < P.first)
             P.first = Proj;
-        else if (Proj > P.second)
+        if (i == 0 || Proj > P.second)
             P.second = Proj;
     }
 
@@ -42,32 +39,41 @@ bool ProjectionIntersect(const Projection &A, const Projection &B)
     return (B.first > A.first && B.first < A.second) || (B.second > A.first && B.second < A.second) || (A.first > B.first && A.first < B.second) || (A.second > B.first && A.second < B.second);
 }
 
-bool CollidingSprites(const sf::Sprite &A, const sf::Sprite &B)
+bool CollidingShapes(const sf::Shape &A, const sf::Shape &B)
 {
-    if (!A.getGlobalBounds().intersects(B.getGlobalBounds())) // AABB collision
+    if (!A.getGlobalBounds().intersects(B.getGlobalBounds()))
         return false;
 
-    sf::Vector2f Axes[4];
-    for (int i = 0; i < 4; i++) // find all axes that need testing
+    vector<sf::Vector2f> Axes;
+    for (int i = 1; i <= A.getPointCount(); i++)
+        Axes.push_back(Normalize(Perpendicular(A.getPoint(i % A.getPointCount()) - A.getPoint(i - 1))));
+
+    for (int i = 1; i <= B.getPointCount(); i++)
+        Axes.push_back(Normalize(Perpendicular(B.getPoint(i % B.getPointCount()) - B.getPoint(i - 1))));
+
+    for (vector<sf::Vector2f>::iterator it = Axes.begin(); it != Axes.end(); ++it)
     {
-        const sf::Sprite &Shape = (i / 2 == 0 ? A : B); // alternate rectangle
-        const sf::Transform &T = Shape.getTransform();
-
-        sf::Vector2f P1 = T.transformPoint(0.f, 0.f);
-        sf::Vector2f P2 = T.transformPoint(i % 2 == 0 ? sf::Vector2f(Shape.getLocalBounds().width, 0.f) : sf::Vector2f(0.f, Shape.getLocalBounds().height));
-
-        sf::Vector2f Edge = P1 - P2; // alternate edge
-        Axes[i] = Normalize(sf::Vector2f(-Edge.y, Edge.x)); // perpendicular vector
-    }
-
-    for (int i = 0; i < 4; i++) // test all axes
-    {
-        Projection PA = Project(A, Axes[i]);
-        Projection PB = Project(B, Axes[i]);
+        Projection PA = Project(A, *it);
+        Projection PB = Project(B, *it);
 
         if (!ProjectionIntersect(PA, PB))
             return false;
     }
 
     return true;
+}
+
+bool CollidingShapes(const sf::Sprite &A, const sf::Shape &B)
+{
+    return CollidingShapes(SpriteToShape(A), B);
+}
+
+bool CollidingShapes(const sf::Shape &A, const sf::Sprite &B)
+{
+    return CollidingShapes(A, SpriteToShape(B));
+}
+
+bool CollidingShapes(const sf::Sprite &A, const sf::Sprite &B)
+{
+    return CollidingShapes(SpriteToShape(A), SpriteToShape(B));
 }

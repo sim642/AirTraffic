@@ -25,7 +25,7 @@ bool Runway::OnMe(sf::Vector2f Pos)
 
 bool Runway::Colliding(const Runway &Other)
 {
-    return CollidingSprites(Shape, Other.Shape);
+    return CollidingShapes(Shape, Other.Shape);
 }
 
 sf::Vector2f Runway::GetPos()

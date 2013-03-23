@@ -26,12 +26,12 @@ SceneryTemplate Scenery::GetTemplate()
 
 bool Scenery::Colliding(const Scenery &Other)
 {
-    return CollidingSprites(Shape, Other.Shape);
+    return CollidingShapes(Shape, Other.Shape);
 }
 
 bool Scenery::Colliding(const Runway &Other)
 {
-    return CollidingSprites(Shape, Other.Shape);
+    return CollidingShapes(Shape, Other.Shape);
 }
 
 sf::Vector2f Scenery::GetPos()
@@ -42,6 +42,11 @@ sf::Vector2f Scenery::GetPos()
 float Scenery::GetAngle()
 {
     return Shape.getRotation();
+}
+
+const AnimSprite& Scenery::GetShape()
+{
+    return Shape;
 }
 
 void Scenery::Step(float FT)

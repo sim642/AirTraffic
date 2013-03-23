@@ -3,6 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
-bool CollidingSprites(const sf::Sprite &A, const sf::Sprite &B);
+sf::RectangleShape SpriteToShape(const sf::Sprite &Sprite);
+
+bool CollidingShapes(const sf::Shape &A, const sf::Shape &B);
+bool CollidingShapes(const sf::Sprite &A, const sf::Shape &B);
+bool CollidingShapes(const sf::Shape &A, const sf::Sprite &B);
+bool CollidingShapes(const sf::Sprite &A, const sf::Sprite &B);
 
 #endif // COLLISION_H

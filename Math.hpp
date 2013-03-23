@@ -101,6 +101,11 @@ inline sf::Vector2f PolarToRect(sf::Vector2f Polar)
     return Rotate(Rect, Polar.y);
 }
 
+inline sf::Vector2f Perpendicular(sf::Vector2f V)
+{
+    return sf::Vector2f(-V.y, V.x);
+}
+
 inline float DotProduct(sf::Vector2f V, sf::Vector2f U)
 {
     return V.x * U.x + V.y * U.y;

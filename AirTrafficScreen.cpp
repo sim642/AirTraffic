@@ -4,6 +4,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include "Math.hpp"
 #include "GraphUtil.hpp"
+#include "Collision.hpp"
 
 #include <iostream>
 using namespace std;
@@ -100,6 +101,7 @@ void AirTrafficScreen::Reset()
     {
         SpawnRunway();
     }
+    CalculateHull();
 
     for (int n = 0; n < 5; n++)
     {
@@ -110,8 +112,6 @@ void AirTrafficScreen::Reset()
     {
         SendGameData();
     }
-
-    CalculateHull();
 }
 
 void AirTrafficScreen::LoadResources()
@@ -196,6 +196,7 @@ void AirTrafficScreen::LoadResources()
         LoadTexture(Temp.Res);
         Temp.FrameSize = sf::Vector2i(Cur.get("framew", -1), Cur.get("frameh", -1));
         Temp.FrameRate = Cur.get("framerate", 0.f);
+        Temp.Airport = Cur.get<string>("airport") == "true";
 
         SceneryTemplates.insert(make_pair(Temp.Name, Temp));
     }
@@ -1272,6 +1273,9 @@ void AirTrafficScreen::SpawnScenery()
                 break;
             }
         }
+
+        if (CollidingShapes(AirportArea, New->GetShape()) != Temp.Airport)
+            Ready = false;
 
         if (!Ready)
         {

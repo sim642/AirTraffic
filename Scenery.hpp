@@ -14,6 +14,7 @@ struct SceneryTemplate
     string Res;
     sf::Vector2i FrameSize;
     float FrameRate;
+    bool Airport;
 };
 
 class Scenery
@@ -27,6 +28,8 @@ class Scenery
 
         sf::Vector2f GetPos();
         float GetAngle();
+
+        const AnimSprite& GetShape();
 
         void Step(float FT);
         void Draw(sf::RenderWindow &App);
