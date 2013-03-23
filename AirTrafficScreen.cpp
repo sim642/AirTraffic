@@ -324,6 +324,7 @@ void AirTrafficScreen::HandleNet()
                             if (it != RunwayTemplates.end())
                                 Runways.push_back(new Runway(it->second, Textures, sf::Vector2f(X, Y), Angle));
                         }
+                        CalculateHull();
                         break;
                     }
                     case PacketTypes::ScoreUpdate:

@@ -2,8 +2,6 @@
 #include "Math.hpp"
 #include <algorithm>
 
-using namespace std;
-
 sf::ConvexShape Line(const sf::Vector2f &Start, const sf::Vector2f &End, float Thickness, const sf::Color &Color, float Outline, const sf::Color &OutlineColor)
 {
     sf::Vector2f Normal(Start.y - End.y, End.x - Start.x);
