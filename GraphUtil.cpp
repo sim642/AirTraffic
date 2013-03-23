@@ -90,7 +90,7 @@ sf::ConvexShape ConvexHull(vector<sf::Vector2f> Points)
     sort(Points.begin() + 1, Points.end(), AngleComp);
 
     int m = 0;
-    for (int i = 1; i < Points.size(); i++)
+    for (unsigned int i = 1; i < Points.size(); i++)
     {
         while (CCW(Points[m == 0 ? Points.size() - 1 : m - 1], Points[m], Points[i]) >= 0.f)
         {
@@ -107,7 +107,7 @@ sf::ConvexShape ConvexHull(vector<sf::Vector2f> Points)
     }
 
     sf::ConvexShape Shape(m + 1);
-    for (int i = 0; i < Shape.getPointCount(); i++)
+    for (unsigned int i = 0; i < Shape.getPointCount(); i++)
         Shape.setPoint(i, Points[i]);
 
     return Shape;

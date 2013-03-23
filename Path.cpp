@@ -30,7 +30,7 @@ bool Path::TryAddPoint(sf::Vector2f Point)
             double step = 1.0 / interp;
             double t = step;
             sf::Vector2f last = Points.back();
-            for (int i = 1; i < interp; i++, t += step)
+            for (unsigned int i = 1; i < interp; i++, t += step)
             {
                 Points.push_back(last + static_cast<float>(t) * (Point - last));
             }
@@ -59,7 +59,7 @@ bool Path::TryAddPoint(sf::Vector2f Point)
 
             double step = 1.0 / interp;
             double t = step;
-            for (int i = 0; i < interp; i++, t += step)
+            for (unsigned int i = 0; i < interp; i++, t += step)
             {
                 int j = Points.size() - 2 - (interp - 1) + 1 + i; // not perfect fix
                 if (j < 0)
@@ -69,7 +69,7 @@ bool Path::TryAddPoint(sf::Vector2f Point)
                 p.y = f(p0.y, p1.y, m0.y, m1.y, t);
             }
             t = step;
-            for (int i = 1; i < interp; i++, t += step)
+            for (unsigned int i = 1; i < interp; i++, t += step)
             {
                 sf::Vector2f p;
                 p.x = f(p1.x, p2.x, m1.x, m2.x, t);

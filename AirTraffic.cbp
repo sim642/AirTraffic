@@ -7,8 +7,8 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\AirTraffic" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin/Debug/AirTraffic" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -16,8 +16,8 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\Release\AirTraffic" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin/Release/AirTraffic" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -31,14 +31,13 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
-			<Add option="-DSFML_STATIC" />
 		</Compiler>
 		<Linker>
-			<Add option="-lsfml-network-s" />
-			<Add option="-lsfml-audio-s" />
-			<Add option="-lsfml-graphics-s" />
-			<Add option="-lsfml-window-s" />
-			<Add option="-lsfml-system-s" />
+			<Add option="-lsfml-network" />
+			<Add option="-lsfml-audio" />
+			<Add option="-lsfml-graphics" />
+			<Add option="-lsfml-window" />
+			<Add option="-lsfml-system" />
 		</Linker>
 		<Unit filename="AirTraffic.cpp" />
 		<Unit filename="AirTraffic.hpp" />

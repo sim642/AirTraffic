@@ -20,7 +20,7 @@ Projection Project(const sf::Shape &Shape, const sf::Vector2f &Axis)
 {
     Projection P;
 
-    for (int i = 0; i < Shape.getPointCount(); i++)
+    for (unsigned int i = 0; i < Shape.getPointCount(); i++)
     {
         sf::Vector2f Point = Shape.getPoint(i);
 
@@ -45,10 +45,10 @@ bool CollidingShapes(const sf::Shape &A, const sf::Shape &B)
         return false;
 
     vector<sf::Vector2f> Axes;
-    for (int i = 1; i <= A.getPointCount(); i++)
+    for (unsigned int i = 1; i <= A.getPointCount(); i++)
         Axes.push_back(Normalize(Perpendicular(A.getPoint(i % A.getPointCount()) - A.getPoint(i - 1))));
 
-    for (int i = 1; i <= B.getPointCount(); i++)
+    for (unsigned int i = 1; i <= B.getPointCount(); i++)
         Axes.push_back(Normalize(Perpendicular(B.getPoint(i % B.getPointCount()) - B.getPoint(i - 1))));
 
     for (vector<sf::Vector2f>::iterator it = Axes.begin(); it != Axes.end(); ++it)
