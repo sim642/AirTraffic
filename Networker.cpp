@@ -190,6 +190,8 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
                         else
                             ++it;
                     }
+                    else
+                        ++it;
                 }
             }
         }
