@@ -1,8 +1,5 @@
 #include "Networker.hpp"
 
-#include <iostream>
-using namespace std;
-
 Networker::Networker() : Active(false)
 {
     CleanConns();

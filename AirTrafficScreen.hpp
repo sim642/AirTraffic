@@ -77,6 +77,11 @@ class AirTrafficScreen : public Screen
         sf::Text ScoreText;
         sf::Text DebugText;
 
+        sf::Text ChatText;
+        vector<sf::String> ChatLines;
+        sf::String UserChatLine;
+        void AddChatLine(const sf::String &Line);
+
         float Spawner;
         float PlayTime;
 

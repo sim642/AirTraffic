@@ -5,6 +5,8 @@
 #include "Math.hpp"
 #include "GraphUtil.hpp"
 #include "Collision.hpp"
+#include <sstream>
+#include <cctype>
 
 #include <iostream>
 using namespace std;
@@ -22,6 +24,10 @@ AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), B
     DebugText.setCharacterSize(24);
     DebugText.setPosition(sf::Vector2f(10.f, 50.f));
     DebugText.setColor(sf::Color::White);
+
+    ChatText.setFont(Font);
+    ChatText.setCharacterSize(14);
+    ChatLines.assign(6, sf::String());
 
     AlarmSound.setLoop(true);
     AlarmSound.setRelativeToListener(true);
@@ -249,9 +255,12 @@ void AirTrafficScreen::HandleNet()
             {
                 sf::Uint32 Id;
                 Packet >> Id;
-                cout << "Connected (" << Id << ")" << endl;
+                ostringstream ss;
+                ss << "[ " << Id << " connected ]";
+                AddChatLine(ss.str());
                 if (Net.IsServer())
                 {
+                    Net.SendTcp(sf::Packet() << Id << PacketTypes::ClientConnect);
                     SendGameData(Id);
                 }
                 break;
@@ -260,9 +269,23 @@ void AirTrafficScreen::HandleNet()
             {
                 sf::Uint32 Id;
                 Packet >> Id;
-                cout << "Disconnected (" << Id << ")" << endl;
+                ostringstream ss;
+                ss << "[ " << Id;
+                if (Id == 0)
+                    ss << "(server)";
+                ss << " disconnected ]";
+                AddChatLine(ss.str());
 
-                Pointers.erase(Id);
+                if (Net.IsServer())
+                {
+                    Net.SendTcp(sf::Packet() << Id << PacketTypes::ClientDisconnect);
+                    Pointers.erase(Id);
+                }
+                else
+                {
+                    // TODO: return to single player mode
+                    Pointers.clear();
+                }
                 break;
             }
             case Networker::NewPacket:
@@ -270,9 +293,21 @@ void AirTrafficScreen::HandleNet()
                 sf::Uint32 SourceId;
                 PacketType Type;
                 Packet >> SourceId >> Type;
-                cout << "Packet (Id " << SourceId << " Type " << Type << ")" << endl;
+                //cerr << "Packet (Id " << SourceId << " Type " << Type << ")" << endl;
                 switch (Type)
                 {
+                    case PacketTypes::ConnectionResponse:
+                    {
+                        if (Net.IsServer())
+                            break;
+
+                        sf::Uint32 Id;
+                        Packet >> Id;
+                        ostringstream ss;
+                        ss << "[ connected as " << Id << " ]";
+                        AddChatLine(ss.str());
+                        break;
+                    }
                     case PacketTypes::SurfaceUpdate:
                     {
                         if (Net.IsServer())
@@ -347,6 +382,11 @@ void AirTrafficScreen::HandleNet()
                         sf::Vector2i PointerPos;
                         Packet >> PointerPos.x >> PointerPos.y;
                         Pointers[SourceId] = PointerPos;
+
+                        if (Net.IsServer())
+                        {
+                            Net.SendUdp(sf::Packet() << SourceId << PacketTypes::PointerUpdate << PointerPos.x << PointerPos.y);
+                        }
                         break;
                     }
                     case PacketTypes::AircraftSpawn:
@@ -487,6 +527,39 @@ void AirTrafficScreen::HandleNet()
                         {
                             Net.SendTcp(sf::Packet() << SourceId << PacketTypes::PathClear << Aid);
                         }
+                        break;
+                    }
+                    case PacketTypes::ChatMessage:
+                    {
+                        sf::String ChatLine;
+                        Packet >> ChatLine;
+
+                        ostringstream ss;
+                        ss << SourceId;
+                        if (SourceId == 0)
+                            ss << "(server)";
+                        ss << ": ";
+                        AddChatLine(ss.str() + ChatLine);
+
+                        if (Net.IsServer())
+                        {
+                            Net.SendTcp(sf::Packet() << SourceId << PacketTypes::ChatMessage << ChatLine);
+                        }
+                        break;
+                    }
+                    case PacketTypes::ClientConnect:
+                    {
+                        ostringstream ss;
+                        ss << "[ " << SourceId << " connected ]";
+                        AddChatLine(ss.str());
+                        break;
+                    }
+                    case PacketTypes::ClientDisconnect:
+                    {
+                        ostringstream ss;
+                        ss << "[ " << SourceId << " disconnected ]";
+                        AddChatLine(ss.str());
+                        Pointers.erase(SourceId);
                         break;
                     }
                 }
@@ -635,6 +708,40 @@ void AirTrafficScreen::HandleEvents()
                 }
             }
 
+        }
+        else if (Event.type == sf::Event::KeyPressed)
+        {
+            switch (Event.key.code)
+            {
+                case sf::Keyboard::Return:
+                {
+                    ostringstream ss;
+                    ss << Net.GetId() << "(me): ";
+                    AddChatLine(ss.str() + UserChatLine);
+                    if (Net.IsActive())
+                    {
+                        Net.SendTcp(sf::Packet() << Net.GetId() << PacketTypes::ChatMessage << UserChatLine);
+                    }
+                    UserChatLine.clear();
+                    break;
+                }
+
+                case sf::Keyboard::Escape:
+                    UserChatLine.clear();
+                    break;
+
+                case sf::Keyboard::BackSpace:
+                    if (UserChatLine.getSize() > 0)
+                        UserChatLine.erase(UserChatLine.getSize() - 1);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        else if (Event.type == sf::Event::TextEntered && iswprint(Event.text.unicode))
+        {
+            UserChatLine += Event.text.unicode;
         }
     }
 }
@@ -936,6 +1043,22 @@ void AirTrafficScreen::Draw()
     App.draw(ScoreText);
     App.draw(DebugText);
 
+    // chat
+    ChatText.setStyle(sf::Text::Regular);
+    for (unsigned int i = 0; i < ChatLines.size(); i++)
+    {
+        ChatText.setPosition(20, 480 + 17 * i);
+        ChatText.setColor(sf::Color(255, 255, 255, Map(static_cast<int>(i), 0, static_cast<int>(ChatLines.size() - 1), 128, 255)));
+        ChatText.setString(ChatLines[i]);
+        App.draw(ChatText);
+    }
+    ChatText.setPosition(20, 480 + 17 * ChatLines.size());
+    ChatText.setColor(sf::Color::White);
+    ChatText.setStyle(sf::Text::Bold);
+    ChatText.setString(UserChatLine);
+    App.draw(ChatText);
+
+    // wind
     App.draw(Line(sf::Vector2f(750.f, 50.f), sf::Vector2f(750.f, 50.f) + Wind * 4.f, 3.f, sf::Color::White));
     App.draw(Circle(sf::Vector2f(750.f, 50.f), 5.f, sf::Color::Red));
 
@@ -1008,6 +1131,13 @@ void AirTrafficScreen::PathingFinish(Aircraft *Ac)
             Ac->GetPath().Highlight = true;
         }
     }
+}
+
+void AirTrafficScreen::AddChatLine(const sf::String &Line)
+{
+    rotate(ChatLines.begin(), ChatLines.begin() + 1, ChatLines.end());
+
+    ChatLines.back() = Line;
 }
 
 void AirTrafficScreen::LoadTexture(const string &FileName)

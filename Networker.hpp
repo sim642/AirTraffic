@@ -24,7 +24,10 @@ namespace PacketTypes
         AircraftDestroy,
         ExplosionUpdate,
         PathUpdate,
-        PathClear
+        PathClear,
+        ChatMessage,
+        ClientConnect,
+        ClientDisconnect
     };
 }
 typedef PacketTypes::PacketType PacketType;
@@ -65,6 +68,12 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
     sf::Uint32 Aid, float X, float Y
 --14. PathClear--
     sf::Uint32 Aid
+--15. ChatMessage--
+    string Message
+--16. ClientConnect--
+    //
+--17. ClientDisconnect--
+    //
 **/
 
 class Networker
