@@ -472,6 +472,11 @@ void AirTrafficScreen::HandleNet()
                         boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.find(Aid);
                         if (it != Aircrafts.end())
                         {
+                            if (Pathing == it->second)
+                            {
+                                Pathing = NULL;
+                            }
+
                             Aircrafts.erase(it);
                         }
                         break;
