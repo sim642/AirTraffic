@@ -77,6 +77,9 @@ void AirTrafficScreen::StepNet()
 
 void AirTrafficScreen::Reset()
 {
+    UserChatLine.clear();
+    ChatLines.assign(6, sf::String());
+
     Pathing = NULL;
     Score = 0;
 
@@ -709,39 +712,42 @@ void AirTrafficScreen::HandleEvents()
             }
 
         }
-        else if (Event.type == sf::Event::KeyPressed)
+        else if (Net.IsActive())
         {
-            switch (Event.key.code)
+            if (Event.type == sf::Event::KeyPressed)
             {
-                case sf::Keyboard::Return:
+                switch (Event.key.code)
                 {
-                    ostringstream ss;
-                    ss << Net.GetId() << "(me): ";
-                    AddChatLine(ss.str() + UserChatLine);
-                    if (Net.IsActive())
+                    case sf::Keyboard::Return:
                     {
-                        Net.SendTcp(sf::Packet() << Net.GetId() << PacketTypes::ChatMessage << UserChatLine);
+                        ostringstream ss;
+                        ss << Net.GetId() << "(me): ";
+                        AddChatLine(ss.str() + UserChatLine);
+                        if (Net.IsActive())
+                        {
+                            Net.SendTcp(sf::Packet() << Net.GetId() << PacketTypes::ChatMessage << UserChatLine);
+                        }
+                        UserChatLine.clear();
+                        break;
                     }
-                    UserChatLine.clear();
-                    break;
+
+                    case sf::Keyboard::Escape:
+                        UserChatLine.clear();
+                        break;
+
+                    case sf::Keyboard::BackSpace:
+                        if (UserChatLine.getSize() > 0)
+                            UserChatLine.erase(UserChatLine.getSize() - 1);
+                        break;
+
+                    default:
+                        break;
                 }
-
-                case sf::Keyboard::Escape:
-                    UserChatLine.clear();
-                    break;
-
-                case sf::Keyboard::BackSpace:
-                    if (UserChatLine.getSize() > 0)
-                        UserChatLine.erase(UserChatLine.getSize() - 1);
-                    break;
-
-                default:
-                    break;
             }
-        }
-        else if (Event.type == sf::Event::TextEntered && iswprint(Event.text.unicode))
-        {
-            UserChatLine += Event.text.unicode;
+            else if (Event.type == sf::Event::TextEntered && iswprint(Event.text.unicode))
+            {
+                UserChatLine += Event.text.unicode;
+            }
         }
     }
 }
@@ -1052,11 +1058,15 @@ void AirTrafficScreen::Draw()
         ChatText.setString(ChatLines[i]);
         App.draw(ChatText);
     }
-    ChatText.setPosition(20, 480 + 17 * ChatLines.size());
-    ChatText.setColor(sf::Color::White);
-    ChatText.setStyle(sf::Text::Bold);
-    ChatText.setString(UserChatLine);
-    App.draw(ChatText);
+
+    if (Net.IsActive())
+    {
+        ChatText.setPosition(20, 480 + 17 * ChatLines.size());
+        ChatText.setColor(sf::Color::White);
+        ChatText.setStyle(sf::Text::Bold);
+        ChatText.setString(UserChatLine + "_");
+        App.draw(ChatText);
+    }
 
     // wind
     App.draw(Line(sf::Vector2f(750.f, 50.f), sf::Vector2f(750.f, 50.f) + Wind * 4.f, 3.f, sf::Color::White));
