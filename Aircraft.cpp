@@ -288,7 +288,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
                 Shape.setRotation(Angle(Me - Runway));
             }
 
-            float Scale = Map(Dist, 0.f, Land->GetLength() * 1.1f, 1.f, 0.65f);
+            float Scale = Map2(Dist, 0.f, Land->GetLength() * 1.1f, 1.f, 0.65f);
             Shape.setScale(Scale, Scale);
             Radius = Template.Radius * Scale;
 
@@ -310,7 +310,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
                 Shape.setRotation(Angle(Me - Runway));
             }
 
-            float Scale = Map(Dist, 0.f, Land->GetLength() * 1.1f, 0.65f, 1.f);
+            float Scale = Map2(Dist, 0.f, Land->GetLength() * 1.1f, 0.65f, 1.f);
             Shape.setScale(Scale, Scale);
             Radius = Template.Radius * Scale;
 

@@ -14,6 +14,13 @@ inline T Map(T X, T InMin, T InMax, T OutMin, T OutMax)
     return (X - InMin) * (OutMax - OutMin) / (InMax - InMin) + OutMin;
 }
 
+template<typename T>
+inline T Map2(T X, T InMin, T InMax, T OutMin, T OutMax)
+{
+    const T t = (X - InMin) / (InMax - InMin);
+    return (-2 * pow(t, 3) + 3 * pow(t, 2)) * (OutMax - OutMin) + OutMin;
+}
+
 inline float DegToRad(float Deg)
 {
     return Deg * PI / 180.f;
