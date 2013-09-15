@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <map>
+#include <vector>
 #include "AnimSprite.hpp"
 #include "Runway.hpp"
 
@@ -15,6 +16,7 @@ struct SceneryTemplate
     sf::Vector2i FrameSize;
     float FrameRate;
     bool Airport;
+    vector<string> Surfaces;
 };
 
 class Scenery

@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <map>
+#include <vector>
 
 using namespace std;
 
@@ -15,6 +16,7 @@ struct RunwayTemplate
     float LandAngle;
     float Length;
     bool Directional;
+    vector<string> Surfaces;
 };
 
 class Runway

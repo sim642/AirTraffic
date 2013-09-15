@@ -150,6 +150,12 @@ void AirTrafficScreen::LoadResources()
         Temp.Length = Cur.get<float>("length");
         Temp.Directional = Cur.get<bool>("directional");
 
+        boost::property_tree::ptree &CurSurfaces = Cur.get_child("surfaces");
+        for (boost::property_tree::ptree::iterator it2 = CurSurfaces.begin(); it2 != CurSurfaces.end(); ++it2)
+        {
+            Temp.Surfaces.push_back(it2->second.get_value<string>());
+        }
+
         RunwayTemplates.insert(make_pair(Temp.Name, Temp));
     }
 
@@ -206,6 +212,12 @@ void AirTrafficScreen::LoadResources()
         Temp.FrameSize = sf::Vector2i(Cur.get("framew", -1), Cur.get("frameh", -1));
         Temp.FrameRate = Cur.get("framerate", 0.f);
         Temp.Airport = Cur.get<string>("airport") == "true";
+
+        boost::property_tree::ptree &CurSurfaces = Cur.get_child("surfaces");
+        for (boost::property_tree::ptree::iterator it2 = CurSurfaces.begin(); it2 != CurSurfaces.end(); ++it2)
+        {
+            Temp.Surfaces.push_back(it2->second.get_value<string>());
+        }
 
         SceneryTemplates.insert(make_pair(Temp.Name, Temp));
     }
@@ -1184,8 +1196,21 @@ void AirTrafficScreen::LoadSound(const string &FileName)
 
 void AirTrafficScreen::SpawnRunway()
 {
-    map<string, RunwayTemplate>::iterator it = RunwayTemplates.begin();
-    advance(it, rand() % RunwayTemplates.size());
+    map<string, RunwayTemplate>::iterator it;
+    bool CanSpawn = false;
+    do
+    {
+        it = RunwayTemplates.begin();
+        advance(it, rand() % RunwayTemplates.size());
+
+        if (find(it->second.Surfaces.begin(), it->second.Surfaces.end(), Background->GetTemplate().Name) != it->second.Surfaces.end())
+        {
+            CanSpawn = true;
+            break;
+        }
+    }
+    while (!CanSpawn);
+
     const RunwayTemplate &Temp = it->second;
 
     sf::Vector2f Pos;
@@ -1392,8 +1417,21 @@ void AirTrafficScreen::SpawnExplosion(sf::Vector2f Pos)
 
 void AirTrafficScreen::SpawnScenery()
 {
-    map<string, SceneryTemplate>::iterator it = SceneryTemplates.begin();
-    advance(it, rand() % SceneryTemplates.size());
+    map<string, SceneryTemplate>::iterator it;
+    bool CanSpawn = false;
+    do
+    {
+        it = SceneryTemplates.begin();
+        advance(it, rand() % SceneryTemplates.size());
+
+        if (find(it->second.Surfaces.begin(), it->second.Surfaces.end(), Background->GetTemplate().Name) != it->second.Surfaces.end())
+        {
+            CanSpawn = true;
+            break;
+        }
+    }
+    while (!CanSpawn);
+
     const SceneryTemplate &Temp = it->second;
 
     sf::Vector2f Pos;

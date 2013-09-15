@@ -9,7 +9,8 @@
 			"radius": 20,
 			"landangle": 45,
 			"length": 140,
-			"directional": true
+			"directional": true,
+			"surfaces": ["grass", "desert"]
 		},
 		{
 			"name": "runway2",
@@ -19,7 +20,8 @@
 			"radius": 25,
 			"landangle": 45,
 			"length": 150,
-			"directional": true
+			"directional": true,
+			"surfaces": ["desert"]
 		},
 		{
 			"name": "helipad",
@@ -29,7 +31,8 @@
 			"radius": 20,
 			"landangle": 180,
 			"length": 10,
-			"directional": false
+			"directional": false,
+			"surfaces": ["grass"]
 		}
 	],
 	"aircrafts":
@@ -133,7 +136,8 @@
 			"framew": 100,
 			"frameh": 100,
 			"framerate": 1.0,
-			"airport": false
+			"airport": false,
+			"surfaces": ["grass"]
 		},
 		{
 			"name": "tower",
@@ -141,7 +145,8 @@
 			"framew": 96,
 			"frameh": 48,
 			"framerate": 1.0,
-			"airport": true
+			"airport": true,
+			"surfaces": ["desert"]
 		}
 	],
 	"surfaces":
