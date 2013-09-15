@@ -694,6 +694,16 @@ void AirTrafficScreen::HandleEvents()
                  Event.mouseButton.button == sf::Mouse::Left &&
                  Pathing != NULL)
         {
+            Path &P = Pathing->GetPath();
+            if (P.TryAddPoint(MousePos, 10.f))
+            {
+                if (Net.IsActive())
+                {
+                    Net.SendTcp(sf::Packet() << Net.GetId() << PacketTypes::PathUpdate << PathingAid << MousePos.x << MousePos.y);
+                }
+                PathingFinish(Pathing);
+            }
+
             Pathing = NULL;
         }
         else if (Event.type == sf::Event::MouseMoved)

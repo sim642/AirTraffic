@@ -12,7 +12,7 @@ class Path
         Path();
 
         int AddPoint(sf::Vector2f Point);
-        bool TryAddPoint(sf::Vector2f Point);
+        bool TryAddPoint(sf::Vector2f Point, float MinDist = 20.f);
 
         float EndAngle();
 

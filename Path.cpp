@@ -15,7 +15,7 @@ int Path::AddPoint(sf::Vector2f Point)
     return NumPoints() - 1;
 }
 
-bool Path::TryAddPoint(sf::Vector2f Point)
+bool Path::TryAddPoint(sf::Vector2f Point, float MinDist)
 {
     bool Added = false;
     if (Points.size() < 1)
@@ -23,7 +23,7 @@ bool Path::TryAddPoint(sf::Vector2f Point)
         Points.push_back(Point);
         Added = true;
     }
-    else if (!InRange(Point, Points.back(), 20.f))
+    else if (!InRange(Point, Points.back(), MinDist))
     {
         if (Points.size() < 2)
         {
