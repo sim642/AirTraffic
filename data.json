@@ -146,6 +146,7 @@
 			"frameh": 48,
 			"framerate": 1.0,
 			"airport": true,
+			"shadow": 0.97,
 			"surfaces": ["desert"]
 		}
 	],

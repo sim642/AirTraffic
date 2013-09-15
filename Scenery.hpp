@@ -16,6 +16,7 @@ struct SceneryTemplate
     sf::Vector2i FrameSize;
     float FrameRate;
     bool Airport;
+    float Shadow;
     vector<string> Surfaces;
 };
 
@@ -35,6 +36,7 @@ class Scenery
 
         void Step(float FT);
         void Draw(sf::RenderWindow &App);
+        void DrawShadow(sf::RenderWindow &App);
     private:
         const SceneryTemplate &Template;
         AnimSprite Shape;

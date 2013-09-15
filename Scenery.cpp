@@ -56,5 +56,17 @@ void Scenery::Step(float FT)
 
 void Scenery::Draw(sf::RenderWindow &App)
 {
+    Shape.setColor(sf::Color::White);
     App.draw(Shape);
+}
+
+void Scenery::DrawShadow(sf::RenderWindow &App)
+{
+    Shape.setColor(sf::Color(0, 0, 0, 127));
+
+    float Scale = Template.Shadow;
+
+    sf::Transform Transform;
+    Transform.scale(sf::Vector2f(Scale, Scale), sf::Vector2f(App.getSize().x / 2, App.getSize().y * 0.8f));
+    App.draw(Shape, Transform);
 }

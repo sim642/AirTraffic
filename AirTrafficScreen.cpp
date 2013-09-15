@@ -212,6 +212,7 @@ void AirTrafficScreen::LoadResources()
         Temp.FrameSize = sf::Vector2i(Cur.get("framew", -1), Cur.get("frameh", -1));
         Temp.FrameRate = Cur.get("framerate", 0.f);
         Temp.Airport = Cur.get<string>("airport") == "true";
+        Temp.Shadow = Cur.get("shadow", 0.f);
 
         boost::property_tree::ptree &CurSurfaces = Cur.get_child("surfaces");
         for (boost::property_tree::ptree::iterator it2 = CurSurfaces.begin(); it2 != CurSurfaces.end(); ++it2)
@@ -938,16 +939,28 @@ void AirTrafficScreen::Draw()
     Background->Draw(App);
     App.draw(AirportArea);
 
+    // runways
+    for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+    {
+        it->Draw(App);
+    }
+
+    // scenery shadows
+    for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
+    {
+        it->DrawShadow(App);
+    }
+
     // sceneries
     for (boost::ptr_list<Scenery>::iterator it = Sceneries.begin(); it != Sceneries.end(); ++it)
     {
         it->Draw(App);
     }
 
-    // runways
-    for (boost::ptr_list<Runway>::iterator it = Runways.begin(); it != Runways.end(); ++it)
+    // aircraft shadows
+    for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
     {
-        it->Draw(App);
+        it->second->DrawShadow(App);
     }
 
     // landing areas
@@ -986,12 +999,6 @@ void AirTrafficScreen::Draw()
                 }
             }
         }
-    }
-
-    // aircraft shadows
-    for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
-    {
-        it->second->DrawShadow(App);
     }
 
     // aircraft paths
