@@ -154,11 +154,13 @@
 	[
 		{
 			"name": "grass",
-			"res": "Grass192_2.png"
+			"res": "Grass192_2.png",
+			"areares": "Concrete.png"
 		},
 		{
 			"name": "desert",
-			"res": "desert.png"
+			"res": "desert.png",
+			"areares": "ConcreteDesert.png"
 		}
 	]
 }

@@ -10,6 +10,7 @@ struct SurfaceTemplate
 {
     string Name;
     string Res;
+    string AreaRes;
 };
 
 class Surface

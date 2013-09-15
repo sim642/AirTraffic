@@ -230,6 +230,8 @@ void AirTrafficScreen::LoadResources()
         Temp.Name = Cur.get<string>("name");
         Temp.Res = Cur.get<string>("res");
         LoadTexture(Temp.Res);
+        Temp.AreaRes = Cur.get("areares", "Concrete.png");
+        LoadTexture(Temp.AreaRes);
 
         SurfaceTemplates.insert(make_pair(Temp.Name, Temp));
     }
@@ -1530,7 +1532,7 @@ void AirTrafficScreen::CalculateHull()
     }
 
     AirportArea = ConvexHull(Points);
-    AirportArea.setTexture(&Textures["Concrete.png"]);
+    AirportArea.setTexture(&Textures[Background->GetTemplate().AreaRes]);
 
     sf::FloatRect Bounds = AirportArea.getGlobalBounds();
     sf::Vector2f Origin(Bounds.left + Bounds.width / 2.f, Bounds.top + Bounds.height / 2.f);
