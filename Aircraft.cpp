@@ -326,7 +326,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
     }
 
     Shape.move(sf::Vector2f(cos(DegToRad(Shape.getRotation())), sin(DegToRad(Shape.getRotation()))) * FT * Speed);
-    Shape.move(Wind * FT);
+    Shape.move(Wind * FT * Magnitude(Shape.getScale()) / sqrt(2.f));
 
     return Die;
 }
