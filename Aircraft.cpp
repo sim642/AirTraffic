@@ -263,7 +263,8 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
             if (Land &&
                 P.NumPoints() == 0 &&
                 Land->OnMe(Me) &&
-                abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle)
+                P.Highlight
+                /*abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle*/)
             {
                 FlySound.stop();
                 LandingSound.play();
