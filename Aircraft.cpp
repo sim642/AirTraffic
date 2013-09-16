@@ -308,7 +308,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
 
             if (Land->GetTemplate().Directional)
             {
-                Shape.setRotation(Angle(Me - Runway));
+                Shape.rotate(AngleDiff(Shape.getRotation(), Angle(Me - Runway)) * 3 * FT);
             }
 
             float Scale = Map2(Dist, 0.f, Land->GetLength() * 1.1f, 0.65f, 1.f);
