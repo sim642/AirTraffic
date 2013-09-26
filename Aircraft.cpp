@@ -184,7 +184,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
         case FlyingIn:
         {
             sf::Vector2f To(400.f, 300.f);
-            Shape.setRotation(RadToDeg(atan2(To.y - Me.y, To.x - Me.x)));
+            Shape.setRotation(Angle(Me - To));
 
             if (P.NumPoints() > 0)
             {
@@ -200,7 +200,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
         case FlyingOut:
         {
             sf::Vector2f From(400.f, 300.f);
-            Shape.setRotation(RadToDeg(atan2(Me.y - From.y, Me.x - From.x)));
+            Shape.rotate(AngleDiff(Shape.getRotation(), Angle(From - Me)) * FT);
 
             if (Me.x < -Radius || Me.x > (800 + Radius) || Me.y < -Radius || Me.y > (600 + Radius))
             {
@@ -256,7 +256,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
             if (InRange(Me, To, 5))
                 P.RemovePoint(0);
 
-            float Target = RadToDeg(atan2(To.y - Me.y, To.x - Me.x));
+            float Target = Angle(Me - To);
 
             Shape.setRotation(Target);
 
@@ -325,7 +325,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
         }
     }
 
-    Shape.move(sf::Vector2f(cos(DegToRad(Shape.getRotation())), sin(DegToRad(Shape.getRotation()))) * FT * Speed);
+    Shape.move(PolarToRect(sf::Vector2f(Speed, Shape.getRotation())) * FT);
     Shape.move(Wind * FT * Magnitude(Shape.getScale()) / sqrt(2.f));
 
     return Die;
