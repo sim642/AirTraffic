@@ -301,8 +301,8 @@ void AirTrafficScreen::HandleNet()
                 }
                 else
                 {
-                    // TODO: return to single player mode
                     Pointers.clear();
+                    KillNet();
                 }
                 break;
             }
@@ -524,7 +524,7 @@ void AirTrafficScreen::HandleNet()
                         boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.find(Aid);
                         if (it != Aircrafts.end() && it->second->Pathable())
                         {
-                            it->second->GetPath().TryAddPoint(Pos);
+                            it->second->GetPath().TryAddPoint(Pos, 0.f);
                             PathingFinish(it->second);
                         }
 
@@ -1540,4 +1540,9 @@ void AirTrafficScreen::CalculateHull()
         AirportArea.setPoint(i, AirportArea.getPoint(i) - Origin);
     AirportArea.scale(1.03f, 1.03f);
     AirportArea.setPosition(Origin);
+}
+
+bool AirTrafficScreen::IsNetActive()
+{
+    return Net.IsActive();
 }

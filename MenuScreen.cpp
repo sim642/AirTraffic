@@ -195,6 +195,12 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
             }
         }
 
+        if (!ATS->IsNetActive() && HasItem("Disconnect"))
+        {
+            ItemPicked = true;
+            ItemSelected = find(Items.begin(), Items.end(), "Disconnect") - Items.begin();
+        }
+
         if (ItemPicked)
         {
             string Selected = Items[ItemSelected];

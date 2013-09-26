@@ -29,6 +29,7 @@ class AirTrafficScreen : public Screen
         void SetupClient(const string &Host);
         void SetupServer();
         void KillNet();
+        bool IsNetActive();
 
         void StepNet();
         void Draw();
