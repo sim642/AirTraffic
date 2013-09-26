@@ -10,32 +10,44 @@ Networker::~Networker()
     CleanConns();
 }
 
-void Networker::SetupClient(const sf::IpAddress &NewIp)
+bool Networker::SetupClient(const sf::IpAddress &NewIp)
 {
     CleanConns();
 
+    if (ClientSocket.Tcp.connect(NewIp, Port) != sf::Socket::Done)
+        return false;
+
     Server = false;
     Active = true;
-    ClientSocket.Tcp.connect(NewIp, Port);
+
     ClientSocket.Ip = NewIp;
     ClientSocket.UdpPort = Port;
     //Udp.Bind(Port); //temp
 
     Selector.add(ClientSocket.Tcp);
     //Selector.Add(Udp);
+    return true;
 }
 
-void Networker::SetupServer()
+bool Networker::SetupServer()
 {
     CleanConns();
 
+    if (ServerTcp.listen(Port) != sf::Socket::Done)
+        return false;
+
+    if (Udp.bind(Port) != sf::Socket::Done)
+    {
+        ServerTcp.close();
+        return false;
+    }
+
     Server = true;
     Active = true;
-    ServerTcp.listen(Port);
-    Udp.bind(Port); //temp
 
     Selector.add(ServerTcp);
     Selector.add(Udp);
+    return true;
 }
 
 void Networker::Kill()

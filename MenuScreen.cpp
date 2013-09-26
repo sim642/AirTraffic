@@ -85,13 +85,18 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                         {
                             Input = false;
 
-                            AddItemBefore("Disconnect", "Join game");
-                            RemoveItem("Join game");
-                            RemoveItem("Host server");
-                            RemoveItem("New game");
+                            if (ATS->SetupClient(UserText.getString()))
+                            {
+                                AddItemBefore("Disconnect", "Join game");
+                                RemoveItem("Join game");
+                                RemoveItem("Host server");
+                                RemoveItem("New game");
 
-                            ATS->SetupClient(UserText.getString());
-                            return AirTrafficType;
+                                ATS->SetupClient(UserText.getString());
+                                return AirTrafficType;
+                            }
+
+                            break;
                         }
 
                         case sf::Keyboard::Escape:
@@ -222,11 +227,14 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
             }
             else if (Selected == "Host server")
             {
-                AddItemBefore("Disconnect", "Join game");
-                RemoveItem("Join game");
-                RemoveItem("Host server");
-                ATS->SetupServer();
-                return AirTrafficType;
+                if (ATS->SetupServer())
+                {
+                    AddItemBefore("Disconnect", "Join game");
+                    RemoveItem("Join game");
+                    RemoveItem("Host server");
+
+                    return AirTrafficType;
+                }
             }
             else if (Selected == "Disconnect")
             {

@@ -243,16 +243,22 @@ void AirTrafficScreen::LoadResources()
     AlarmSound.setBuffer(Sounds["alarm.wav"]);
 }
 
-void AirTrafficScreen::SetupClient(const string &Host)
+bool AirTrafficScreen::SetupClient(const string &Host)
 {
-    Net.SetupClient(Host);
+    if (!Net.SetupClient(Host))
+        return false;
+
     Reset(); // not fully needed
+    return true;
 }
 
-void AirTrafficScreen::SetupServer()
+bool AirTrafficScreen::SetupServer()
 {
-    Net.SetupServer();
+    if (!Net.SetupServer())
+        return false;
+
     Reset();
+    return true;
 }
 
 void AirTrafficScreen::KillNet()

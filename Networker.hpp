@@ -92,8 +92,8 @@ class Networker
         Networker();
         ~Networker();
 
-        void SetupClient(const sf::IpAddress &NewIp);
-        void SetupServer();
+        bool SetupClient(const sf::IpAddress &NewIp);
+        bool SetupServer();
         void Kill();
 
         void SendTcp(sf::Packet &Packet);
