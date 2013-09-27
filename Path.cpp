@@ -15,7 +15,7 @@ int Path::AddPoint(sf::Vector2f Point)
     return NumPoints() - 1;
 }
 
-bool Path::TryAddPoint(sf::Vector2f Point, float MinDist)
+bool Path::TryAddPoint(sf::Vector2f Point, float MinDist, bool EndAngleCheck)
 {
     bool Added = false;
     if (Points.size() < 1)
@@ -37,6 +37,16 @@ bool Path::TryAddPoint(sf::Vector2f Point, float MinDist)
         }
         else
         {
+            if (EndAngleCheck)
+            {
+                int i = AddPoint(Point);
+                float NewAngle = EndAngle();
+                RemovePoint(i);
+
+                if (abs(AngleDiff(NewAngle, EndAngle())) >= 90.f)
+                    return false;
+            }
+
             static double shit = 0.5;
 
             sf::Vector2f p0 = Points.at(max<int>(0, Points.size() - 2 - (interp - 1)));

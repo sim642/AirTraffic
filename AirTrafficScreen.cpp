@@ -716,7 +716,7 @@ void AirTrafficScreen::HandleEvents()
                  Pathing != NULL)
         {
             Path &P = Pathing->GetPath();
-            if (P.TryAddPoint(MousePos, 10.f))
+            if (P.TryAddPoint(MousePos, 10.f, true))
             {
                 if (Net.IsActive())
                 {
