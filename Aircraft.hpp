@@ -59,7 +59,9 @@ class Aircraft
         const AircraftTemplate& GetTemplate() const;
 
         sf::Vector2f GetPos() const;
+        void SetPos(const sf::Vector2f &NewPos);
         float GetAngle() const;
+        void SetAngle(const float &NewAngle);
         Runway* const GetLand() const;
         float GetRadius() const;
 

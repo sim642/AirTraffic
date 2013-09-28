@@ -89,6 +89,8 @@ class AirTrafficScreen : public Screen
         sf::Vector2f Wind;
         float WindTime;
 
+        float NetUpdateTime;
+
         void LoadTexture(const string& FileName);
         map<string, sf::Texture> Textures;
         void LoadSound(const string& FileName);

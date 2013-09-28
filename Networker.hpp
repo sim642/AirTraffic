@@ -60,6 +60,7 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
 --9. AircraftCreateIn--
     sf::Uint32 Aid, string Name, float X, float Y, float Angle, sf::Int32 Runway(-1 = None), sf::Uint16 State, float LandX, float LandY
 --10. AircraftUpdate--
+    sf::Uint32 Aid, float X, float Y, float Angle, sf::Int32 Runway(-1 = None)
 --11. AircraftDestory--
     sf::Uint32 Aid
 --12. ExplosionUpdate--

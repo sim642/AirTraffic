@@ -90,6 +90,7 @@ void AirTrafficScreen::Reset()
     Spawner = 0.f;
     PlayTime = 0.f;
     WindTime = 0.f;
+    NetUpdateTime = 0.f;
 
     if (Net.IsServer())
     {
@@ -482,6 +483,35 @@ void AirTrafficScreen::HandleNet()
                         }
                         break;
                     }
+                    case PacketTypes::AircraftUpdate:
+                    {
+                        if (Net.IsServer())
+                            break;
+
+                        sf::Uint32 Aid;
+                        sf::Vector2f Pos;
+                        float Angle;
+                        sf::Int32 Rw;
+                        Packet >> Aid >> Pos.x >> Pos.y >> Angle >> Rw;
+
+                        Runway *Land = 0;
+                        if (Rw >= 0)
+                        {
+                            boost::ptr_list<Runway>::iterator it2 = Runways.begin();
+                            advance(it2, Rw);
+                            Land = &*it2;
+                        }
+
+                        boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.find(Aid);
+                        if (it != Aircrafts.end())
+                        {
+                            Aircraft *Ac = it->second;
+                            Ac->SetPos(Pos);
+                            Ac->SetAngle(Angle);
+                            Ac->SetRunway(Land);
+                        }
+                        break;
+                    }
                     case PacketTypes::AircraftDestroy:
                     {
                         if (Net.IsServer())
@@ -601,6 +631,31 @@ void AirTrafficScreen::HandleNet()
         }
     }
     while (ReceiveStatus != Networker::NoPacket);
+
+    if (Net.IsServer() && NetUpdateTime > 0.1f)
+    {
+        for (boost::ptr_map<sf::Uint32, Aircraft>::iterator it = Aircrafts.begin(); it != Aircrafts.end(); ++it)
+        {
+            sf::Packet Packet;
+            Packet << 0 << PacketTypes::AircraftUpdate << it->first << it->second->GetPos().x << it->second->GetPos().y << it->second->GetAngle();
+            if (it->second->GetLand() == NULL)
+                Packet << -1;
+            else
+            {
+                boost::ptr_list<Runway>::iterator it2 = Runways.begin();
+                for (; it2 != Runways.end(); ++it2)
+                {
+                    if (&*it2 == it->second->GetLand())
+                        break;
+                }
+                sf::Int32 Rw = distance(Runways.begin(), it2);
+                Packet << Rw;
+            }
+
+            Net.SendUdp(Packet);
+        }
+        NetUpdateTime = 0.f;
+    }
 }
 
 void AirTrafficScreen::SendGameData(const sf::Uint32 Id)
@@ -794,6 +849,7 @@ void AirTrafficScreen::Step()
     Spawner += FT;
     PlayTime += FT;
     WindTime += FT;
+    NetUpdateTime += FT;
 
 
     sf::Vector2i MousePos = sf::Mouse::getPosition(App);

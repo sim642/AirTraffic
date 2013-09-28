@@ -63,9 +63,19 @@ sf::Vector2f Aircraft::GetPos() const
     return Shape.getPosition();
 }
 
+void Aircraft::SetPos(const sf::Vector2f &NewPos)
+{
+    Shape.setPosition(NewPos);
+}
+
 float Aircraft::GetAngle() const
 {
     return Shape.getRotation();
+}
+
+void Aircraft::SetAngle(const float &NewAngle)
+{
+    Shape.setRotation(NewAngle);
 }
 
 Runway* const Aircraft::GetLand() const
