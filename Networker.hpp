@@ -27,7 +27,8 @@ namespace PacketTypes
         PathClear,
         ChatMessage,
         ClientConnect,
-        ClientDisconnect
+        ClientDisconnect,
+        ConnectionUdp,
     };
 }
 typedef PacketTypes::PacketType PacketType;
@@ -40,7 +41,7 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
 **/
 /** Packets
 --0. ConnectionResponse--
-    sf::Uint32 Id, sf::Uint16 UdpPort
+    sf::Uint32 Id
 --1. SurfaceUpdate--
     string Name
 --2. SceneryUpdate--
@@ -75,6 +76,8 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
     //
 --17. ClientDisconnect--
     //
+--18. ConnectionUdp--
+    sf::Uint16 UdpPort
 **/
 
 class Networker
