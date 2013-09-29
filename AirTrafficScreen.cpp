@@ -661,7 +661,7 @@ void AirTrafficScreen::HandleNet()
 
 void AirTrafficScreen::SendGameData(const sf::Uint32 Id)
 {
-    Net.SendTcp(sf::Packet() << 0 << PacketTypes::ScoreUpdate << Score, Id); // score
+    Net.SendTcp(sf::Packet() << 0 << PacketTypes::ScoreUpdate << Score << HighScore, Id); // score
     Net.SendTcp(sf::Packet() << 0 << PacketTypes::WindUpdate << Wind.x << Wind.y, Id); // wind
     Net.SendTcp(sf::Packet() << 0 << PacketTypes::SurfaceUpdate << Background->GetTemplate().Name, Id); // surface
 
