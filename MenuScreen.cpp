@@ -92,7 +92,6 @@ MenuScreen::ScreenType MenuScreen::Run(const ScreenType &OldScreen)
                                 RemoveItem("Host server");
                                 RemoveItem("New game");
 
-                                ATS->SetupClient(UserText.getString());
                                 return AirTrafficType;
                             }
 
