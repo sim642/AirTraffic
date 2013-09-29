@@ -1038,10 +1038,10 @@ void AirTrafficScreen::Draw()
                 if (find(Landable.begin(), Landable.end(), it->GetTemplate().Name) != Landable.end())
                 {
                     App.draw(Circle(it->GetPos(),
-                                               it->GetTemplate().Radius - 3.f,
-                                               sf::Color(0, 255, 255, 96),
-                                               3.f,
-                                               sf::Color(0, 255, 255)));
+                                    it->GetTemplate().Radius - 3.f,
+                                    sf::Color(0, 255, 255, 96),
+                                    3.f,
+                                    sf::Color(0, 255, 255)));
                 }
             }
             else
@@ -1094,10 +1094,10 @@ void AirTrafficScreen::Draw()
                 AlarmOn = true;
                 float MinDist = (R1 + R2) / 2.5f;
                 App.draw(Circle(Pos1,
-                                           R1 - 3.f,
-                                           sf::Color(255, 255, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
-                                           3.f,
-                                           sf::Color(255, 255, 0, Map<float>(Dist, MinDist, MaxDist, 255, 64))));
+                                R1 - 3.f,
+                                sf::Color(255, 255, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
+                                3.f,
+                                sf::Color(255, 255, 0, Map<float>(Dist, MinDist, MaxDist, 255, 64))));
             }
         }
         // with other aircraft
@@ -1116,15 +1116,15 @@ void AirTrafficScreen::Draw()
                 AlarmOn = true;
                 float MinDist = (R1 + R2) / 1.3f;
                 App.draw(Circle(Pos1,
-                                           R1 - 3.f,
-                                           sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
-                                           3.f,
-                                           sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 255, 64))));
+                                R1 - 3.f,
+                                sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
+                                3.f,
+                                sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 255, 64))));
                 App.draw(Circle(Pos2,
-                                           R2 - 3.f,
-                                           sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
-                                           3.f,
-                                           sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 255, 64))));
+                                R2 - 3.f,
+                                sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 128, 32)),
+                                3.f,
+                                sf::Color(255, 0, 0, Map<float>(Dist, MinDist, MaxDist, 255, 64))));
             }
         }
     }
@@ -1232,9 +1232,9 @@ void AirTrafficScreen::PathingFinish(Aircraft *Ac)
         Aircraft::OutDirections OutDirection = Ac->GetOutDirection();
 
         if ((OutDirection == Aircraft::OutUp && Point.y < 50) ||
-          (OutDirection == Aircraft::OutDown && Point.y > 550) ||
-          (OutDirection == Aircraft::OutLeft && Point.x < 50) ||
-          (OutDirection == Aircraft::OutRight && Point.x > 750))
+            (OutDirection == Aircraft::OutDown && Point.y > 550) ||
+            (OutDirection == Aircraft::OutLeft && Point.x < 50) ||
+            (OutDirection == Aircraft::OutRight && Point.x > 750))
         {
             Ac->GetPath().Highlight = true;
         }
