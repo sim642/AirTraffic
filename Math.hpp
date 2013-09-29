@@ -8,8 +8,8 @@ using namespace std;
 
 const float PI = 3.14159265f;
 
-template<typename T>
-inline T Map(T X, T InMin, T InMax, T OutMin, T OutMax)
+template<typename Tin, typename Tout>
+inline Tout Map(Tin X, Tin InMin, Tin InMax, Tout OutMin, Tout OutMax)
 {
     return (X - InMin) * (OutMax - OutMin) / (InMax - InMin) + OutMin;
 }

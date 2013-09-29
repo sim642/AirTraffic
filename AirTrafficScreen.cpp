@@ -1146,6 +1146,22 @@ void AirTrafficScreen::Draw()
     }
 
     // hud
+    if (HighScore == 0)
+        ScoreText.setColor(Score < 0 ? sf::Color(255, 128, 128) : sf::Color::White);
+    else
+    {
+        float RecordP = max(float(Score) / HighScore, 0.f);
+        if (RecordP >= 0.5f)
+        {
+            int val = Map(RecordP, 0.5f, 1.f, 255, 128);
+            ScoreText.setColor(sf::Color(val, 255, val));
+        }
+        else
+        {
+            int val = Map(RecordP, 0.f, 0.5f, 128, 255);
+            ScoreText.setColor(sf::Color(255, val, val));
+        }
+    }
     App.draw(ScoreText);
     App.draw(HighScoreText);
 
