@@ -24,6 +24,7 @@ struct AircraftTemplate
     float Radius;
     float Speed;
     float Turn;
+    float Value;
     vector<string> Runways;
 };
 
@@ -64,6 +65,7 @@ class Aircraft
         void SetAngle(const float &NewAngle);
         Runway* const GetLand() const;
         float GetRadius() const;
+        float GetTime() const;
 
         Path& GetPath();
         bool OnMe(sf::Vector2f);
@@ -93,6 +95,7 @@ class Aircraft
         float Radius;
         float Speed;
         float Turn;
+        float Time;
 
         Path P;
         AnimSprite Shape;

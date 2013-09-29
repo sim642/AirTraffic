@@ -178,6 +178,7 @@ void AirTrafficScreen::LoadResources()
         Temp.Speed = Cur.get<float>("speed");
         Temp.Radius = Cur.get<float>("radius");
         Temp.Turn = Cur.get<float>("turn");
+        Temp.Value = Cur.get<int>("value");
 
         boost::property_tree::ptree &CurRunways = Cur.get_child("runways");
         for (boost::property_tree::ptree::iterator it2 = CurRunways.begin(); it2 != CurRunways.end(); ++it2)
@@ -856,9 +857,7 @@ void AirTrafficScreen::Step()
     sf::Listener::setPosition(MousePos.x, MousePos.y, 100.f);
     //sf::Listener::SetDirection(0.f, 0.f, -100.f);
 
-    float SpawnTime = Map(PlayTime, 0.f, 120.f, 5.f, 0.5f);
-    if (SpawnTime < 0.5f)
-        SpawnTime = 0.5f;
+    float SpawnTime = 5 * pow(0.99995, Score);
 
     if ((!Net.IsActive() || Net.IsServer()) && Spawner > SpawnTime)
     {
@@ -906,7 +905,7 @@ void AirTrafficScreen::Step()
                 sf::Vector2f Pos1 = Ac.GetPos(), Pos2 = it2->second->GetPos();
                 SpawnExplosion(Pos1);
                 SpawnExplosion(Pos2);
-                Score -= 10000;
+                Score -= Ac.GetTemplate().Value + it2->second->GetTemplate().Value;
                 ScoreUpdate = true;
 
                 if (Pathing == it->second || Pathing == it2->second) // take care if were drawing a path
@@ -927,7 +926,7 @@ void AirTrafficScreen::Step()
             {
                 sf::Vector2f Pos1 = Ac.GetPos()/*, Pos2 = it3->GetPos()*/;
                 SpawnExplosion(Pos1);
-                Score -= 5000;
+                Score -= Ac.GetTemplate().Value;
                 ScoreUpdate = true;
 
                 if (Pathing == it->second)
@@ -944,7 +943,7 @@ void AirTrafficScreen::Step()
             }
             else if (Ac.Step(FT, Wind))
             {
-                Score += 1000;
+                Score += 2*Ac.GetTemplate().Value / sqrt(Ac.GetTime());
                 ScoreUpdate = true;
 
                 if (Pathing == it->second) // take care if were drawing a path

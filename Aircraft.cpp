@@ -51,6 +51,7 @@ void Aircraft::Setup(map<string, sf::Texture> &Textures, map<string, sf::SoundBu
     Radius = Template.Radius;
     Speed = Template.Speed;
     Turn = Template.Turn;
+    Time = 0.f;
 }
 
 const AircraftTemplate& Aircraft::GetTemplate() const
@@ -86,6 +87,11 @@ Runway* const Aircraft::GetLand() const
 float Aircraft::GetRadius() const
 {
     return Radius;
+}
+
+float Aircraft::GetTime() const
+{
+    return Time;
 }
 
 Path& Aircraft::GetPath()
@@ -179,6 +185,7 @@ void Aircraft::Pause(bool Status)
 bool Aircraft::Step(float FT, sf::Vector2f Wind)
 {
     bool Die = false;
+    Time += FT;
 
     const sf::Vector2f &Me = Shape.getPosition();
     TakeoffSound.setPosition(Me.x, Me.y, 0.f);

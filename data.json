@@ -46,6 +46,7 @@
 			"radius": 35,
 			"speed": 120,
 			"turn": 1.75,
+			"value": 1000,
 			"runways": ["runway1", "runway2"]
 		},
 		{
@@ -57,6 +58,7 @@
 			"radius": 35,
 			"speed": 120,
 			"turn": 1.75,
+			"value": 1000,
 			"runways": ["runway1", "runway2"]
 		},
 		{
@@ -68,6 +70,7 @@
 			"radius": 35,
 			"speed": 120,
 			"turn": 1.75,
+			"value": 1000,
 			"runways": ["runway1", "runway2"]
 		},
 		{
@@ -79,6 +82,7 @@
 			"radius": 23,
 			"speed": 80,
 			"turn": 2,
+			"value": 500,
 			"runways": ["runway1", "runway2"]
 		},
 		{
@@ -90,6 +94,7 @@
 			"radius": 40,
 			"speed": 130,
 			"turn": 1.25,
+			"value": 1500,
 			"runways": ["runway2"]
 		},
 		{
@@ -104,6 +109,7 @@
 			"radius": 25,
 			"speed": 65,
 			"turn": 5,
+			"value": 750,
 			"runways": ["helipad"]
 		},
 		{
@@ -115,6 +121,7 @@
 			"radius": 25,
 			"speed": 180,
 			"turn": 3,
+			"value": 2000,
 			"runways": ["runway1", "runway2"]
 		}
 	],
