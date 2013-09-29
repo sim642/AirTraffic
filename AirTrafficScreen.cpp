@@ -20,10 +20,10 @@ AirTrafficScreen::AirTrafficScreen(sf::RenderWindow &NewApp) : Screen(NewApp), B
     ScoreText.setPosition(sf::Vector2f(10.f, 10.f));
     ScoreText.setColor(sf::Color::White);
 
-    DebugText.setFont(Font);
-    DebugText.setCharacterSize(24);
-    DebugText.setPosition(sf::Vector2f(10.f, 50.f));
-    DebugText.setColor(sf::Color::White);
+    HighScoreText.setFont(Font);
+    HighScoreText.setCharacterSize(24);
+    HighScoreText.setPosition(sf::Vector2f(10.f, 50.f));
+    HighScoreText.setColor(sf::Color::White);
 
     ChatText.setFont(Font);
     ChatText.setCharacterSize(14);
@@ -81,7 +81,7 @@ void AirTrafficScreen::Reset()
     ChatLines.assign(6, sf::String());
 
     Pathing = NULL;
-    Score = 0;
+    Score = HighScore = 0;
 
     Wind = sf::Vector2f(0.f, 1.f);
     Wind = Rotate(Wind, Random(0.f, 360.f));
@@ -393,7 +393,7 @@ void AirTrafficScreen::HandleNet()
                     {
                         if (Net.IsServer())
                             break;
-                        Packet >> Score;
+                        Packet >> Score >> HighScore;
                         break;
                     }
                     case PacketTypes::WindUpdate:
@@ -963,9 +963,12 @@ void AirTrafficScreen::Step()
                 ++it;
             }
 
+            if (ScoreUpdate && (Score > HighScore))
+                HighScore = Score;
+
             if (Net.IsServer() && ScoreUpdate)
             {
-                Net.SendTcp(sf::Packet() << 0 << PacketTypes::ScoreUpdate << Score);
+                Net.SendTcp(sf::Packet() << 0 << PacketTypes::ScoreUpdate << Score << HighScore);
             }
         }
         else
@@ -993,7 +996,7 @@ void AirTrafficScreen::Step()
     }
 
     ScoreText.setString(boost::lexical_cast<string>(Score));
-    DebugText.setString(boost::lexical_cast<string>(SpawnTime));
+    HighScoreText.setString(boost::lexical_cast<string>(HighScore));
 }
 
 void AirTrafficScreen::Draw()
@@ -1144,7 +1147,7 @@ void AirTrafficScreen::Draw()
 
     // hud
     App.draw(ScoreText);
-    App.draw(DebugText);
+    App.draw(HighScoreText);
 
     // chat
     ChatText.setStyle(sf::Text::Regular);

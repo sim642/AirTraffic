@@ -48,7 +48,7 @@ sf::Packet& operator<< (sf::Packet &Packet, PacketType &Type);
 --3. RunwayUpdate--
     [string Name, float X, float Y, float Angle]
 --4. ScoreUpdate--
-    sf::Int32 Score
+    sf::Int32 Score, sf::Int32 HighScore
 --5. WindUpdate--
     float X, float Y
 --6. PointerUpdate--

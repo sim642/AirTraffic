@@ -73,10 +73,11 @@ class AirTrafficScreen : public Screen
         void PathingFinish(Aircraft *Ac);
 
         int Score;
+        int HighScore;
 
         sf::Font Font;
         sf::Text ScoreText;
-        sf::Text DebugText;
+        sf::Text HighScoreText;
 
         sf::Text ChatText;
         vector<sf::String> ChatLines;
