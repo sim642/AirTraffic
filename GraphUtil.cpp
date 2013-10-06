@@ -115,25 +115,22 @@ sf::ConvexShape ConvexHull(vector<sf::Vector2f> Points)
 
 sf::Texture PerlinNoise()
 {
-    const int Size2 = 1024;
+    const int Size2 = 800;
     const float Persistence = 0.5f;
 
     vector< vector<float> > F(Size2, vector<float>(Size2, 0.f));
 
-    for (int i = 2; i <= 7; i++)
+    for (int i = 4; i <= 7; i++)
     {
         int Freq = pow(2, i);
-        float Amplitude = pow(Persistence, 10 - i);
+        float Amplitude = pow(Persistence, log(Size2) / log(2) - i);
 
         int Size = Size2 / Freq;
-        vector< vector<sf::Vector2f> > G;
+        vector< vector<sf::Vector2f> > G(Size + 1, vector<sf::Vector2f>(Size + 1));
         for (int y = 0; y < Size + 1; y++)
         {
-            vector<sf::Vector2f> Row;
             for (int x = 0; x < Size + 1; x++)
-                Row.push_back(PolarToRect(sf::Vector2f(1.f, Random(0.f, 360.f))));
-
-            G.push_back(Row);
+                G[y][x] = PolarToRect(sf::Vector2f(1.f, Random(0.f, 360.f)));
         }
 
         for (int y = 0; y < Size2; y++)
@@ -145,22 +142,24 @@ sf::Texture PerlinNoise()
                 sf::Vector2i p0(p);
                 sf::Vector2i p1 = p0 + sf::Vector2i(1, 1);
 
-                float s = DotProduct(G[p0.y][p0.x], p - sf::Vector2f(p0));
-                float t = DotProduct(G[p0.y][p1.x], p - sf::Vector2f(p1.x, p0.y));
-                float u = DotProduct(G[p1.y][p0.x], p - sf::Vector2f(p0.x, p1.y));
-                float v = DotProduct(G[p1.y][p1.x], p - sf::Vector2f(p1));
+                sf::Vector2f pp0 = p - sf::Vector2f(p0);
+                sf::Vector2f pp1 = p - sf::Vector2f(p1);
+
+                float s = DotProduct(G[p0.y][p0.x], pp0);
+                float t = DotProduct(G[p0.y][p1.x], sf::Vector2f(pp1.x, pp0.y));
+                float u = DotProduct(G[p1.y][p0.x], sf::Vector2f(pp0.x, pp1.y));
+                float v = DotProduct(G[p1.y][p1.x], pp1);
 
                 sf::Vector2f S;
-                S.x = 3 * pow(p.x - p0.x, 2) - 2 * pow(p.x - p0.x, 3);
+                S.x = 3 * pow(pp0.x, 2) - 2 * pow(pp0.x, 3);
                 float a = s + S.x * (t - s);
                 float b = u + S.x * (v - u);
-                S.y = 3 * pow(p.y - p0.y, 2) - 2 * pow(p.y - p0.y, 3);
+                S.y = 3 * pow(pp0.y, 2) - 2 * pow(pp0.y, 3);
                 float z = a + S.y * (b - a);
 
                 F[y][x] += z * Amplitude;
             }
         }
-
     }
 
     float min, max;
@@ -187,7 +186,7 @@ sf::Texture PerlinNoise()
     {
         for (int x = 0; x < Size2; x++)
         {
-            int val = Map(F[y][x], min, max, 128, 255);
+            int val = Map(F[y][x], min, max, 165, 255);
             Img.setPixel(x, y, sf::Color(val, val, val));
         }
     }
