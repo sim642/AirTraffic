@@ -23,6 +23,8 @@ class Surface
     private:
         const SurfaceTemplate &Template;
         sf::Sprite Shape;
+        sf::Texture NoiseTex;
+        sf::Sprite NoiseShape;
 };
 
 #endif // SURFACE_H

@@ -112,3 +112,87 @@ sf::ConvexShape ConvexHull(vector<sf::Vector2f> Points)
 
     return Shape;
 }
+
+sf::Texture PerlinNoise()
+{
+    const int Size2 = 1024;
+    const float Persistence = 0.5f;
+
+    vector< vector<float> > F(Size2, vector<float>(Size2, 0.f));
+
+    for (int i = 2; i <= 7; i++)
+    {
+        int Freq = pow(2, i);
+        float Amplitude = pow(Persistence, 10 - i);
+
+        int Size = Size2 / Freq;
+        vector< vector<sf::Vector2f> > G;
+        for (int y = 0; y < Size + 1; y++)
+        {
+            vector<sf::Vector2f> Row;
+            for (int x = 0; x < Size + 1; x++)
+                Row.push_back(PolarToRect(sf::Vector2f(1.f, Random(0.f, 360.f))));
+
+            G.push_back(Row);
+        }
+
+        for (int y = 0; y < Size2; y++)
+        {
+            for (int x = 0; x < Size2; x++)
+            {
+                sf::Vector2f p(x, y);
+                p *= float(Size) / Size2;
+                sf::Vector2i p0(p);
+                sf::Vector2i p1 = p0 + sf::Vector2i(1, 1);
+
+                float s = DotProduct(G[p0.y][p0.x], p - sf::Vector2f(p0));
+                float t = DotProduct(G[p0.y][p1.x], p - sf::Vector2f(p1.x, p0.y));
+                float u = DotProduct(G[p1.y][p0.x], p - sf::Vector2f(p0.x, p1.y));
+                float v = DotProduct(G[p1.y][p1.x], p - sf::Vector2f(p1));
+
+                sf::Vector2f S;
+                S.x = 3 * pow(p.x - p0.x, 2) - 2 * pow(p.x - p0.x, 3);
+                float a = s + S.x * (t - s);
+                float b = u + S.x * (v - u);
+                S.y = 3 * pow(p.y - p0.y, 2) - 2 * pow(p.y - p0.y, 3);
+                float z = a + S.y * (b - a);
+
+                F[y][x] += z * Amplitude;
+            }
+        }
+
+    }
+
+    float min, max;
+    for (int y = 0; y < Size2; y++)
+    {
+        for (int x = 0; x < Size2; x++)
+        {
+            if (y == 0 && x == 0)
+                min = max = F[y][x];
+            else
+            {
+                if (F[y][x] < min)
+                    min = F[y][x];
+
+                if (F[y][x] > max)
+                    max = F[y][x];
+            }
+        }
+    }
+
+    sf::Image Img;
+    Img.create(Size2, Size2, sf::Color::Red);
+    for (int y = 0; y < Size2; y++)
+    {
+        for (int x = 0; x < Size2; x++)
+        {
+            int val = Map(F[y][x], min, max, 128, 255);
+            Img.setPixel(x, y, sf::Color(val, val, val));
+        }
+    }
+
+    sf::Texture Tex;
+    Tex.loadFromImage(Img);
+    return Tex;
+}

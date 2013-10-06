@@ -10,4 +10,6 @@ sf::RectangleShape Rectangle(float Left, float Top, float Width, float Height, c
 
 sf::ConvexShape ConvexHull(std::vector<sf::Vector2f> Points);
 
+sf::Texture PerlinNoise();
+
 #endif // GRAPHUTIL_H
