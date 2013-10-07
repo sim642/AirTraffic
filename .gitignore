@@ -2,3 +2,5 @@ AirTraffic.layout
 AirTraffic.depend
 obj/
 bin/
+
+gmon.out
