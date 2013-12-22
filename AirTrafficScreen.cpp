@@ -842,6 +842,12 @@ void AirTrafficScreen::HandleEvents()
             }
         }
     }
+
+	if (Pathing != NULL)
+	{
+		if (!Pathing->Pathable() || (Pathing->GetPath().NumPoints() == 0 && !InRange(Pathing->GetPos(), MousePos, 25)))
+			Pathing = NULL;
+	}
 }
 
 void AirTrafficScreen::Step()
