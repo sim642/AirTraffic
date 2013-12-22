@@ -256,14 +256,6 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
             {
                 State = FlyingPath;
             }
-            else if (Direction == Out &&
-                     ((OutDirection == OutUp && Me.y < 50) ||
-                      (OutDirection == OutDown && Me.y > 550) ||
-                      (OutDirection == OutLeft && Me.x < 50) ||
-                      (OutDirection == OutRight && Me.x > 750)))
-            {
-                State = FlyingOut;
-            }
             break;
         }
         case FlyingPath:
@@ -290,7 +282,18 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
             }
             else if (P.NumPoints() == 0)
             {
-                State = FlyingFree;
+				if (Direction == Out &&
+					 ((OutDirection == OutUp && To.y < 50) ||
+					  (OutDirection == OutDown && To.y > 550) ||
+					  (OutDirection == OutLeft && To.x < 50) ||
+					  (OutDirection == OutRight && To.x > 750)))
+				{
+					State = FlyingOut;
+				}
+				else
+				{
+					State = FlyingFree;
+				}
             }
             break;
         }
