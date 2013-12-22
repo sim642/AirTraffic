@@ -279,7 +279,7 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
 
             if (Land &&
                 P.NumPoints() == 0 &&
-                Land->OnMe(Me) &&
+                /*Land->OnMe(Me) &&*/
                 P.Highlight
                 /*abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle*/)
             {
