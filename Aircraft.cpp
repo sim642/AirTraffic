@@ -219,7 +219,12 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
             sf::Vector2f From(400.f, 300.f);
             Shape.rotate(AngleDiff(Shape.getRotation(), Angle(From - Me)) * FT);
 
-            if (Me.x < -Radius || Me.x > (800 + Radius) || Me.y < -Radius || Me.y > (600 + Radius))
+            float Scale = Map(Speed / Template.Speed, 0.f, 1.f, 1.f, 0.9f);
+            float ShadowRadius = Radius * Scale;
+			sf::Vector2f Shadow = sf::Transform().scale(sf::Vector2f(Scale, Scale), sf::Vector2f(800 / 2, 600 * 0.8f)).transformPoint(Me);
+
+            if ((Me.x < -Radius || Me.x > (800 + Radius) || Me.y < -Radius || Me.y > (600 + Radius)) &&
+				(Shadow.x < -ShadowRadius || Shadow.x > (800 + ShadowRadius) || Shadow.y < -ShadowRadius || Shadow.y > (600 + ShadowRadius)))
             {
                 Die = true;
             }
