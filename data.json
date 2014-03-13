@@ -155,6 +155,12 @@
 			"airport": true,
 			"shadow": 0.97,
 			"surfaces": ["desert"]
+		},
+		{
+			"name": "hangar",
+			"res": "Hangar.png",
+			"airport": true,
+			"surfaces": ["grass", "desert"]
 		}
 	],
 	"surfaces":
