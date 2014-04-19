@@ -4,8 +4,16 @@
 Explosion::Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float NewTime) : Template(NewTemplate), Time(NewTime)
 {
     const sf::Texture &Texture = Textures[Template.Res];
-    Shape.setTexture(Texture);
-    Shape.setOrigin(sf::Vector2f(Texture.getSize()) / 2.f);
+    if (Template.FrameSize.x >= 0 || Template.FrameSize.y >= 0)
+    {
+        Shape = AnimSprite(Texture, Template.FrameSize, Template.FrameRate);
+        Shape.setOrigin(Template.FrameSize.x / 2.f, Template.FrameSize.y / 2.f);
+    }
+    else
+    {
+        Shape = AnimSprite(Texture, sf::Vector2i(Texture.getSize()), 0.f);
+        Shape.setOrigin(sf::Vector2f(Texture.getSize()) / 2.f);
+    }
     Shape.setPosition(Pos);
 
     Sound.setBuffer(Sounds[Template.SoundRes]);
@@ -15,7 +23,10 @@ Explosion::Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Textu
     Sound.play();
 
     Radius = Template.Radius;
-    TTL = Template.Time;
+    if (Template.Time == 0.f)
+		TTL = Shape.getFrameCount() / Shape.getFrameRate();
+	else
+		TTL = Template.Time;
 }
 
 ExplosionTemplate Explosion::GetTemplate()
@@ -60,6 +71,7 @@ void Explosion::Pause(bool Status)
 
 bool Explosion::Step(float FT)
 {
+	Shape.update(FT);
     Time += FT;
     return Time > TTL;
 }
@@ -67,6 +79,7 @@ bool Explosion::Step(float FT)
 void Explosion::Draw(sf::RenderWindow &App)
 {
     //Shape.SetColor(sf::Color(255, 255, 255, 255 - (Time / TTL) * 255));
-    Shape.setColor(sf::Color(255, 255, 255, 255 - pow(Time / TTL, 2) * 255));
+    if (Template.Time != 0.f)
+		Shape.setColor(sf::Color(255, 255, 255, 255 - pow(Time / TTL, 2) * 255));
     App.draw(Shape);
 }

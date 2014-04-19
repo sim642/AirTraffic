@@ -132,7 +132,16 @@
 			"res": "Exp2.png",
 			"soundres": "exp.wav",
 			"radius": 128,
-			"time": 3.0
+			"time": 2.0
+		},
+		{
+			"name": "exp2",
+			"res": "Explosion.png",
+			"framew": 128,
+			"frameh": 128,
+			"framerate": 4.0,
+			"soundres": "exp.wav",
+			"radius": 128
 		}
 	],
 	"sceneries":

@@ -196,10 +196,12 @@ void AirTrafficScreen::LoadResources()
         Temp.Name = Cur.get<string>("name");
         Temp.Res = Cur.get<string>("res");
         LoadTexture(Temp.Res);
+        Temp.FrameSize = sf::Vector2i(Cur.get("framew", -1), Cur.get("frameh", -1));
+        Temp.FrameRate = Cur.get("framerate", 0.f);
         Temp.SoundRes = Cur.get("soundres", "");
         LoadSound(Temp.SoundRes);
         Temp.Radius = Cur.get<float>("radius");
-        Temp.Time = Cur.get<float>("time");
+        Temp.Time = Cur.get("time", 0.f);
 
         ExplosionTemplates.insert(make_pair(Temp.Name, Temp));
     }

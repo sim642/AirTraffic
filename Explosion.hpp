@@ -5,6 +5,7 @@
 #include <SFML/Audio.hpp>
 #include <vector>
 #include <map>
+#include "AnimSprite.hpp"
 
 using namespace std;
 
@@ -12,6 +13,8 @@ struct ExplosionTemplate
 {
     string Name;
     string Res;
+    sf::Vector2i FrameSize;
+    float FrameRate;
     string SoundRes;
     float Radius;
     float Time;
@@ -38,7 +41,7 @@ class Explosion
     private:
         const ExplosionTemplate &Template;
 
-        sf::Sprite Shape;
+        AnimSprite Shape;
 
         float TTL, Time;
         float Radius;
