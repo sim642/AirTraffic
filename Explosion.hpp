@@ -24,10 +24,11 @@ class Explosion
 {
     public:
         friend class Aircraft;
-        Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float NewTime = 0.f);
+        Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, float NewTime = 0.f);
         ExplosionTemplate GetTemplate();
 
         sf::Vector2f GetPos();
+        float GetAngle();
         float GetRadius();
 
         bool Deadly();

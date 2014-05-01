@@ -1,7 +1,7 @@
 #include "Explosion.hpp"
 #include "Math.hpp"
 
-Explosion::Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float NewTime) : Template(NewTemplate), Time(NewTime)
+Explosion::Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Texture> &Textures, map<string, sf::SoundBuffer> &Sounds, sf::Vector2f Pos, float Rot, float NewTime) : Template(NewTemplate), Time(NewTime)
 {
     const sf::Texture &Texture = Textures[Template.Res];
     if (Template.FrameSize.x >= 0 || Template.FrameSize.y >= 0)
@@ -15,6 +15,7 @@ Explosion::Explosion(const ExplosionTemplate &NewTemplate, map<string, sf::Textu
         Shape.setOrigin(sf::Vector2f(Texture.getSize()) / 2.f);
     }
     Shape.setPosition(Pos);
+    Shape.setRotation(Rot);
 
     Sound.setBuffer(Sounds[Template.SoundRes]);
     Sound.setAttenuation(0.01f);
@@ -37,6 +38,11 @@ ExplosionTemplate Explosion::GetTemplate()
 sf::Vector2f Explosion::GetPos()
 {
     return Shape.getPosition();
+}
+
+float Explosion::GetAngle()
+{
+	return Shape.getRotation();
 }
 
 float Explosion::GetRadius()

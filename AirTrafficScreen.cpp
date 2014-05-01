@@ -544,13 +544,13 @@ void AirTrafficScreen::HandleNet()
                         {
                             string Name;
                             sf::Vector2f Pos;
-                            float Time;
-                            Packet >> Name >> Pos.x >> Pos.y >> Time;
+                            float Angle, Time;
+                            Packet >> Name >> Pos.x >> Pos.y >> Angle >> Time;
 
                             map<string, ExplosionTemplate>::iterator it = ExplosionTemplates.find(Name);
 
                             if (it != ExplosionTemplates.end())
-                                Explosions.push_back(new Explosion(it->second, Textures, Sounds, Pos, Time));
+                                Explosions.push_back(new Explosion(it->second, Textures, Sounds, Pos, Angle, Time));
                         }
                         break;
                     }
@@ -725,7 +725,7 @@ void AirTrafficScreen::SendGameData(const sf::Uint32 Id)
         for (boost::ptr_list<Explosion>::iterator it = Explosions.begin(); it != Explosions.end(); ++it)
         {
             const sf::Vector2f &Pos = it->GetPos();
-            Packet << it->GetTemplate().Name << Pos.x << Pos.y << it->GetTime();
+            Packet << it->GetTemplate().Name << Pos.x << Pos.y << it->GetAngle() << it->GetTime();
         }
         Net.SendTcp(Packet, Id);
     }
@@ -1507,11 +1507,12 @@ void AirTrafficScreen::SpawnExplosion(sf::Vector2f Pos)
     map<string, ExplosionTemplate>::iterator it = ExplosionTemplates.begin();
     advance(it, rand() % ExplosionTemplates.size());
     const ExplosionTemplate &Temp = it->second;
-    Explosions.push_back(new Explosion(Temp, Textures, Sounds, Pos));
+    float Angle = Random(0.f, 360.f);
+    Explosions.push_back(new Explosion(Temp, Textures, Sounds, Pos, Angle));
 
     if (Net.IsServer())
     {
-        Net.SendTcp(sf::Packet() << 0 << PacketTypes::ExplosionUpdate << Temp.Name << Pos.x << Pos.y << 0.f);
+        Net.SendTcp(sf::Packet() << 0 << PacketTypes::ExplosionUpdate << Temp.Name << Pos.x << Pos.y << Angle << 0.f);
     }
 }
 
