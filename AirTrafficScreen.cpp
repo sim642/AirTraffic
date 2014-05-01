@@ -1232,6 +1232,9 @@ void AirTrafficScreen::Pause(bool Status)
 
 void AirTrafficScreen::PathingFinish(Aircraft *Ac)
 {
+	if (!Ac->Pathable())
+		return;
+
     Path &P = Ac->GetPath();
 
     Ac->GetPath().Highlight = false;
