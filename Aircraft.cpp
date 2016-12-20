@@ -265,40 +265,43 @@ bool Aircraft::Step(float FT, sf::Vector2f Wind)
         }
         case FlyingPath:
         {
-            const sf::Vector2f To = P[0]; // might crash
-
-            if (InRange(Me, To, 5))
-                P.RemovePoint(0);
-
-            float Target = Angle(Me - To);
-
-            Shape.setRotation(Target);
-
-            if (Land &&
-                P.NumPoints() == 0 &&
-                /*Land->OnMe(Me) &&*/
-                P.Highlight
-                /*abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle*/)
+            if (P.NumPoints() > 0)
             {
-                FlySound.stop();
-                LandingSound.play();
-                State = Landing;
-                LandPoint = Me;
-            }
-            else if (P.NumPoints() == 0)
-            {
-				if (Direction == Out &&
-					 ((OutDirection == OutUp && To.y < 50) ||
-					  (OutDirection == OutDown && To.y > 550) ||
-					  (OutDirection == OutLeft && To.x < 50) ||
-					  (OutDirection == OutRight && To.x > 750)))
-				{
-					State = FlyingOut;
-				}
-				else
-				{
-					State = FlyingFree;
-				}
+                const sf::Vector2f To = P[0]; // might crash
+
+                if (InRange(Me, To, 5))
+                    P.RemovePoint(0);
+
+                float Target = Angle(Me - To);
+
+                Shape.setRotation(Target);
+
+                if (Land &&
+                    P.NumPoints() == 0 &&
+                    /*Land->OnMe(Me) &&*/
+                    P.Highlight
+                    /*abs(AngleDiff(GetAngle(), Land->GetAngle())) <= Land->GetTemplate().LandAngle*/)
+                {
+                    FlySound.stop();
+                    LandingSound.play();
+                    State = Landing;
+                    LandPoint = Me;
+                }
+                else if (P.NumPoints() == 0)
+                {
+                    if (Direction == Out &&
+                         ((OutDirection == OutUp && To.y < 50) ||
+                          (OutDirection == OutDown && To.y > 550) ||
+                          (OutDirection == OutLeft && To.x < 50) ||
+                          (OutDirection == OutRight && To.x > 750)))
+                    {
+                        State = FlyingOut;
+                    }
+                    else
+                    {
+                        State = FlyingFree;
+                    }
+                }
             }
             break;
         }
