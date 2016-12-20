@@ -186,7 +186,8 @@ Networker::ReceiveStatus Networker::Receive(sf::Packet &Packet)
                         {
                             if (Type == PacketTypes::ConnectionUdp)
                             {
-                                Info >> Pair.UdpPort;
+                                // Info >> Pair.UdpPort;
+                                Pair.UdpPort = UdpPort;
                             }
 
                             return NewPacket;
