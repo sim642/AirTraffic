@@ -73,6 +73,7 @@
 					<Add option="-lsfml-graphics-s" />
 					<Add option="-lsfml-window-s" />
 					<Add option="-lsfml-system-s" />
+					<Add option="-static" />
 					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
 				</Linker>
@@ -94,6 +95,7 @@
 					<Add option="-lsfml-graphics-s" />
 					<Add option="-lsfml-window-s" />
 					<Add option="-lsfml-system-s" />
+					<Add option="-static" />
 					<Add option="-static-libgcc" />
 					<Add option="-static-libstdc++" />
 				</Linker>
