@@ -1374,7 +1374,7 @@ void AirTrafficScreen::SpawnAircraft()
     sf::Vector2f Pos;
     float Angle;
 
-    bool Ready;
+    bool Ready = false;
     Aircraft* New;
 
     if (Chance(0.4f))
